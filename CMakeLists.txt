@@ -5,4 +5,5 @@ add_definitions(-Wall -Wextra)
 
 add_executable (rec
     entry.c
-    instruction.c)
+    instruction.c
+    section.c)
