@@ -5,13 +5,14 @@
 
 int main(void)
 {
-    printf("hello, world!\n");
+    printf("rec started\n");
 
     FILE *fp = fopen("libplasma.so", "rb");
     uint32_t *text = read_section(fp, 0x12e8, 0x2df0);
     fclose(fp);
 
-
+    process_instruction(text[(0x2170 - 0x12e8)/4]);
+    process_instruction(text[(0x2170 - 0x12e8)/4 + 1]);
 
     free(text);
     return 0;

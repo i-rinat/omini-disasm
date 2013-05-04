@@ -1,9 +1,10 @@
 project (omini-disasm)
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions(-Wall -Wextra)
+add_definitions(-std=gnu99 -Wall -Wextra)
 
 add_executable (rec
     entry.c
     instruction.c
-    section.c)
+    section.c
+    output.c)
