@@ -100,10 +100,44 @@ p_str_immediate(uint32_t code)
     } else if (!index && wback) {
         emit_code("   store(r%d, r%d);", Rn, Rt);
         emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
-    } else if (!index && !wback) {
-        emit_code("   store(r%d, r%d);", Rn, Rt);
     } else {
-        assert(0 && "logic error");
+        emit_code("   store(r%d, r%d);", Rn, Rt);
+    }
+}
+
+void
+p_ldr_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = !!(code & (1 << 24));
+    const uint32_t add = !!(code & (1 << 23));
+    const uint32_t wback = !index && (code & (1 << 21));
+
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rt = (code >> 12) & 0x0f;
+    const uint32_t imm12 = code & 0xfff;
+    const int32_t imm32 = add ? imm12 : -imm12;
+
+    if (15 == Rt)   // ldr pc, <something>
+        assert(0);
+
+    if (15 == Rn) {
+        if (wback) {
+            assert(0 && "writeback in ldr with Rn = pc");
+        }
+
+        emit_code("   r%d = %d", Rt, get_word_at(pc + 8 + (index ? imm32 : 0)));
+    } else {
+        if (index && !wback) {
+            emit_code("   r%d = load(r%d + %d);", Rt, Rn, imm32);
+        } else if (index && wback) {
+            emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
+            emit_code("   r%d = load(r%d);", Rt, Rn);
+        } else if (!index && wback) {
+            emit_code("   r%d = load(r%d);", Rt, Rn);
+            emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
+        } else {
+            emit_code("   r%d = load(r%d);", Rt, Rn);
+        }
     }
 }
 
@@ -129,6 +163,8 @@ process_instruction(uint32_t pc)
         p_sub_register_shifted_register(code);
     } else if ((code & 0x0e500000) == 0x04000000) {
         p_str_immediate(code);
+    } else if ((code & 0x0e500000) == 0x04100000) {
+        p_ldr_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
