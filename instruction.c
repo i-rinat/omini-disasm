@@ -209,7 +209,25 @@ p_add_register(uint32_t pc, uint32_t code)
     default:
         assert(0 && "not implemented");
     }
+}
 
+void
+p_cmp_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t imm12 = code & 0xfff;
+    const uint32_t imm32 = arm_expand_imm12(imm12);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+
+    if (15 == Rn) {
+        emit_code("   tmp = %d - %d;", pc + 8, imm32);
+        assert(0);
+    } else {
+        emit_code("   tmp = r%d - %d;", Rn, imm32);
+        emit_code("   APSR.C = (tmp > r%d);", Rn);
+        emit_code("   ASPR.N = (tmp & 0x80000000);");
+        emit_code("   ASPR.Z = (tmp == 0);");
+        // TODO: overflow handling
+    }
 }
 
 void
@@ -237,6 +255,8 @@ process_instruction(uint32_t pc)
         p_ldr_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x00800000) {
         p_add_register(pc, code);
+    } else if ((code & 0x0ff00000) == 0x03500000) {
+        p_cmp_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
