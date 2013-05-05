@@ -2,4 +2,4 @@
 
 
 void
-emit_output(const char *fmt, ...);
+emit_code(const char *fmt, ...);

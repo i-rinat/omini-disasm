@@ -3,7 +3,7 @@
 #include "output.h"
 
 void
-emit_output(const char *fmt, ...)
+emit_code(const char *fmt, ...)
 {
     va_list args;
     fprintf(stdout, "code emit:   ");

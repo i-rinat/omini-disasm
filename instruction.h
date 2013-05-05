@@ -2,4 +2,4 @@
 #include <stdint.h>
 
 void
-process_instruction(uint32_t code);
+process_instruction(uint32_t pc);
