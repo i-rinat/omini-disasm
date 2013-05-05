@@ -164,7 +164,7 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
             assert(0 && "writeback in ldr with Rn = pc");
         }
 
-        emit_code("   r%d = %d", Rt, get_word_at(pc + 8 + (index ? imm32 : 0)));
+        emit_code("   r%d = %d;", Rt, get_word_at(pc + 8 + (index ? imm32 : 0)));
     } else {
         if (index && !wback) {
             emit_code("   r%d = load(r%d + %d);", Rt, Rn, imm32);
