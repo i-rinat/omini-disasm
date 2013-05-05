@@ -4,6 +4,15 @@
 #include <stdio.h>
 #include <assert.h>
 
+enum SRType {
+    SRType_LSL,
+    SRType_LSR,
+    SRType_ASR,
+    SRType_RRX,
+    SRType_ROR
+};
+
+
 uint32_t
 arm_expand_imm12(uint32_t imm12)
 {
@@ -19,6 +28,36 @@ arm_expand_imm12(uint32_t imm12)
     }
 }
 
+enum SRType
+arm_decode_imm_type(uint32_t type, uint32_t imm5)
+{
+    if (0 == type)
+        return SRType_LSL;
+    else if (1 == type)
+        return SRType_LSR;
+    else if (2 == type)
+        return SRType_ASR;
+    else if (3 == type) {
+        return (0 == imm5) ? SRType_RRX : SRType_ROR;
+    }
+    assert(0 && "should never reach this point");
+    return SRType_LSL;
+}
+
+uint32_t
+arm_decode_imm_shift(uint32_t type, uint32_t imm5)
+{
+    if (0 == type)
+        return imm5;
+    else if (1 == type || 2 == type)
+        return (imm5 != 0) ? imm5 : 32;
+    else if (3 == type)
+        return (0 == imm5) ? 1 : imm5;
+    assert(0 && "should never reach this point");
+    return 0;
+}
+
+// ==================
 
 void
 p_push(uint32_t code)
