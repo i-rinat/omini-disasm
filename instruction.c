@@ -371,6 +371,7 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
 void
 p_ldm(uint32_t pc, uint32_t code)
 {
+    (void)pc;
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t wback = code & (1 << 21);
 
