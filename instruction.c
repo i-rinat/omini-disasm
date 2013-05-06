@@ -238,6 +238,27 @@ process_instruction(uint32_t pc)
     printf("process_instruction(0x%x)\n", code);
     emit_code("label_%04x:", pc);
 
+    const uint32_t condition = (code >> 28) & 0x0f;
+    switch (condition) {
+    case 0b0000: emit_code("  if (ASPR.Z) {"); break;
+    case 0b0001: emit_code("  if (!ASPR.Z) {"); break;
+    case 0b0010: emit_code("  if (ASPR.C) {"); break;
+    case 0b0011: emit_code("  if (!ASPR.C) {"); break;
+    case 0b0100: emit_code("  if (ASPR.N) {"); break;
+    case 0b0101: emit_code("  if (!ASPR.N) {"); break;
+    case 0b0110: emit_code("  if (ASPR.V) {"); break;
+    case 0b0111: emit_code("  if (!ASPR.V) {"); break;
+    case 0b1000: emit_code("  if (ASPR.C && !ASPR.Z) {"); break;
+    case 0b1001: emit_code("  if (!ASPR.C && ASPR.Z) {"); break;
+    case 0b1010: emit_code("  if (!!ASPR.N == !!ASPR.V) {"); break;
+    case 0b1011: emit_code("  if (!!ASPR.N != !!ASPR.V) {"); break;
+    case 0b1100: emit_code("  if (!ASPR.Z && !!ASPR.N == !!ASPR.V) {"); break;
+    case 0b1101: emit_code("  if (ASPR.Z && !!ASPR.N != !!ASPR.V) {"); break;
+    case 0b1110: /* unconditional, no code emited */ break;
+    default: assert(0 && "wierd condition"); break;
+    }
+
+
     if ((code & 0x0fff0fff) == 0x052d0004) {
         printf("push (single)\n");
         assert(0 && "not implemented");
@@ -260,4 +281,7 @@ process_instruction(uint32_t pc)
     } else {
         assert(0 && "instruction code not implemented");
     }
+
+    if (condition != 0x0e)
+        emit_code("  }");
 }
