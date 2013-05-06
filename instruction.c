@@ -212,6 +212,36 @@ p_add_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_add_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
+
+    assert(Rd != 15);
+    if (15 == Rn) {
+        emit_code("    r%d = %d;", Rd, pc + 8 + imm32);
+        const uint32_t result = pc + 8 + imm32;
+        if (setflags) {
+            emit_code("    ASPR.C = %d;", (result < imm32));
+        }
+    } else {
+        if (setflags) {
+            emit_code("    tmp = r%d + %d;", Rn, imm32);
+            emit_code("    ASPR.C = (tmp < r%d);", Rn);
+        }
+        emit_code("    r%d = r%d + %d;", Rd, Rn, imm32);
+    }
+
+    if (setflags) {
+        emit_code("    ASPR.N = r%d & 0x80000000;", Rd);
+        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        // TODO: V flag
+    }
+}
+
+void
 p_cmp_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t imm12 = code & 0xfff;
@@ -338,6 +368,8 @@ process_instruction(uint32_t pc)
         p_ldr_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x00800000) {
         p_add_register(pc, code);
+    } else if ((code & 0x0fe00000) == 0x02800000) {
+        p_add_immediate(pc, code);
     } else if ((code & 0x0ff00000) == 0x03500000) {
         p_cmp_immediate(pc, code);
     } else if ((code & 0x0f000000) == 0x0a000000) {
