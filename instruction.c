@@ -270,6 +270,29 @@ p_mov_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_mov_immediate(uint32_t pc, uint32_t code)
+{
+    (void)pc;
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm8 = code & 0xff;
+    const uint32_t rotation = ((code >> 8) & 0xf) * 2;
+
+    const uint32_t imm32 = (imm8 >> rotation) | (imm8 << (32 - rotation));
+    const uint32_t carry = (rotation) ? !!(imm32 & 0x80000000) : 42;
+
+    assert(Rd != 15);
+    emit_code("    r%d = %d;", Rd, imm32);
+    if (setflags) {
+        emit_code("    ASPR.N = (r%d & 0x80000000);", Rd);
+        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        if (42 != carry)
+            emit_code("    ASPR.C = %d;", carry);
+        // V unchanged
+    }
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -323,6 +346,8 @@ process_instruction(uint32_t pc)
         p_bl(pc, code);
     } else if ((code & 0x0fe00ff0) == 0x01a00000) {
         p_mov_register(pc, code);
+    } else if ((code & 0x0fe00000) == 0x03a00000) {
+        p_mov_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
