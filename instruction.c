@@ -240,6 +240,36 @@ p_b(uint32_t pc, uint32_t code)
 }
 
 void
+p_bl(uint32_t pc, uint32_t code)
+{
+    const uint32_t imm24 = code & 0x00ffffff;
+    const uint32_t imm32 = (imm24 & (1<<23)) ? ((0xff000000 | imm24) << 2) : (imm24 << 2);
+
+    emit_code("    func_%04x();", imm32 + 8 + pc);
+}
+
+void
+p_mov_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t Rm = code & 0x0f;
+
+    assert(Rd != 15);
+    if (15 == Rm) {
+        emit_code("    r%d = %d;", Rd, pc + 8);
+    } else {
+        emit_code("    r%d = r%d;", Rd, Rm);
+    }
+
+    if (setflags) {
+        emit_code("    ASPR.N = (r%d & 0x80000000);", Rd);
+        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        // C and V are not changed
+    }
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -289,6 +319,10 @@ process_instruction(uint32_t pc)
         p_cmp_immediate(pc, code);
     } else if ((code & 0x0f000000) == 0x0a000000) {
         p_b(pc, code);
+    } else if ((code & 0x0f000000) == 0x0b000000) {
+        p_bl(pc, code);
+    } else if ((code & 0x0fe00ff0) == 0x01a00000) {
+        p_mov_register(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
