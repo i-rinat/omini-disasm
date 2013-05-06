@@ -60,18 +60,6 @@ arm_decode_imm_shift(uint32_t type, uint32_t imm5)
 // ==================
 
 void
-p_push(uint32_t code)
-{
-    const uint32_t register_list = code & 0xffff;
-    uint32_t mask = 1;
-    for (int reg = 0; reg < 16; reg ++) {
-        if (register_list & mask)
-            emit_code("   push(%d);", reg);
-        mask <<= 1;
-    }
-}
-
-void
 p_sub_immediate(uint32_t code)
 {
     const uint32_t imm12 = code & 0xfff;
@@ -456,8 +444,6 @@ process_instruction(uint32_t pc)
 
     if ((code & 0x0fd00000) == 0x09000000) {
         p_stmdb(pc, code);
-    } else if ((code & 0x0fff0000) == 0x092d0000) {
-        p_push(code);
     } else if ((code & 0x0fe00000) == 0x02400000) {
         p_sub_immediate(code);
     } else if ((code & 0x0fe00010) == 0x00400000) {
