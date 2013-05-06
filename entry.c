@@ -11,7 +11,7 @@ int main(void)
     uint32_t *text = read_section(fp, 0x12e8, 0x2df0);
     fclose(fp);
 
-    for (int k = 0; k < 26; k ++)
+    for (int k = 0; k < 90; k ++)
         process_instruction(0x2170 + k * 4);
 
     free(text);
