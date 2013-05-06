@@ -323,6 +323,52 @@ p_mov_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrd_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rt1 = (code >> 12) & 0x0f;
+    const uint32_t Rt2 = Rt1 + 1;
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t imm4H = (code >> 8) & 0xf;
+    const uint32_t imm4L = (code & 0x0f);
+    const uint32_t imm32 = (imm4H << 4) | imm4L;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert((Rt1 & 1) == 0);
+    assert(Rt2 < 15);
+
+    if (15 == Rn) {
+        if (wback)
+            assert(0 && "writeback to pc");
+
+        if (index) {
+            emit_code("    r%d = %d;", Rt1, get_word_at(pc + 8 + offset));
+            emit_code("    r%d = %d;", Rt2, get_word_at(pc + 8 + offset + 4));
+        } else {
+            emit_code("    r%d = %d;", Rt1, get_word_at(pc + 8));
+            emit_code("    r%d = %d;", Rt2, get_word_at(pc + 8 + 4));
+        }
+    }
+    if (index && !wback) {
+        emit_code("    r%d = load(r%d + %d);", Rt1, Rn, offset);
+        emit_code("    r%d = load(r%d + %d);", Rt2, Rn, offset + 4);
+    } else if (index && wback) {
+        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("    r%d = load(r%d);", Rt1, Rn);
+        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
+    } else if (!index && wback) {
+        emit_code("    r%d = load(r%d);", Rt1, Rn);
+        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
+        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+    } else {
+        emit_code("    r%d = load(r%d);", Rt1, Rn);
+        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
+    }
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -366,6 +412,8 @@ process_instruction(uint32_t pc)
         p_str_immediate(code);
     } else if ((code & 0x0e500000) == 0x04100000) {
         p_ldr_immediate(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x004000d0) {
+        p_ldrd_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x00800000) {
         p_add_register(pc, code);
     } else if ((code & 0x0fe00000) == 0x02800000) {
