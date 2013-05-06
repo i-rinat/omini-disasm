@@ -395,6 +395,37 @@ p_ldm(uint32_t pc, uint32_t code)
 }
 
 void
+p_stmdb(uint32_t pc, uint32_t code)
+{
+    const uint32_t wback = code & (1 < 21);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+
+    uint32_t mask = 1;
+    uint32_t neg_offset = 0;
+    for (uint32_t k = 0; k <= 15; k ++) {
+        if (code & mask)
+            neg_offset += 4;
+        mask <<= 1;
+    }
+    uint32_t storage_size = neg_offset;
+
+    mask = 1;
+    for (uint32_t k = 0; k <= 14; k ++) {
+        if (code & mask) {
+            emit_code("    store(r%d - %d, r%d);", Rn, neg_offset, k);
+            neg_offset -= 4;
+        }
+        mask <<= 1;
+    }
+
+    if (code & (1 << 15))
+        emit_code("    store(r%d - %d, %d);", Rn, neg_offset, pc + 8);
+
+    if (wback)
+        emit_code("    r%d = r%d - %d;", Rn, Rn, storage_size);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -423,9 +454,8 @@ process_instruction(uint32_t pc)
     }
 
 
-    if ((code & 0x0fff0fff) == 0x052d0004) {
-        printf("push (single)\n");
-        assert(0 && "not implemented");
+    if ((code & 0x0fd00000) == 0x09000000) {
+        p_stmdb(pc, code);
     } else if ((code & 0x0fff0000) == 0x092d0000) {
         p_push(code);
     } else if ((code & 0x0fe00000) == 0x02400000) {
