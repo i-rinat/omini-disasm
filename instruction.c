@@ -231,6 +231,15 @@ p_cmp_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_b(uint32_t pc, uint32_t code)
+{
+    const uint32_t imm24 = code & 0x00ffffff;
+    const uint32_t imm32 = (imm24 & (1<<23)) ? ((0xff000000 | imm24) << 2) : (imm24 << 2);
+
+    emit_code("    goto label_%04x;", imm32 + 8 + pc);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -278,6 +287,8 @@ process_instruction(uint32_t pc)
         p_add_register(pc, code);
     } else if ((code & 0x0ff00000) == 0x03500000) {
         p_cmp_immediate(pc, code);
+    } else if ((code & 0x0f000000) == 0x0a000000) {
+        p_b(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
