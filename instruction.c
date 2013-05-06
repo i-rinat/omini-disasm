@@ -369,6 +369,31 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldm(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t wback = code & (1 << 21);
+
+    uint32_t mask = 1;
+    uint32_t offset = 0;
+    for (uint32_t k = 0; k <= 14; k ++) {
+        if (code & mask) {
+            assert(!(k == Rn && wback));
+            emit_code("    r%d = load(r%d + %d);", k, Rn, offset);
+            offset += 4;
+        }
+        mask = mask << 1;
+    }
+
+    if (code && (1<<15))
+        offset += 4;
+    if (wback)
+        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+    if (code && (1<<15))
+        emit_code("}");
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -428,6 +453,8 @@ process_instruction(uint32_t pc)
         p_mov_register(pc, code);
     } else if ((code & 0x0fe00000) == 0x03a00000) {
         p_mov_immediate(pc, code);
+    } else if ((code & 0x0fd00000) == 0x08900000) {
+        p_ldm(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
