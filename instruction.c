@@ -402,7 +402,7 @@ p_ldm(uint32_t pc, uint32_t code)
     if (wback)
         emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
     if (code && (1<<15))
-        emit_code("}");
+        end_function();
 }
 
 void
