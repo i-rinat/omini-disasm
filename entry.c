@@ -3,6 +3,7 @@
 #include "instruction.h"
 #include "section.h"
 #include "pc-stack.h"
+#include "output.h"
 #include <assert.h>
 
 void
@@ -36,11 +37,9 @@ main(void)
     //~ for (int k = 0; k < 90; k ++)
         //~ process_instruction(0x2170 + k * 4);
 
-
+    set_output_file("code.c");
     process_function(0x2170);
-
-
-
+    close_output_file();
 
     free(text);
     return 0;
