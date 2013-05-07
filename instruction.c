@@ -1,6 +1,7 @@
 #include "instruction.h"
 #include "output.h"
 #include "section.h"
+#include "pc-stack.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -77,7 +78,7 @@ arm_decode_imm_shift(uint32_t type, uint32_t imm5)
 // ==================
 
 void
-p_sub_immediate(uint32_t code)
+p_sub_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t imm12 = code & 0xfff;
     const uint32_t imm32 = arm_expand_imm12(imm12);
@@ -91,39 +92,24 @@ p_sub_immediate(uint32_t code)
     if (setflags) {
         assert(0);
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
-p_sub_register(uint32_t code)
-{
-    assert(0);
-    (void)code;
-    //~ const uint32_t imm5 = (code >> 7) & 0x1f;
-    //~ const uint32_t type = (code >> 5) & 0x03;
-    //~ const uint32_t Rd = (code >> 12) & 0x0f;
-    //~ const uint32_t Rn = (code >> 16) & 0x0f;
-    //~
-    //~ assert(Rd != 15);
-    //~ assert(Rd != 14);
-//~
-    //~ int setflags = (code >> 20) & 1;
-    //~ if (setflags) {
-        //~ assert(0);
-    //~ }
-}
-
-void
-p_sub_register_shifted_register(uint32_t code)
+p_sub_register_shifted_register(uint32_t pc, uint32_t code)
 {
     assert(0);
     int setflags = (code >> 20) & 1;
     if (setflags) {
         assert(0);
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
-p_str_immediate(uint32_t code)
+p_str_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t index = !!(code & (1 << 24));
     const uint32_t add = !!(code & (1 << 23));
@@ -147,6 +133,8 @@ p_str_immediate(uint32_t code)
     } else {
         emit_code("   store(r%d, r%d);", Rn, Rt);
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -183,6 +171,8 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
             emit_code("   r%d = load(r%d);", Rt, Rn);
         }
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -214,6 +204,8 @@ p_add_register(uint32_t pc, uint32_t code)
     default:
         assert(0 && "not implemented");
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -244,6 +236,8 @@ p_add_immediate(uint32_t pc, uint32_t code)
         emit_code("    ASPR.Z = (r%d == 0);", Rd);
         // TODO: V flag
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -263,6 +257,8 @@ p_cmp_immediate(uint32_t pc, uint32_t code)
         emit_code("   ASPR.Z = (tmp == 0);");
         // TODO: overflow handling
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -272,6 +268,12 @@ p_b(uint32_t pc, uint32_t code)
     const uint32_t imm32 = (imm24 & (1<<23)) ? ((0xff000000 | imm24) << 2) : (imm24 << 2);
 
     emit_code("    goto label_%04x;", imm32 + 8 + pc);
+
+    pc_stack_push(imm32 + 8 + pc);
+    if (((code >> 28) & 0x0f) != 0x0e) {
+        // if branch was conditional, continue to explore forward
+        pc_stack_push(pc + 4);
+    }
 }
 
 void
@@ -281,6 +283,9 @@ p_bl(uint32_t pc, uint32_t code)
     const uint32_t imm32 = (imm24 & (1<<23)) ? ((0xff000000 | imm24) << 2) : (imm24 << 2);
 
     emit_code("    func_%04x();", imm32 + 8 + pc);
+
+    // pc_stack_push(imm32 + 8 + pc);
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -302,6 +307,8 @@ p_mov_register(uint32_t pc, uint32_t code)
         emit_code("    ASPR.Z = (r%d == 0);", Rd);
         // C and V are not changed
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -325,6 +332,8 @@ p_mov_immediate(uint32_t pc, uint32_t code)
             emit_code("    ASPR.C = %d;", carry);
         // V unchanged
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -371,6 +380,8 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
         emit_code("    r%d = load(r%d);", Rt1, Rn);
         emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
     }
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -395,8 +406,11 @@ p_ldm(uint32_t pc, uint32_t code)
         offset += 4;
     if (wback)
         emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-    if (code && (1<<15))
+    if (code && (1<<15)) {
         end_function();
+    } else {
+        pc_stack_push(pc + 4);
+    }
 }
 
 void
@@ -428,6 +442,8 @@ p_stmdb(uint32_t pc, uint32_t code)
 
     if (wback)
         emit_code("    r%d = r%d - %d;", Rn, Rn, storage_size);
+
+    pc_stack_push(pc + 4);
 }
 
 void
@@ -462,13 +478,11 @@ process_instruction(uint32_t pc)
     if ((code & 0x0fd00000) == 0x09000000) {
         p_stmdb(pc, code);
     } else if ((code & 0x0fe00000) == 0x02400000) {
-        p_sub_immediate(code);
-    } else if ((code & 0x0fe00010) == 0x00400000) {
-        p_sub_register(code);
+        p_sub_immediate(pc, code);
     } else if ((code & 0x0fe00090) == 0x00400010) {
-        p_sub_register_shifted_register(code);
+        p_sub_register_shifted_register(pc, code);
     } else if ((code & 0x0e500000) == 0x04000000) {
-        p_str_immediate(code);
+        p_str_immediate(pc, code);
     } else if ((code & 0x0e500000) == 0x04100000) {
         p_ldr_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x004000d0) {
