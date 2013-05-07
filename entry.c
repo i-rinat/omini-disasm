@@ -13,9 +13,6 @@ process_function(uint32_t start_pc)
     uint32_t next_pc = start_pc;
     while (! pc_stack_empty()) {
         uint32_t pc = pc_stack_pop();
-        printf("0x%08x\n", pc);
-        //~ if (next_pc != pc)
-            //~ emit_code("    goto label_%04x;", pc);
         process_instruction(pc);
         next_pc = pc + 4;
         (void)next_pc;
@@ -23,7 +20,6 @@ process_function(uint32_t start_pc)
 
     pc_stack_free();
 }
-
 
 int
 main(void)
