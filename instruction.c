@@ -12,6 +12,17 @@ enum SRType {
     SRType_ROR
 };
 
+int flag_inside_function = 0;
+
+void
+begin_function(uint32_t pc)
+{
+    flag_inside_function = 1;
+    emit_code("void func_%04x() {", pc);
+}
+
+
+// ============================
 
 uint32_t
 arm_expand_imm12(uint32_t imm12)

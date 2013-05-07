@@ -7,4 +7,5 @@ add_executable (rec
     entry.c
     instruction.c
     section.c
-    output.c)
+    output.c
+    pc-stack.c)
