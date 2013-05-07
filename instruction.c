@@ -226,19 +226,19 @@ p_add_immediate(uint32_t pc, uint32_t code)
         emit_code("    r%d = %d;", Rd, pc + 8 + imm32);
         const uint32_t result = pc + 8 + imm32;
         if (setflags) {
-            emit_code("    ASPR.C = %d;", (result < imm32));
+            emit_code("    APSR.C = %d;", (result < imm32));
         }
     } else {
         if (setflags) {
             emit_code("    tmp = r%d + %d;", Rn, imm32);
-            emit_code("    ASPR.C = (tmp < r%d);", Rn);
+            emit_code("    APSR.C = (tmp < r%d);", Rn);
         }
         emit_code("    r%d = r%d + %d;", Rd, Rn, imm32);
     }
 
     if (setflags) {
-        emit_code("    ASPR.N = r%d & 0x80000000;", Rd);
-        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = r%d & 0x80000000;", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
         // TODO: V flag
     }
 
@@ -258,8 +258,8 @@ p_cmp_immediate(uint32_t pc, uint32_t code)
     } else {
         emit_code("   tmp = r%d - %d;", Rn, imm32);
         emit_code("   APSR.C = (tmp > r%d);", Rn);
-        emit_code("   ASPR.N = (tmp & 0x80000000);");
-        emit_code("   ASPR.Z = (tmp == 0);");
+        emit_code("   APSR.N = (tmp & 0x80000000);");
+        emit_code("   APSR.Z = (tmp == 0);");
         // TODO: overflow handling
     }
 
@@ -308,8 +308,8 @@ p_mov_register(uint32_t pc, uint32_t code)
     }
 
     if (setflags) {
-        emit_code("    ASPR.N = (r%d & 0x80000000);", Rd);
-        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = (r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
         // C and V are not changed
     }
 
@@ -331,10 +331,10 @@ p_mov_immediate(uint32_t pc, uint32_t code)
     assert(Rd != 15);
     emit_code("    r%d = %d;", Rd, imm32);
     if (setflags) {
-        emit_code("    ASPR.N = (r%d & 0x80000000);", Rd);
-        emit_code("    ASPR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = (r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
         if (42 != carry)
-            emit_code("    ASPR.C = %d;", carry);
+            emit_code("    APSR.C = %d;", carry);
         // V unchanged
     }
 
@@ -461,20 +461,20 @@ process_instruction(uint32_t pc)
 
     const uint32_t condition = (code >> 28) & 0x0f;
     switch (condition) {
-    case 0b0000: emit_code("  if (ASPR.Z) {"); break;
-    case 0b0001: emit_code("  if (!ASPR.Z) {"); break;
-    case 0b0010: emit_code("  if (ASPR.C) {"); break;
-    case 0b0011: emit_code("  if (!ASPR.C) {"); break;
-    case 0b0100: emit_code("  if (ASPR.N) {"); break;
-    case 0b0101: emit_code("  if (!ASPR.N) {"); break;
-    case 0b0110: emit_code("  if (ASPR.V) {"); break;
-    case 0b0111: emit_code("  if (!ASPR.V) {"); break;
-    case 0b1000: emit_code("  if (ASPR.C && !ASPR.Z) {"); break;
-    case 0b1001: emit_code("  if (!ASPR.C && ASPR.Z) {"); break;
-    case 0b1010: emit_code("  if (!!ASPR.N == !!ASPR.V) {"); break;
-    case 0b1011: emit_code("  if (!!ASPR.N != !!ASPR.V) {"); break;
-    case 0b1100: emit_code("  if (!ASPR.Z && !!ASPR.N == !!ASPR.V) {"); break;
-    case 0b1101: emit_code("  if (ASPR.Z && !!ASPR.N != !!ASPR.V) {"); break;
+    case 0b0000: emit_code("  if (APSR.Z) {"); break;
+    case 0b0001: emit_code("  if (!APSR.Z) {"); break;
+    case 0b0010: emit_code("  if (APSR.C) {"); break;
+    case 0b0011: emit_code("  if (!APSR.C) {"); break;
+    case 0b0100: emit_code("  if (APSR.N) {"); break;
+    case 0b0101: emit_code("  if (!APSR.N) {"); break;
+    case 0b0110: emit_code("  if (APSR.V) {"); break;
+    case 0b0111: emit_code("  if (!APSR.V) {"); break;
+    case 0b1000: emit_code("  if (APSR.C && !APSR.Z) {"); break;
+    case 0b1001: emit_code("  if (!APSR.C && APSR.Z) {"); break;
+    case 0b1010: emit_code("  if (!!APSR.N == !!APSR.V) {"); break;
+    case 0b1011: emit_code("  if (!!APSR.N != !!APSR.V) {"); break;
+    case 0b1100: emit_code("  if (!APSR.Z && !!APSR.N == !!APSR.V) {"); break;
+    case 0b1101: emit_code("  if (APSR.Z && !!APSR.N != !!APSR.V) {"); break;
     case 0b1110: /* unconditional, no code emited */ break;
     default: assert(0 && "wierd condition"); break;
     }
