@@ -3,6 +3,7 @@
 #include "instruction.h"
 #include "section.h"
 #include "pc-stack.h"
+#include <assert.h>
 
 void
 process_function(uint32_t start_pc)
@@ -17,6 +18,8 @@ process_function(uint32_t start_pc)
         next_pc = pc + 4;
         (void)next_pc;
     }
+
+    assert(!inside_function());
 
     pc_stack_free();
 }

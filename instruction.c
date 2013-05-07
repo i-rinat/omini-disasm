@@ -21,6 +21,18 @@ begin_function(uint32_t pc)
     emit_code("void func_%04x() {", pc);
 }
 
+int
+inside_function()
+{
+    return flag_inside_function;
+}
+
+void
+end_function()
+{
+    flag_inside_function = 0;
+    emit_code("}");
+}
 
 // ============================
 
