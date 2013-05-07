@@ -19,8 +19,8 @@ process_function(uint32_t start_pc)
         (void)next_pc;
     }
 
-    assert(!inside_function());
-
+    assert(function_end_found());
+    end_function();
     pc_stack_free();
 }
 

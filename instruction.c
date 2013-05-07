@@ -13,25 +13,30 @@ enum SRType {
     SRType_ROR
 };
 
-int flag_inside_function = 0;
+int flag_function_end_found = 0;
 
 void
 begin_function(uint32_t pc)
 {
-    flag_inside_function = 1;
+    flag_function_end_found = 0;
     emit_code("void func_%04x() {", pc);
 }
 
 int
-inside_function()
+function_end_found()
 {
-    return flag_inside_function;
+    return flag_function_end_found;
+}
+
+void
+set_function_end_flag()
+{
+    flag_function_end_found = 1;
 }
 
 void
 end_function()
 {
-    flag_inside_function = 0;
     emit_code("}");
 }
 
@@ -407,7 +412,7 @@ p_ldm(uint32_t pc, uint32_t code)
     if (wback)
         emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
     if (code && (1<<15)) {
-        end_function();
+        set_function_end_flag();
     } else {
         pc_stack_push(pc + 4);
     }
