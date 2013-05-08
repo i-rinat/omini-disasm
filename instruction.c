@@ -413,6 +413,7 @@ p_ldm(uint32_t pc, uint32_t code)
         emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
     if (code && (1<<15)) {
         set_function_end_flag();
+        emit_code("    return;");
     } else {
         pc_stack_push(pc + 4);
     }

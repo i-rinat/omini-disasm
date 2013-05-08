@@ -10,18 +10,26 @@ void
 process_function(uint32_t start_pc)
 {
     pc_stack_initialize();
+    visited_bitmap_initialize();
     pc_stack_push(start_pc);
     begin_function(start_pc);
-    uint32_t next_pc = start_pc;
+    uint32_t predicted_pc = start_pc;
     while (! pc_stack_empty()) {
         uint32_t pc = pc_stack_pop();
+        if (predicted_pc != pc) {
+            if (visited_bitmap_visited(predicted_pc))
+                emit_code("    goto label_%04x;", predicted_pc);
+        }
+        if (visited_bitmap_visited(pc))
+            continue;
         process_instruction(pc);
-        next_pc = pc + 4;
-        (void)next_pc;
+        visited_bitmap_mark_visited(pc);
+        predicted_pc = pc + 4;
     }
 
     assert(function_end_found());
     end_function();
+    visited_bitmap_free();
     pc_stack_free();
 }
 
