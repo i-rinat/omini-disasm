@@ -421,7 +421,7 @@ p_ldm(uint32_t pc, uint32_t code)
 void
 p_stmdb(uint32_t pc, uint32_t code)
 {
-    const uint32_t wback = code & (1 < 21);
+    const uint32_t wback = code & (1 << 21);
     const uint32_t Rn = (code >> 16) & 0x0f;
 
     uint32_t mask = 1;
