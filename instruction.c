@@ -458,6 +458,43 @@ p_stmdb(uint32_t pc, uint32_t code)
 }
 
 void
+p_strd_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rt1 = (code >> 12) & 0x0f;
+    const uint32_t Rt2 = Rt1 + 1;
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t imm4H = (code >> 8) & 0x0f;
+    const uint32_t imm4L = code & 0x0f;
+    const uint32_t imm32 = (imm4H << 4) | imm4L;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert((Rt1 & 1) == 0);
+    assert(Rt1 != 15);
+    assert(Rt2 != 15);
+
+    if (index && !wback) {
+        emit_code("    store(r%d + %d, r%d);", Rn, offset, Rt1);
+        emit_code("    store(r%d + %d + 4, r%d);", Rn, offset, Rt2);
+    } else if (index && wback) {
+        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("    store(r%d, r%d);", Rn, Rt1);
+        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
+    } else if (!index && wback) {
+        emit_code("    store(r%d, r%d);", Rn, Rt1);
+        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
+        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+    } else { // !index &&  !wback
+        emit_code("    store(r%d, r%d);", Rn, Rt1);
+        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -514,6 +551,8 @@ process_instruction(uint32_t pc)
         p_mov_immediate(pc, code);
     } else if ((code & 0x0fd00000) == 0x08900000) {
         p_ldm(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x004000f0) {
+        p_strd_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
