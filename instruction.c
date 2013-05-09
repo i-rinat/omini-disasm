@@ -294,7 +294,6 @@ p_bl(uint32_t pc, uint32_t code)
 
     emit_code("    func_%04x();", imm32 + 8 + pc);
 
-    // pc_stack_push(imm32 + 8 + pc);
     func_list_add(imm32 + 8 + pc);
     pc_stack_push(pc + 4);
 }
