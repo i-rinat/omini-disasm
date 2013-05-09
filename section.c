@@ -50,6 +50,7 @@ get_word_at(uint32_t addr)
 
         ptr = ptr->next;
     }
+    printf("get_word_at(0x%04x)\n", addr);
     assert(0 && "can't get word at address");
     return 0;
 }
