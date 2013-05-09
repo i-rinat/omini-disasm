@@ -526,6 +526,32 @@ p_cmp_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_lsl_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t Rm = code & 0x0f;
+    const uint32_t shift_n = arm_decode_imm_shift(0, imm5);
+
+    assert(Rd != 15);
+    assert(shift_n > 0);
+
+    if (setflags)
+        emit_code("    APSR.C = !!((r%d << %d) & 0x80000000);", Rm, shift_n - 1);
+
+    emit_code("    r%d = r%d << %d;", Rd, Rm, shift_n);
+
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -586,6 +612,8 @@ process_instruction(uint32_t pc)
         p_strd_immediate(pc, code);
     } else if ((code & 0x0ff00010) == 0x01500000) {
         p_cmp_register(pc, code);
+    } else if ((code & 0x0fe00070) == 0x01a00000) {
+        p_lsl_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
