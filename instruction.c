@@ -578,6 +578,37 @@ p_and_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_asr_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t Rm = code & 0x0f;
+    const uint32_t shift_n = arm_decode_imm_shift(0b10, imm5);
+
+    assert(Rd != 15);
+    assert(shift_n > 0);
+
+    if (15 == Rm) {
+        emit_code("    r%d = %u;", Rd, (uint32_t)((int32_t)(pc+8) >> shift_n));
+        if (setflags)
+            emit_code("    APSR.C = %d;", (uint32_t)((int32_t)(pc+8) >> (shift_n - 1)) & 1);
+    } else {
+        emit_code("    r%d = (uint32_t)((int32_t)r%d >> %d);", Rd, Rm, shift_n);
+        if (setflags)
+            emit_code("    APSR.C = (uint32_t)((int32_t)r%d >> %d) & 1;", Rm, shift_n - 1);
+    }
+
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -642,6 +673,8 @@ process_instruction(uint32_t pc)
         p_lsl_immediate(pc, code);
     } else if ((code & 0x0fe00000) == 0x02000000) {
         p_and_immediate(pc, code);
+    } else if ((code & 0x0fe00070) == 0x01a00040) {
+        p_asr_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
