@@ -46,9 +46,21 @@ main(void)
         //~ process_instruction(0x2170 + k * 4);
 
     set_output_file("code.c");
-    process_function(0x2170);
+
+    func_list_initialize();
+    func_list_add(0x2170);
+
+    while (func_list_get_count() > 0) {
+        printf("functions in list: %u (%u)\n", func_list_get_count(), func_list_get_done_count());
+        uint32_t func_pc = func_list_get_next();
+        process_function(func_pc);
+        func_list_mark_done(func_pc);
+    }
+
+    func_list_free();
     close_output_file();
 
     free(text);
+    printf("done\n");
     return 0;
 }
