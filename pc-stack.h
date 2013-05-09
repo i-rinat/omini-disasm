@@ -12,3 +12,11 @@ void        visited_bitmap_initialize();
 int         visited_bitmap_visited(uint32_t pc);
 void        visited_bitmap_mark_visited(uint32_t pc);
 void        visited_bitmap_free();
+
+void        func_list_initialize();
+void        func_list_add(uint32_t pc);
+void        func_list_mark_done(uint32_t pc);
+uint32_t    func_list_get_done_count();
+uint32_t    func_list_get_count();
+uint32_t    func_list_get_next();
+void        func_list_free();

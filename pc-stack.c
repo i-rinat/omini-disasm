@@ -10,6 +10,8 @@ uint32_t *pc_stack = NULL;
 uint32_t pc_stack_element_count = 0;
 
 GHashTable *visited_bitmap;
+GHashTable *func_list;
+GHashTable *func_list_done;
 
 void
 pc_stack_initialize()
@@ -70,4 +72,67 @@ void
 visited_bitmap_free()
 {
     g_hash_table_destroy(visited_bitmap);
+}
+
+void
+func_list_initialize()
+{
+    func_list = g_hash_table_new(g_direct_hash, g_direct_equal);
+    func_list_done = g_hash_table_new(g_direct_hash, g_direct_equal);
+}
+
+void
+func_list_add(uint32_t pc)
+{
+    gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
+    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+
+    if (! (already_in_1 || already_in_2)) {
+        g_hash_table_insert(func_list, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+    }
+}
+
+void
+func_list_mark_done(uint32_t pc)
+{
+    gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
+
+    if (already_in_1) {
+        g_hash_table_remove(func_list, GINT_TO_POINTER(pc));
+        g_hash_table_insert(func_list_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+    }
+
+}
+
+uint32_t
+func_list_get_next()
+{
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_hash_table_iter_init(&iter, func_list);
+    if (g_hash_table_iter_next(&iter, &key, &value)) {
+        return GPOINTER_TO_INT(key);
+    }
+    assert(0 && "requested func addr from func_list while there is no funcs in list");
+    return 0;
+}
+
+void
+func_list_free()
+{
+    g_hash_table_destroy(func_list);
+    g_hash_table_destroy(func_list_done);
+}
+
+uint32_t
+func_list_get_done_count()
+{
+    return g_hash_table_size(func_list_done);
+}
+
+uint32_t
+func_list_get_count()
+{
+    return g_hash_table_size(func_list);
 }
