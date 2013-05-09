@@ -253,17 +253,19 @@ p_cmp_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t imm12 = code & 0xfff;
     const uint32_t imm32 = arm_expand_imm12(imm12);
+    const uint32_t imm32rev = ~imm32 + 1;
     const uint32_t Rn = (code >> 16) & 0x0f;
 
     if (15 == Rn) {
-        emit_code("   tmp = %d - %d;", pc + 8, imm32);
+        emit_code("    tmp = %d + %d;", pc + 8, imm32rev);
         assert(0);
     } else {
-        emit_code("   tmp = r%d - %d;", Rn, imm32);
-        emit_code("   APSR.C = (tmp > r%d);", Rn);
-        emit_code("   APSR.N = (tmp & 0x80000000);");
-        emit_code("   APSR.Z = (tmp == 0);");
-        // TODO: overflow handling
+        emit_code("    tmp = r%d + %d;", Rn, imm32rev);
+        emit_code("    APSR.C = (tmp > r%d);", Rn);
+        emit_code("    APSR.N = (tmp & 0x80000000);");
+        emit_code("    APSR.Z = (tmp == 0);");
+        emit_code("    APSR.V = !((r%d ^ %d) & 0x80000000) && ((tmp ^ r%d) & 0x80000000);",
+            Rn, imm32rev, Rn);
     }
 
     pc_stack_push(pc + 4);
