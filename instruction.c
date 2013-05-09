@@ -224,14 +224,18 @@ p_add_immediate(uint32_t pc, uint32_t code)
     assert(Rd != 15);
     if (15 == Rn) {
         emit_code("    r%d = %d;", Rd, pc + 8 + imm32);
-        const uint32_t result = pc + 8 + imm32;
         if (setflags) {
+            const uint32_t result = pc + 8 + imm32;
             emit_code("    APSR.C = %d;", (result < imm32));
+            emit_code("    APSR.V = %d;",
+                !(((pc+8) ^ imm32) & 0x80000000) && ((result ^ imm32) & 0x80000000));
         }
     } else {
         if (setflags) {
             emit_code("    tmp = r%d + %d;", Rn, imm32);
             emit_code("    APSR.C = (tmp < r%d);", Rn);
+            emit_code("    APSR.V = !((r%d ^ %d) & 0x80000000) && ((tmp ^ r%d) & 0x80000000);",
+                Rn, imm32, Rn);
         }
         emit_code("    r%d = r%d + %d;", Rd, Rn, imm32);
     }
@@ -239,7 +243,6 @@ p_add_immediate(uint32_t pc, uint32_t code)
     if (setflags) {
         emit_code("    APSR.N = r%d & 0x80000000;", Rd);
         emit_code("    APSR.Z = (r%d == 0);", Rd);
-        // TODO: V flag
     }
 
     pc_stack_push(pc + 4);
