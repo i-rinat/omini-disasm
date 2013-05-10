@@ -91,8 +91,14 @@ p_sub_immediate(uint32_t pc, uint32_t code)
     const uint32_t Rd = (code >> 12) & 0xf;
     const uint32_t Rn = (code >> 16) & 0xf;
 
-    emit_code("   r%d = r%d - %d;", Rd, Rn, imm32);
     assert(Rd != 15);   // pc
+
+    if (15 == Rn) {
+        emit_code("   r%d = %u;", Rd, pc + 8 - imm32);
+    } else {
+        emit_code("   r%d = r%d - %u;", Rd, Rn, imm32);
+    }
+
     int setflags = (code >> 20) & 1;
     if (setflags) {
         assert(0);
