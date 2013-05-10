@@ -638,6 +638,49 @@ p_strh_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_orr_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x03;
+    const uint32_t Rm = code & 0x0f;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+
+    assert(Rd != 15);
+    assert(Rn != 15);
+    assert(Rm != 15);
+
+    switch (shift_t) {
+    case SRType_LSL:
+        // APSR.C will be changed only if setflags set and actual shift happens
+        // otherwise it will be set to own value, i.e. unchanged
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!((r%d << %d) & 0x80000000);", Rm, shift_n - 1);
+        emit_code("    r%d = r%d | (r%d << %d);", Rd, Rn, Rm, shift_n);
+        break;
+    case SRType_LSR:
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!((r%d >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%d = r%d | (r%d >> %d);", Rd, Rn, Rm, shift_n);
+        break;
+    default:
+        assert(0 && "not implemented shift type");
+        break;
+    }
+
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -706,6 +749,8 @@ process_instruction(uint32_t pc)
         p_asr_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x004000b0) {
         p_strh_immediate(pc, code);
+    } else if ((code & 0x0fe00010) == 0x01800000) {
+        p_orr_register(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
