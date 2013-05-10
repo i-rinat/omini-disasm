@@ -15,6 +15,7 @@ void        visited_bitmap_free();
 
 void        func_list_initialize();
 void        func_list_add(uint32_t pc);
+void        func_list_add_to_done_list(uint32_t pc);
 void        func_list_mark_done(uint32_t pc);
 uint32_t    func_list_get_done_count();
 uint32_t    func_list_get_count();

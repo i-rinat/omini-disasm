@@ -93,6 +93,17 @@ func_list_add(uint32_t pc)
 }
 
 void
+func_list_add_to_done_list(uint32_t pc)
+{
+    gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
+    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+
+    if (! (already_in_1 || already_in_2)) {
+        g_hash_table_insert(func_list_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+    }
+}
+
+void
 func_list_mark_done(uint32_t pc)
 {
     gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
