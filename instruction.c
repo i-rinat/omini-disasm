@@ -516,7 +516,7 @@ p_cmp_register(uint32_t pc, uint32_t code)
     }
     emit_code("      tmp = r%d + rhs;", Rn);
     emit_code("      APSR.N = !!(tmp & 0x80000000);");
-    emit_code("      APSR.Z = (tmp == 0)");
+    emit_code("      APSR.Z = (tmp == 0);");
     emit_code("      APSR.C = (tmp < rhs);");
     emit_code("      APSR.V = !((r%d ^ rhs) & 0x80000000) && ((tmp ^ rhs) & 0x80000000);", Rn);
     emit_code("    }");
