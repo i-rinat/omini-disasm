@@ -821,6 +821,17 @@ p_lsr_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_bx(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rm = code & 0x0f;
+
+    assert(Rm == 14);   // only `bx lr' supported now
+
+    set_function_end_flag();
+    emit_code("    return;");
+}
+
+void
 p_ldrh_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t index = !!(code & (1 << 24));
@@ -937,6 +948,8 @@ process_instruction(uint32_t pc)
         p_lsr_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x005000b0) {
         p_ldrh_immediate(pc, code);
+    } else if ((code & 0x0ff000f0) == 0x01200010) {
+        p_bx(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
