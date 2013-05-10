@@ -129,6 +129,21 @@ func_list_get_next()
     return 0;
 }
 
+uint32_t
+func_list_pop_from_done_list()
+{
+    GHashTableIter iter;
+    gpointer key, value;
+
+    g_hash_table_iter_init(&iter, func_list_done);
+    if (g_hash_table_iter_next(&iter, &key, &value)) {
+        g_hash_table_iter_remove(&iter);
+        return GPOINTER_TO_INT(key);
+    }
+
+    return 0;
+}
+
 void
 func_list_free()
 {

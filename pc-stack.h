@@ -21,3 +21,4 @@ uint32_t    func_list_get_done_count();
 uint32_t    func_list_get_count();
 uint32_t    func_list_get_next();
 void        func_list_free();
+uint32_t    func_list_pop_from_done_list();
