@@ -730,6 +730,7 @@ p_rsb_register(uint32_t pc, uint32_t code)
     }
 
     if (setflags) {
+        emit_code("      tmp = ~r%d + rhs;", Rn);
         emit_code("      APSR.N = !!(tmp & 0x80000000);");
         emit_code("      APSR.Z = (tmp == 0);");
         emit_code("      APSR.C = (tmp < rhs);");
