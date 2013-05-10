@@ -746,6 +746,29 @@ p_rsb_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_mul(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 16) & 0x0f;
+    const uint32_t Rm = (code >> 8) & 0x0f;
+    const uint32_t Rn = code & 0x0f;
+
+    assert(Rd != 15);
+    assert(Rm != 15);
+    assert(Rn != 15);
+
+    emit_code("    r%d = r%d * r%d;", Rd, Rn, Rm);
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        // C unchanged
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -820,6 +843,8 @@ process_instruction(uint32_t pc)
         p_mvn_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x00600000) {
         p_rsb_register(pc, code);
+    } else if ((code & 0x0fe000f0) == 0x00000090) {
+        p_mul(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
