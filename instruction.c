@@ -821,6 +821,40 @@ p_lsr_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrh_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = !!(code & (1 << 24));
+    const uint32_t add = !!(code & (1 << 23));
+    const uint32_t wback = !index && (code & (1 << 21));
+
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rt = (code >> 12) & 0x0f;
+    const uint32_t imm32 = code & 0xfff;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert(Rt != 15);
+
+    if (15 == Rn) {
+        if (wback)
+            assert(0 && "writeback in ldrh with Rn = pc");
+        emit_code("   r%d = %u;", Rt, 0xffff & get_word_at(pc + 8 + (index ? offset : 0)));
+    } else {
+        if (index && !wback) {
+            emit_code("   r%d = load_halfword(r%d + %d);", Rt, Rn, offset);
+        } else if (index && wback) {
+            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+            emit_code("   r%d = load_halfword(r%d);", Rt, Rn);
+        } else if (!index) {
+            emit_code("   r%d = load_halfword(r%d);", Rt, Rn);
+            if (wback)
+                emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+        }
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -901,6 +935,8 @@ process_instruction(uint32_t pc)
         p_rsb_immediate(pc, code);
     } else if ((code & 0x0fe00070) == 0x01a00020) {
         p_lsr_immediate(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x005000b0) {
+        p_ldrh_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
