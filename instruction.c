@@ -119,24 +119,23 @@ p_str_immediate(uint32_t pc, uint32_t code)
     const uint32_t index = !!(code & (1 << 24));
     const uint32_t add = !!(code & (1 << 23));
     const uint32_t wback = !index || (code & (1 << 21));
-
     const uint32_t Rn = (code >> 16) & 0xf;
     const uint32_t Rt = (code >> 12) & 0xf;
-    const uint32_t imm12 = (code & 0xfff);
-    const int32_t imm32 = add ? imm12 : -imm12;
+    const uint32_t imm32 = (code & 0xfff);
+    const int32_t offset = add ? imm32 : -imm32;
 
-    assert(Rt != 15);   // do not want stores into .text
+    assert(Rn != 15);   // do not want stores into .text
+    assert(Rt != 15);
 
     if (index && !wback) {
-        emit_code("   store(r%d + %d, r%d);", Rn, imm32, Rt);
+        emit_code("   store(r%d + %d, r%d);", Rn, offset, Rt);
     } else if (index && wback) {
-        emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
+        emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
         emit_code("   store(r%d, r%d);", Rn, Rt);
-    } else if (!index && wback) {
+    } else if (!index) {
         emit_code("   store(r%d, r%d);", Rn, Rt);
-        emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
-    } else {
-        emit_code("   store(r%d, r%d);", Rn, Rt);
+        if (wback)
+            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
     }
 
     pc_stack_push(pc + 4);
