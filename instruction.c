@@ -773,7 +773,7 @@ process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
 
-    printf("process_instruction(0x%x)\n", code);
+    printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
     emit_code("label_%04x:", pc);
 
     const uint32_t condition = (code >> 28) & 0x0f;
