@@ -701,6 +701,51 @@ p_mvn_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_rsb_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x03;
+    const uint32_t Rm = code & 0x0f;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+
+    assert(Rd != 15);
+    assert(Rn != 15);
+    assert(Rm != 15);
+
+    emit_code("    {");
+    switch (shift_t) {
+    case SRType_LSL:
+        emit_code("      uint32_t rhs = (r%d << %d) + 1;", Rm, shift_n);
+        break;
+    case SRType_LSR:
+        emit_code("      uint32_t rhs = (r%d >> %d) + 1;", Rm, shift_n);
+        break;
+    default:
+        assert(0 && "not implemented");
+        break;
+    }
+
+    if (setflags) {
+        emit_code("      APSR.N = !!(tmp & 0x80000000);");
+        emit_code("      APSR.Z = (tmp == 0);");
+        emit_code("      APSR.C = (tmp < rhs);");
+        emit_code("      APSR.V = !((~r%d ^ rhs) & 0x80000000) && ((tmp ^ rhs) & 0x80000000));",
+            Rn);
+        emit_code("      r%d = tmp;", Rd);
+    } else {
+        emit_code("      r%d = ~r%d + rhs;", Rd, Rn);
+    }
+
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -773,6 +818,8 @@ process_instruction(uint32_t pc)
         p_orr_register(pc, code);
     } else if ((code & 0x0fe00000) == 0x03e00000) {
         p_mvn_immediate(pc, code);
+    } else if ((code & 0x0fe00010) == 0x00600000) {
+        p_rsb_register(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
