@@ -44,6 +44,7 @@ main(void)
 
     set_output_file("code.c");
 
+    emit_code("#include <stdint.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
     emit_code("");
