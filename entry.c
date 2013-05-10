@@ -51,7 +51,8 @@ main(void)
         printf("functions in list: %u (%u)\n", func_list_get_count(), func_list_get_done_count());
         uint32_t func_pc = func_list_get_next();
         printf("processing function 0x%04x\n", func_pc);
-        process_function(func_pc);
+        if (func_pc >= 0x12e8)
+            process_function(func_pc);
         func_list_mark_done(func_pc);
     }
 
