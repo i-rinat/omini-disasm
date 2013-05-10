@@ -989,6 +989,27 @@ p_ldr_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_bic_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm12 = code & 0xfff;
+    const uint32_t imm32 = arm_expand_imm12(imm12);
+
+    emit_code("    r%d = r%d & %u;", Rd, Rn, ~imm32);
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        if (imm12 & 0xf00)  // change C only if imm12 includes rotation
+            emit_code("    APSR.C = %d;", !!(imm32 & 0x80000000));
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1077,6 +1098,8 @@ process_instruction(uint32_t pc)
         p_str_register(pc, code);
     } else if ((code & 0x0e500010) == 0x06100000) {
         p_ldr_register(pc, code);
+    } else if ((code & 0x0fe00000) == 0x03c00000) {
+        p_bic_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
