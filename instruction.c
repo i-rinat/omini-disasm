@@ -823,6 +823,7 @@ p_lsr_immediate(uint32_t pc, uint32_t code)
 void
 p_bx(uint32_t pc, uint32_t code)
 {
+    (void)pc;
     const uint32_t Rm = code & 0x0f;
 
     assert(Rm == 14);   // only `bx lr' supported now
