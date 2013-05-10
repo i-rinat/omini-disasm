@@ -44,6 +44,10 @@ main(void)
 
     set_output_file("code.c");
 
+    emit_code("#include \"registers.inc\"");
+    emit_code("#include \"prototypes.inc\"");
+    emit_code("");
+
     func_list_initialize();
     func_list_add(0x2170);
 
@@ -114,8 +118,19 @@ main(void)
         func_list_mark_done(func_pc);
     }
 
-    func_list_free();
     close_output_file();
+
+    // generate prototypes
+
+    set_output_file("prototypes.inc");
+    uint32_t func_pc;
+    while (0 != (func_pc = func_list_pop_from_done_list())) {
+        emit_code("void func_%04x();", func_pc);
+    }
+
+    close_output_file();
+
+    func_list_free();
 
     free(text);
     printf("done\n");
