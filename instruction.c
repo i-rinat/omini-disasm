@@ -609,6 +609,36 @@ p_asr_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_strh_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rt = (code >> 12) & 0x0f;
+    const uint32_t imm4H = (code >> 8) & 0x0f;
+    const uint32_t imm4L = code & 0x0f;
+    const uint32_t imm32 = (imm4H << 4) | imm4L;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert(Rt != 15);   // possible, but not needed now
+    assert(Rn != 15);
+
+    if (index && !wback) {
+        emit_code("   store_halfword(r%d + %d, r%d & 0xffff);", Rn, offset, Rt);
+    } else if (index && wback) {
+        emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("   store_halfword(r%d, r%d & 0xffff);", Rn, Rt);
+    } else if (!index) {
+        emit_code("   store_halfword(r%d, r%d & 0xffff);", Rn, Rt);
+        if (wback)
+            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -675,6 +705,8 @@ process_instruction(uint32_t pc)
         p_and_immediate(pc, code);
     } else if ((code & 0x0fe00070) == 0x01a00040) {
         p_asr_immediate(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x004000b0) {
+        p_strh_immediate(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
