@@ -866,6 +866,68 @@ p_ldrh_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_str_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rt = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x0f;
+    const uint32_t type = (code >> 5) & 0x03;
+    const uint32_t Rm = code & 0x0f;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+    const char add_op = add ? '+' : '-';
+
+    assert(Rn != 15);
+    assert(Rt != 15);
+    assert(Rm != 15);
+
+    if (index && !wback) {
+        switch (shift_t) {
+        case SRType_LSL:
+            emit_code("    store(r%d %c (r%d << %u), r%d);", Rn, add_op, Rm, shift_n, Rt);
+            break;
+        case SRType_LSR:
+            emit_code("    store(r%d %c (r%d >> %u), r%d);", Rn, add_op, Rm, shift_n, Rt);
+            break;
+        default:
+            assert(0 && "not implemented shift operation");
+        }
+    } else if (index && wback) {
+        switch (shift_t) {
+        case SRType_LSL:
+            emit_code("    r%d = r%d %c (r%d << %u);", Rn, Rn, add_op, Rm, shift_n);
+            break;
+        case SRType_LSR:
+            emit_code("    r%d = r%d %c (r%d >> %u);", Rn, Rn, add_op, Rm, shift_n);
+            break;
+        default:
+            assert(0 && "not implemented shift operation");
+        }
+
+        emit_code("    store(r%d, r%d);", Rn, Rt);
+    } else if (!index) {
+        emit_code("    store(r%d, r%d);", Rn, Rt);
+        if (wback) {
+            switch (shift_t) {
+            case SRType_LSL:
+                emit_code("    r%d = r%d %c (r%d << %u);", Rn, Rn, add_op, Rm, shift_n);
+                break;
+            case SRType_LSR:
+                emit_code("    r%d = r%d %c (r%d >> %u);", Rn, Rn, add_op, Rm, shift_n);
+                break;
+            default:
+                assert(0 && "not implemented shift operation");
+            }
+        }
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -950,6 +1012,8 @@ process_instruction(uint32_t pc)
         p_ldrh_immediate(pc, code);
     } else if ((code & 0x0ff000f0) == 0x01200010) {
         p_bx(pc, code);
+    } else if ((code & 0x0e500010) == 0x06000000) {
+        p_str_register(pc, code);
     } else {
         assert(0 && "instruction code not implemented");
     }
