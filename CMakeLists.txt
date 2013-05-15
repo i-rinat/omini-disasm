@@ -16,4 +16,4 @@ add_executable (rec
     output.c
     pc-stack.c)
 
-target_link_libraries(rec ${SOMELIBS_LIBRARIES})
+target_link_libraries(rec ${SOMELIBS_LIBRARIES} -lbfd)
