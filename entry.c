@@ -5,6 +5,7 @@
 #include "pc-stack.h"
 #include "output.h"
 #include <assert.h>
+#include <bfd.h>
 
 void
 process_function(uint32_t start_pc)
@@ -33,10 +34,45 @@ process_function(uint32_t start_pc)
     pc_stack_free();
 }
 
+void
+whatever(const char *fname)
+{
+    bfd *obj = bfd_openr("libplasma.so", NULL);
+    if (NULL == obj) {
+        printf("bfd_openr failed\n");
+        return;
+    }
+
+    if (!bfd_check_format(obj, bfd_object)) {
+        if (bfd_get_error() != bfd_error_file_ambiguously_recognized) {
+            printf("bfd not recognized binary\n");
+            return;
+        }
+    }
+
+    printf("section list:\n");
+    for (asection *s = obj->sections; s; s = s->next) {
+        if (SEC_LOAD & bfd_get_section_flags(obj, s)) {
+            if (bfd_section_lma(obj, s) != bfd_section_vma(obj, s)) {
+                assert(0);
+            } else {
+                printf("   loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
+                    bfd_section_name(obj, s), bfd_section_lma(obj, s), bfd_section_size(obj, s));
+            }
+        } else {
+            printf("   non-loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
+                bfd_section_name(obj, s), bfd_section_lma(obj, s), bfd_section_size(obj, s));
+        }
+    }
+
+}
+
 int
 main(void)
 {
     printf("rec started\n");
+
+    whatever("libplasma.so");
 
     FILE *fp = fopen("libplasma.so", "rb");
     uint32_t *text = read_section(fp, 0x12e8, 0x2df0);
