@@ -37,7 +37,7 @@ process_function(uint32_t start_pc)
 void
 whatever(const char *fname)
 {
-    bfd *obj = bfd_openr("libplasma.so", NULL);
+    bfd *obj = bfd_openr(fname, NULL);
     if (NULL == obj) {
         printf("bfd_openr failed\n");
         return;
@@ -57,11 +57,11 @@ whatever(const char *fname)
                 assert(0);
             } else {
                 printf("   loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                    bfd_section_name(obj, s), bfd_section_lma(obj, s), bfd_section_size(obj, s));
+                    bfd_section_name(obj, s), (uint32_t)bfd_section_lma(obj, s), (uint32_t)bfd_section_size(obj, s));
             }
         } else {
             printf("   non-loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                bfd_section_name(obj, s), bfd_section_lma(obj, s), bfd_section_size(obj, s));
+                bfd_section_name(obj, s), (uint32_t)bfd_section_lma(obj, s), (uint32_t)bfd_section_size(obj, s));
         }
     }
 
