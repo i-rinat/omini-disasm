@@ -37,13 +37,13 @@ process_function(uint32_t start_pc)
 void
 whatever(const char *fname)
 {
-    bfd *obj = bfd_openr(fname, NULL);
-    if (NULL == obj) {
+    bfd *abfd = bfd_openr(fname, NULL);
+    if (NULL == abfd) {
         printf("bfd_openr failed\n");
         return;
     }
 
-    if (!bfd_check_format(obj, bfd_object)) {
+    if (!bfd_check_format(abfd, bfd_object)) {
         if (bfd_get_error() != bfd_error_file_ambiguously_recognized) {
             printf("bfd not recognized binary\n");
             return;
@@ -51,17 +51,19 @@ whatever(const char *fname)
     }
 
     printf("section list:\n");
-    for (asection *s = obj->sections; s; s = s->next) {
-        if (SEC_LOAD & bfd_get_section_flags(obj, s)) {
-            if (bfd_section_lma(obj, s) != bfd_section_vma(obj, s)) {
+    for (asection *s = abfd->sections; s; s = s->next) {
+        if (SEC_LOAD & bfd_get_section_flags(abfd, s)) {
+            if (bfd_section_lma(abfd, s) != bfd_section_vma(abfd, s)) {
                 assert(0);
             } else {
                 printf("   loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                    bfd_section_name(obj, s), (uint32_t)bfd_section_lma(obj, s), (uint32_t)bfd_section_size(obj, s));
+                    bfd_section_name(abfd, s), (uint32_t)bfd_section_lma(abfd, s),
+                    (uint32_t)bfd_section_size(abfd, s));
             }
         } else {
             printf("   non-loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                bfd_section_name(obj, s), (uint32_t)bfd_section_lma(obj, s), (uint32_t)bfd_section_size(obj, s));
+                bfd_section_name(abfd, s), (uint32_t)bfd_section_lma(abfd, s),
+                (uint32_t)bfd_section_size(abfd, s));
         }
     }
 
