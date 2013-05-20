@@ -6,6 +6,7 @@
 #include "output.h"
 #include <assert.h>
 #include <bfd.h>
+#include <string.h>
 
 void
 process_function(uint32_t start_pc)
@@ -34,47 +35,129 @@ process_function(uint32_t start_pc)
     pc_stack_free();
 }
 
+static
 void
-whatever(const char *fname)
+determine_target_functions(bfd *abfd)
 {
-    bfd *abfd = bfd_openr(fname, NULL);
-    if (NULL == abfd) {
-        printf("bfd_openr failed\n");
+
+    int storage_needed = bfd_get_dynamic_symtab_upper_bound(abfd);
+    if (storage_needed <= 0)    // either error or empty symbol table
         return;
-    }
 
-    if (!bfd_check_format(abfd, bfd_object)) {
-        if (bfd_get_error() != bfd_error_file_ambiguously_recognized) {
-            printf("bfd not recognized binary\n");
-            return;
-        }
-    }
+    asymbol **symbol_table = malloc(storage_needed);
+    assert(symbol_table);
 
-    printf("section list:\n");
-    for (asection *s = abfd->sections; s; s = s->next) {
-        if (SEC_LOAD & bfd_get_section_flags(abfd, s)) {
-            if (bfd_section_lma(abfd, s) != bfd_section_vma(abfd, s)) {
-                assert(0);
+    int number_of_symbols = bfd_canonicalize_dynamic_symtab(abfd, symbol_table);
+    printf("number_of_symbols = %d\n", number_of_symbols);
+
+    assert(number_of_symbols > 0);
+
+    for (int k = 0; k < number_of_symbols; k ++) {
+        printf("sym name: %s, of section %s, value = %x\n", symbol_table[k]->name,
+            symbol_table[k]->section->name,
+            (int)(symbol_table[k]->value + symbol_table[k]->section->vma));
+
+        const char *symname = symbol_table[k]->name;
+        const char *sectname = symbol_table[k]->section->name;
+
+        if (!strcmp(sectname, ".text")) {
+            if (!strcmp(symname, ".text")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Backtrace")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_ForcedUnwind")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_RaiseException")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP_D_16_to_31")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP_D")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Restore_WMMXC")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Restore_WMMXD")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Resume")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Resume_or_Rethrow")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP_D_16_to_31")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP_D")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Save_WMMXC")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_Unwind_Save_WMMXD")) {
+                // do nothing
+            } else if (!strcmp(symname, "___Unwind_Backtrace")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_Backtrace")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_Complete")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_DeleteException")) {
+                // do nothing
+            } else if (!strcmp(symname, "___Unwind_ForcedUnwind")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_ForcedUnwind")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_GetCFA")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_GetDataRelBase")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_GetLanguageSpecificData")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_GetRegionStart")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_GetTextRelBase")) {
+                // do nothing
+            } else if (!strcmp(symname, "___Unwind_RaiseException")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_RaiseException")) {
+                // do nothing
+            } else if (!strcmp(symname, "___Unwind_Resume")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_Resume")) {
+                // do nothing
+            } else if (!strcmp(symname, "___Unwind_Resume_or_Rethrow")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_Resume_or_Rethrow")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_VRS_Get")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_VRS_Pop")) {
+                // do nothing
+            } else if (!strcmp(symname, "_Unwind_VRS_Set")) {
+                // do nothing
             } else {
-                printf("   loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                    bfd_section_name(abfd, s), (uint32_t)bfd_section_lma(abfd, s),
-                    (uint32_t)bfd_section_size(abfd, s));
+                printf("unknown symbol %s\n", symname);
+                assert(0 && "not implemented");
+            }
+        } else if (!strcmp(sectname, ".data")) {
+            if (!strcmp(symname, ".data")) {
+                // do nothing
+            } else {
+                printf("unknown symbol %s\n", symname);
+                assert(0 && "not implemented");
             }
         } else {
-            printf("   non-loadable section: %s, addr = 0x%04x, size = 0x%04x\n",
-                bfd_section_name(abfd, s), (uint32_t)bfd_section_lma(abfd, s),
-                (uint32_t)bfd_section_size(abfd, s));
+            printf("don't know how to process symbol of section '%s'\n", sectname);
+            assert(0 && "not implemented");
         }
     }
 
+    free(symbol_table);
 }
+
 
 int
 main(void)
 {
     printf("rec started\n");
-
-    whatever("libplasma.so");
 
     FILE *fp = fopen("libplasma.so", "rb");
     uint32_t *text = read_section(fp, 0x12e8, 0x2df0);
@@ -88,6 +171,14 @@ main(void)
     emit_code("");
 
     func_list_initialize();
+
+    bfd *abfd = bfd_openr("libplasma.so", NULL);
+    if (!bfd_check_format(abfd, bfd_object))
+        if (bfd_get_error() != bfd_error_file_ambiguously_recognized)
+            assert(0 && "bfd not recognized binary");
+
+    determine_target_functions(abfd);
+
     func_list_add(0x2170);
 
     func_list_add_to_done_list(0x2304);
