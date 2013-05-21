@@ -159,7 +159,11 @@ determine_target_functions(bfd *abfd)
                 emit_code("}");
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
                 // do nothing
+            } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr1")) {
+                // do nothing
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr2")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gnu_unwind_frame")) {
                 // do nothing
             } else if (!strcmp(symname, "__gtdf2")) {
                 // frontend for __cmpdf2
@@ -169,7 +173,11 @@ determine_target_functions(bfd *abfd)
                 // frontend for __cmpdf2
             } else if (!strcmp(symname, "__aeabi_cdcmple")) {
                 // do nothing
+            } else if (!strcmp(symname, "__aeabi_cdcmpeq")) {
+                // do nothing
             } else if (!strcmp(symname, "__restore_core_regs")) {
+                // do nothing
+            } else if (!strcmp(symname, "restore_core_regs")) {
                 // do nothing
             } else if (!strcmp(symname, "__aeabi_cdrcmple")) {
                 // do nothing
@@ -193,7 +201,11 @@ determine_target_functions(bfd *abfd)
                 emit_code("void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
             } else if (!strcmp(symname, "__adddf3")) {
                 emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__subdf3")) {
+                emit_code("void func_%04x(){ reg.x_double -= reg.y_double; }", func_addr);
             } else if (!strcmp(symname, "__aeabi_dmul")) {
+                emit_code("void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__muldf3")) {
                 emit_code("void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
             } else if (!strcmp(symname, "__aeabi_dadd")) {
                 emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
@@ -205,12 +217,23 @@ determine_target_functions(bfd *abfd)
                 emit_code("void func_%04x(){ reg.x_double = reg.x_uint64_t; }", func_addr);
             } else if (!strcmp(symname, "__floatundidf")) {
                 emit_code("void func_%04x(){ reg.x_double = r0; }", func_addr);
+
+            } else if (!strcmp(symname, "__nedf2")) {
+                emit_code("void func_%04x(){ r0 = (reg.x_double != reg.y_double); }", func_addr);
+            } else if (!strcmp(symname, "__gedf2")) {
+                emit_code("void func_%04x(){ r0 = (reg.x_double >= reg.y_double); }", func_addr);
+
+
+            } else if (!strcmp(symname, "__aeabi_d2iz")) {
+                emit_code("void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_f2d")) {
+                emit_code("void func_%04x(){ reg.x_double = reg.x_float; }", func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
-            } else if (!strcmp(symname, "")) {
-            } else if (!strcmp(symname, "")) {
-            } else if (!strcmp(symname, "")) {
+            } else if (!strncmp(symname, "Java_", 5)) {
+                // JNI entry
+                func_list_add(func_addr);
             } else {
                 printf("unknown symbol %s\n", symname);
                 assert(0 && "not implemented");
