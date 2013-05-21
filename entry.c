@@ -292,10 +292,6 @@ main(void)
 {
     printf("rec started\n");
 
-    FILE *fp = fopen("libplasma.so", "rb");
-    uint32_t *text = read_section(fp, 0x12e8, 0x2df0);
-    fclose(fp);
-
     set_output_file("code.c");
 
     emit_code("#include <stdint.h>");
@@ -309,6 +305,8 @@ main(void)
     if (!bfd_check_format(abfd, bfd_object))
         if (bfd_get_error() != bfd_error_file_ambiguously_recognized)
             assert(0 && "bfd not recognized binary");
+
+    read_section(abfd, ".text");
 
     determine_target_functions(abfd);
 
@@ -335,7 +333,6 @@ main(void)
 
     func_list_free();
 
-    free(text);
     printf("done\n");
     return 0;
 }

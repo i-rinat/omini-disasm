@@ -1,6 +1,7 @@
 #include "section.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct section_t {
     uint32_t   *buf;
@@ -22,21 +23,38 @@ append_section(uint32_t *buf, uint32_t start, uint32_t length)
     *ptr = malloc(sizeof(section_t));
     assert(*ptr);
 
-    (*ptr)->buf = buf;
+    void *internal_buf = malloc(length);
+    assert(internal_buf);
+    memcpy(internal_buf, buf, length);
+
+    (*ptr)->buf = internal_buf;
     (*ptr)->start = start;
     (*ptr)->length = length;
     (*ptr)->next = NULL;
 }
 
-uint32_t *
-read_section(FILE *fp, uint32_t start, uint32_t length)
+void
+read_section(bfd *abfd, const char *name)
 {
-    uint32_t *buf = calloc(length, sizeof(uint32_t));
-    assert(buf);
-    fseek(fp, start, SEEK_SET);
-    fread(buf, sizeof(uint32_t), length, fp);
-    append_section(buf, start, length);
-    return buf;
+    struct bfd_section *asect = abfd->sections;
+    FILE *fp = fopen(abfd->filename, "rb");
+    assert(fp);
+
+    while (asect) {
+        if (!strcmp(asect->name, name)) {
+            fseek(fp, asect->filepos, SEEK_SET);
+            void *buf = malloc(asect->size);
+            assert(buf);
+            uint read_bytes = fread(buf, 1, asect->size, fp);
+            assert(read_bytes == asect->size);
+            append_section(buf, asect->vma, asect->size);
+            printf("loaded section %s of size %x at %x\n", name, asect->size, asect->vma);
+            free(buf);
+        }
+        asect = asect->next;
+    }
+
+    fclose(fp);
 }
 
 uint32_t

@@ -2,9 +2,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <bfd.h>
 
-uint32_t *
-read_section(FILE *fp, uint32_t start, uint32_t length);
-
-uint32_t
-get_word_at(uint32_t addr);
+void        read_section(bfd *abfd, const char *name);
+uint32_t    get_word_at(uint32_t addr);
