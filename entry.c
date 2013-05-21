@@ -53,14 +53,11 @@ determine_target_functions(bfd *abfd)
     assert(number_of_symbols > 0);
 
     for (int k = 0; k < number_of_symbols; k ++) {
-        printf("sym name: %s, of section %s, value = %x\n", symbol_table[k]->name,
-            symbol_table[k]->section->name,
-            (int)(symbol_table[k]->value + symbol_table[k]->section->vma));
-
         const char *symname = symbol_table[k]->name;
         const char *sectname = symbol_table[k]->section->name;
         uint32_t func_addr = symbol_table[k]->value + symbol_table[k]->section->vma;
 
+        printf("sym name: %s, of section %s, value = %x\n", symname, sectname, func_addr);
         if (!strcmp(sectname, ".text")) {
             if (!strcmp(symname, ".text")) {
                 // do nothing
