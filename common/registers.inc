@@ -11,6 +11,9 @@ union {
 	struct {
 		uint64_t x_uint64_t, y_uint64_t;
 	};
+    struct {
+		int64_t x_int64_t, y_int64_t;
+	};
 	struct {
 		float x_float, y_float, z_float, w_float;
 	};
