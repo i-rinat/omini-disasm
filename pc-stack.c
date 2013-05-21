@@ -144,6 +144,15 @@ func_list_pop_from_done_list()
     return 0;
 }
 
+int
+func_list_already_in_done_list(uint32_t pc)
+{
+    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+    if (already_in_2)
+        return 1;
+    return 0;
+}
+
 void
 func_list_free()
 {
