@@ -58,6 +58,9 @@ determine_target_functions(bfd *abfd)
         uint32_t func_addr = symbol_table[k]->value + symbol_table[k]->section->vma;
 
         printf("sym name: %s, of section %s, value = %x\n", symname, sectname, func_addr);
+        if (func_list_already_in_done_list(func_addr))
+            continue;
+
         if (!strcmp(sectname, ".text")) {
             if (!strcmp(symname, ".text")) {
                 // do nothing
@@ -135,14 +138,19 @@ determine_target_functions(bfd *abfd)
                 // do nothing
             } else if (!strcmp(symname, "__aeabi_dcmpeq")) {
                 emit_code("void func_%04x() { r0 = reg.x_double == reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmplt")) {
                 emit_code("void func_%04x() { r0 = reg.x_double < reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmple")) {
                 emit_code("void func_%04x() { r0 = reg.x_double <= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmpge")) {
                 emit_code("void func_%04x() { r0 = reg.x_double >= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmpgt")) {
                 emit_code("void func_%04x() { r0 = reg.x_double > reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__cmpdf2")) {
                 // this is some underlying stuff, skip it
             } else if (!strcmp(symname, "__eqdf2")) {
@@ -150,10 +158,8 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__floatdidf")) {
                 // alias for __aeabi_l2d
             } else if (!strcmp(symname, "__aeabi_l2d")) {
-                emit_code("void func_%04x() {", func_addr);
-                emit_code("    uint64_t tmp = reg.x_uint64_t;");
-                emit_code("    reg.x_double = tmp;");
-                emit_code("}");
+                emit_code("void func_%04x() { reg.x_double = reg.x_uint64_t; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
                 // do nothing
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr1")) {
@@ -182,49 +188,66 @@ determine_target_functions(bfd *abfd)
                 // alias for __aeabi_i2d
             } else if (!strcmp(symname, "__aeabi_i2d")) {
                 emit_code("void func_%04x() { reg.x_double = reg.r0_signed; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ui2d")) {
                 emit_code("void func_%04x() { reg.x_double = r0; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dsub")) {
                 emit_code(
                     "void func_%04x() { reg.x_double = reg.x_double - reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_drsub")) {
                 emit_code(
                     "void func_%04x() { reg.x_double = reg.y_double - reg.x_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__extendsfdf2")) {
                 emit_code("void func_%04x() { reg.x_double = reg.x_float; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ddiv")) {
                 emit_code("void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__divdf3")) {
                 emit_code("void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__adddf3")) {
                 emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__subdf3")) {
                 emit_code("void func_%04x(){ reg.x_double -= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dmul")) {
                 emit_code("void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__muldf3")) {
                 emit_code("void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dadd")) {
                 emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__floatunsidf")) {
                 emit_code("void func_%04x(){ reg.x_double = r0; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__fixdfsi")) {
                 emit_code("void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ul2d")) {
                 emit_code("void func_%04x(){ reg.x_double = reg.x_uint64_t; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__floatundidf")) {
                 emit_code("void func_%04x(){ reg.x_double = r0; }", func_addr);
-
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__nedf2")) {
                 emit_code("void func_%04x(){ r0 = (reg.x_double != reg.y_double); }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__gedf2")) {
                 emit_code("void func_%04x(){ r0 = (reg.x_double >= reg.y_double); }", func_addr);
-
-
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_d2iz")) {
                 emit_code("void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_f2d")) {
                 emit_code("void func_%04x(){ reg.x_double = reg.x_float; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
@@ -288,66 +311,6 @@ main(void)
             assert(0 && "bfd not recognized binary");
 
     determine_target_functions(abfd);
-
-    func_list_add(0x2170);
-
-    func_list_add_to_done_list(0x2304);
-    func_list_add_to_done_list(0x230c);
-    func_list_add_to_done_list(0x2310);
-    func_list_add_to_done_list(0x25bc);
-    func_list_add_to_done_list(0x25e0);
-    func_list_add_to_done_list(0x2608);
-    func_list_add_to_done_list(0x2648);
-    func_list_add_to_done_list(0x265c);
-    func_list_add_to_done_list(0x26bc);
-    func_list_add_to_done_list(0x2928);
-    func_list_add_to_done_list(0x2b2c);
-    func_list_add_to_done_list(0x2b34);
-    func_list_add_to_done_list(0x2b3c);
-    func_list_add_to_done_list(0x2bc4);
-    func_list_add_to_done_list(0x2be0);
-    func_list_add_to_done_list(0x2bf4);
-    func_list_add_to_done_list(0x2c08);
-    func_list_add_to_done_list(0x2c1c);
-    func_list_add_to_done_list(0x2c30);
-    func_list_add_to_done_list(0x2c44);
-    func_list_add_to_done_list(0x2c58);
-    func_list_add_to_done_list(0x3078);
-    func_list_add_to_done_list(0x30e4);
-    func_list_add_to_done_list(0x34e8);
-    func_list_add_to_done_list(0x34f0);
-    func_list_add_to_done_list(0x34f8);
-    func_list_add_to_done_list(0x3500);
-    func_list_add_to_done_list(0x3858);
-    func_list_add_to_done_list(0x3860);
-    func_list_add_to_done_list(0x3904);
-    func_list_add_to_done_list(0x3920);
-    func_list_add_to_done_list(0x398c);
-    func_list_add_to_done_list(0x39ac);
-    func_list_add_to_done_list(0x39b0);
-    func_list_add_to_done_list(0x39d0);
-    func_list_add_to_done_list(0x3a90);
-    func_list_add_to_done_list(0x3aa4);
-    func_list_add_to_done_list(0x3aac);
-    func_list_add_to_done_list(0x3ab4);
-    func_list_add_to_done_list(0x3abc);
-    func_list_add_to_done_list(0x3ac4);
-    func_list_add_to_done_list(0x3acc);
-    func_list_add_to_done_list(0x3ad4);
-    func_list_add_to_done_list(0x3b18);
-    func_list_add_to_done_list(0x3b5c);
-    func_list_add_to_done_list(0x3b70);
-    func_list_add_to_done_list(0x3b84);
-    func_list_add_to_done_list(0x3ba8);
-    func_list_add_to_done_list(0x3bcc);
-    func_list_add_to_done_list(0x3bf0);
-    func_list_add_to_done_list(0x3c14);
-    func_list_add_to_done_list(0x3c90);
-    func_list_add_to_done_list(0x4024);
-    func_list_add_to_done_list(0x4064);
-    func_list_add_to_done_list(0x4090);
-    func_list_add_to_done_list(0x40c8);
-    func_list_add_to_done_list(0x40d0);
 
     while (func_list_get_count() > 0) {
         printf("functions in list: %u (%u)\n", func_list_get_count(), func_list_get_done_count());
