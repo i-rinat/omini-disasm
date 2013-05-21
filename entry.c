@@ -134,10 +134,18 @@ determine_target_functions(bfd *abfd)
                 // do nothing
             } else if (!strcmp(symname, "_Unwind_VRS_Set")) {
                 // do nothing
+            } else if (!strcmp(symname, "__gnu_unwind_execute")) {
+                // do nothing
+            } else if (!strcmp(symname, "__aeabi_dcmpeq")) {
+                emit_code("void func_%04x() { r0 = reg.x_double == reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dcmplt")) {
+                emit_code("void func_%04x() { r0 = reg.x_double < reg.y_double; }", func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmple")) {
-                emit_code("void func_%04x() {", func_addr);
-                emit_code("    r0 = reg.x_double < reg.y_double;");
-                emit_code("}");
+                emit_code("void func_%04x() { r0 = reg.x_double <= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dcmpge")) {
+                emit_code("void func_%04x() { r0 = reg.x_double >= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dcmpgt")) {
+                emit_code("void func_%04x() { r0 = reg.x_double > reg.y_double; }", func_addr);
             } else if (!strcmp(symname, "__cmpdf2")) {
                 // this is some underlying stuff, skip it
             } else if (!strcmp(symname, "__eqdf2")) {
@@ -151,9 +159,13 @@ determine_target_functions(bfd *abfd)
                 emit_code("}");
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
                 // do nothing
+            } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr2")) {
+                // do nothing
             } else if (!strcmp(symname, "__gtdf2")) {
                 // frontend for __cmpdf2
             } else if (!strcmp(symname, "__ledf2")) {
+                // frontend for __cmpdf2
+            } else if (!strcmp(symname, "__ltdf2")) {
                 // frontend for __cmpdf2
             } else if (!strcmp(symname, "__aeabi_cdcmple")) {
                 // do nothing
@@ -164,10 +176,38 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__floatsidf")) {
                 // alias for __aeabi_i2d
             } else if (!strcmp(symname, "__aeabi_i2d")) {
-                emit_code("void func_%04x() {", func_addr);
-                emit_code("    double tmp = reg.r0_signed;");
-                emit_code("    reg.x_double = tmp;");
-                emit_code("}");
+                emit_code("void func_%04x() { reg.x_double = reg.r0_signed; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_ui2d")) {
+                emit_code("void func_%04x() { reg.x_double = r0; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dsub")) {
+                emit_code(
+                    "void func_%04x() { reg.x_double = reg.x_double - reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_drsub")) {
+                emit_code(
+                    "void func_%04x() { reg.x_double = reg.y_double - reg.x_double; }", func_addr);
+            } else if (!strcmp(symname, "__extendsfdf2")) {
+                emit_code("void func_%04x() { reg.x_double = reg.x_float; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_ddiv")) {
+                emit_code("void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__divdf3")) {
+                emit_code("void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__adddf3")) {
+                emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dmul")) {
+                emit_code("void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_dadd")) {
+                emit_code("void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
+            } else if (!strcmp(symname, "__floatunsidf")) {
+                emit_code("void func_%04x(){ reg.x_double = r0; }", func_addr);
+            } else if (!strcmp(symname, "__fixdfsi")) {
+                emit_code("void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
+            } else if (!strcmp(symname, "__aeabi_ul2d")) {
+                emit_code("void func_%04x(){ reg.x_double = reg.x_uint64_t; }", func_addr);
+            } else if (!strcmp(symname, "__floatundidf")) {
+                emit_code("void func_%04x(){ reg.x_double = r0; }", func_addr);
+            } else if (!strcmp(symname, "")) {
+            } else if (!strcmp(symname, "")) {
+            } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
@@ -187,6 +227,12 @@ determine_target_functions(bfd *abfd)
             // TODO: do something
         } else if (!strcmp(sectname, "*UND*")) {
             printf("stub for *UND*\n");
+            // TODO: do something
+        } else if (!strcmp(sectname, ".fini_array")) {
+            printf("stub for .fini_array\n");
+            // TODO: do something
+        } else if (!strcmp(sectname, ".init_array")) {
+            printf("stub for .init_array\n");
             // TODO: do something
         } else {
             printf("don't know how to process symbol of section '%s'\n", sectname);
