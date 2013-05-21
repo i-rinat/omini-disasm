@@ -59,6 +59,7 @@ determine_target_functions(bfd *abfd)
 
         const char *symname = symbol_table[k]->name;
         const char *sectname = symbol_table[k]->section->name;
+        uint32_t func_addr = symbol_table[k]->value + symbol_table[k]->section->vma;
 
         if (!strcmp(sectname, ".text")) {
             if (!strcmp(symname, ".text")) {
@@ -133,6 +134,43 @@ determine_target_functions(bfd *abfd)
                 // do nothing
             } else if (!strcmp(symname, "_Unwind_VRS_Set")) {
                 // do nothing
+            } else if (!strcmp(symname, "__aeabi_dcmple")) {
+                emit_code("void func_%04x() {", func_addr);
+                emit_code("    r0 = reg.x_double < reg.y_double;");
+                emit_code("}");
+            } else if (!strcmp(symname, "__cmpdf2")) {
+                // this is some underlying stuff, skip it
+            } else if (!strcmp(symname, "__eqdf2")) {
+                // alias for __cmpdf2
+            } else if (!strcmp(symname, "__floatdidf")) {
+                // alias for __aeabi_l2d
+            } else if (!strcmp(symname, "__aeabi_l2d")) {
+                emit_code("void func_%04x() {", func_addr);
+                emit_code("    uint64_t tmp = reg.x_uint64_t;");
+                emit_code("    reg.x_double = tmp;");
+                emit_code("}");
+            } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
+                // do nothing
+            } else if (!strcmp(symname, "__gtdf2")) {
+                // frontend for __cmpdf2
+            } else if (!strcmp(symname, "__ledf2")) {
+                // frontend for __cmpdf2
+            } else if (!strcmp(symname, "__aeabi_cdcmple")) {
+                // do nothing
+            } else if (!strcmp(symname, "__restore_core_regs")) {
+                // do nothing
+            } else if (!strcmp(symname, "__aeabi_cdrcmple")) {
+                // do nothing
+            } else if (!strcmp(symname, "__floatsidf")) {
+                // alias for __aeabi_i2d
+            } else if (!strcmp(symname, "__aeabi_i2d")) {
+                emit_code("void func_%04x() {", func_addr);
+                emit_code("    double tmp = reg.r0_signed;");
+                emit_code("    reg.x_double = tmp;");
+                emit_code("}");
+            } else if (!strcmp(symname, "")) {
+            } else if (!strcmp(symname, "")) {
+            } else if (!strcmp(symname, "")) {
             } else {
                 printf("unknown symbol %s\n", symname);
                 assert(0 && "not implemented");
@@ -144,6 +182,12 @@ determine_target_functions(bfd *abfd)
                 printf("unknown symbol %s\n", symname);
                 assert(0 && "not implemented");
             }
+        } else if (!strcmp(sectname, "*ABS*")) {
+            printf("stub for *ABS*\n");
+            // TODO: do something
+        } else if (!strcmp(sectname, "*UND*")) {
+            printf("stub for *UND*\n");
+            // TODO: do something
         } else {
             printf("don't know how to process symbol of section '%s'\n", sectname);
             assert(0 && "not implemented");

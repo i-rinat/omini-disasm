@@ -3,7 +3,13 @@ union {
 		uint32_t r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14;
 	};
 	struct {
+		int32_t r0_signed;
+	};
+	struct {
 		double x_double, y_double;
+	};
+	struct {
+		uint64_t x_uint64_t, y_uint64_t;
 	};
 	struct {
 		float x_float, y_float, z_float, w_float;
