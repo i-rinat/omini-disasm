@@ -413,6 +413,7 @@ main(void)
             assert(0 && "bfd not recognized binary");
 
     read_section(abfd, ".text");
+    read_section(abfd, ".plt");
 
     determine_target_functions(abfd);
 
