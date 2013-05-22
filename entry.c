@@ -392,6 +392,29 @@ determine_target_functions(bfd *abfd)
     free(symbol_table);
 }
 
+static
+void
+generate_plt_trap_function(uint32_t func_addr)
+{
+    uint32_t code1 = get_word_at(func_addr);
+    uint32_t code2 = get_word_at(func_addr + 4);
+    uint32_t code3 = get_word_at(func_addr + 8);
+
+    if ((code1 & 0xfffff000) == 0xe28fc000 &&
+        (code2 & 0xfffff000) == 0xe28cc000 &&
+        (code3 & 0xfffff000) == 0xe5bcf000)
+    {
+        uint32_t target_addr = arm_expand_imm12(code1 & 0xfff) + func_addr + 8;
+        target_addr += arm_expand_imm12(code2 & 0xfff);
+        target_addr += (code3 & 0xfff);
+
+        emit_code("void func_%04x() {", func_addr);
+        emit_code("    func_%04x();", target_addr);
+        emit_code("}");
+    } else {
+        assert(0 && "unknown plt sequence");
+    }
+}
 
 int
 main(void)
@@ -423,7 +446,7 @@ main(void)
         printf("processing function 0x%04x\n", func_pc);
 
         if (address_in_section(func_pc, ".plt")) {
-            // TODO: make trap function
+            generate_plt_trap_function(func_pc);
         } else {
             process_function(func_pc);
         }
