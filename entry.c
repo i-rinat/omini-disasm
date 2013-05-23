@@ -161,7 +161,7 @@ determine_target_functions(bfd *abfd)
         const char *sectname = symbol_table[k]->section->name;
         uint32_t func_addr = symbol_table[k]->value + symbol_table[k]->section->vma;
 
-        printf("sym name: %s, of section %s, value = %x\n", symname, sectname, func_addr);
+        // printf("sym name: %s, of section %s, value = %x\n", symname, sectname, func_addr);
         if (func_list_already_in_done_list(func_addr))
             continue;
 
@@ -473,20 +473,16 @@ determine_target_functions(bfd *abfd)
                 assert(0 && "not implemented");
             }
         } else if (!strcmp(sectname, "*ABS*")) {
-            printf("stub for %s\n", sectname);
-            // TODO: do something
+            // do nothing
         } else if (!strcmp(sectname, "*UND*")) {
             // do nothing
             // these are dynamic relocatables and they are handled in other function
         } else if (!strcmp(sectname, ".fini_array")) {
-            printf("stub for %s\n", sectname);
-            // TODO: do something
+            // do nothing
         } else if (!strcmp(sectname, ".init_array")) {
-            printf("stub for %s\n", sectname);
-            // TODO: do something
+            // do nothing
         } else if (!strcmp(sectname, ".data.rel.ro")) {
-            printf("stub for %s\n", sectname);
-            // TODO: do something
+            // do nothing
         } else {
             printf("don't know how to process symbol of section '%s'\n", sectname);
             assert(0 && "not implemented");
