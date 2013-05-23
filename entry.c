@@ -37,6 +37,76 @@ process_function(uint32_t start_pc)
 
 static
 void
+process_relocations(bfd *abfd, asymbol **symbol_table)
+{
+    printf("processing relocations\n");
+
+    int relsize = bfd_get_dynamic_reloc_upper_bound(abfd);
+    assert(relsize >= 0);
+    if (0 == relsize) {
+        printf("no relocations found: relsize == 0\n");
+        return;
+    }
+
+    arelent **relpp = malloc(relsize);
+    assert(relpp);
+    int relcount = bfd_canonicalize_dynamic_reloc(abfd, relpp, symbol_table);
+    assert(relcount >= 0);
+    if (0 == relcount) {
+        printf("no relocations found: relcount == 0\n");
+        free(relpp);
+        return;
+    }
+
+    for (int k = 0; k < relcount; k ++) {
+        arelent *relp = relpp[k];
+        const char *ext_func_name = (*relp->sym_ptr_ptr)->name;
+
+        if (!strcmp(relp->howto->name, "R_ARM_JUMP_SLOT")) {
+
+            if (!strcmp(ext_func_name, "__cxa_begin_cleanup")) {
+                // do nothing
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("}");
+            } else {
+                printf("unhandled function %s\n", ext_func_name);
+                assert(0 && "unhandled import");
+            }
+
+        }
+
+        if (!strcmp(relp->howto->name, "UNKNOWN")) {
+            assert(0 && "multiarch libbfd.a required");
+        }
+    }
+
+    free(relpp);
+}
+
+static
+void
 determine_target_functions(bfd *abfd)
 {
 
@@ -372,8 +442,8 @@ determine_target_functions(bfd *abfd)
             printf("stub for %s\n", sectname);
             // TODO: do something
         } else if (!strcmp(sectname, "*UND*")) {
-            printf("stub for %s\n", sectname);
-            // TODO: do something
+            // do nothing
+            // these are dynamic relocatables and they are handled in other function
         } else if (!strcmp(sectname, ".fini_array")) {
             printf("stub for %s\n", sectname);
             // TODO: do something
@@ -388,6 +458,8 @@ determine_target_functions(bfd *abfd)
             assert(0 && "not implemented");
         }
     }
+
+    process_relocations(abfd, symbol_table);
 
     free(symbol_table);
 }
@@ -431,6 +503,7 @@ main(void)
     func_list_initialize();
 
     bfd *abfd = bfd_openr("libplasma.so", NULL);
+    assert(abfd);
     if (!bfd_check_format(abfd, bfd_object))
         if (bfd_get_error() != bfd_error_file_ambiguously_recognized)
             assert(0 && "bfd not recognized binary");
