@@ -518,6 +518,54 @@ generate_plt_trap_function(uint32_t func_addr)
     }
 }
 
+static
+void
+declare_data_arrays(bfd *abfd)
+{
+    printf("declaring data arrays\n");
+    FILE *fp = fopen(abfd->filename, "rb");
+    assert(fp);
+    struct bfd_section *sect = abfd->sections;
+
+    while (sect) {
+        if (!strcmp(sect->name, ".rodata")) {
+            emit_code("const uint32_t d_rodata[%d] = {", sect->size / 4);
+            uint32_t *buf = malloc(sect->size);
+            assert(buf);
+            fseek(fp, sect->filepos, SEEK_SET);
+            fread(buf, 4, sect->size / 4, fp);
+            for (unsigned int k = 0; k < sect->size / 4; k ++) {
+                if (0 == k)
+                    emit_code("0x%x", buf[k]);
+                else
+                    emit_code(", 0x%x", buf[k]);
+            }
+            emit_code("};");
+            free(buf);
+        } else if (!strcmp(sect->name, ".data")) {
+            emit_code("uint32_t d_data[%d] = {", sect->size / 4);
+            uint32_t *buf = malloc(sect->size);
+            assert(buf);
+            fseek(fp, sect->filepos, SEEK_SET);
+            fread(buf, 4, sect->size / 4, fp);
+            for (unsigned int k = 0; k < sect->size / 4; k ++) {
+                if (0 == k)
+                    emit_code("0x%x", buf[k]);
+                else
+                    emit_code(", 0x%x", buf[k]);
+            }
+            emit_code("};");
+            free(buf);
+        } else if (!strcmp(sect->name, ".bss")) {
+            emit_code("uint32_t d_bss[%d];", sect->size / 4);
+        }
+
+        sect = sect->next;
+    }
+
+    fclose(fp);
+}
+
 int
 main(void)
 {
@@ -541,6 +589,8 @@ main(void)
     read_section(abfd, ".text");
     read_section(abfd, ".plt");
 
+    declare_data_arrays(abfd);
+    emit_code("#include \"storeload.inc\"");
     determine_target_functions(abfd);
 
     while (func_list_get_count() > 0) {
