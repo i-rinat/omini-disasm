@@ -66,14 +66,49 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
 
             if (!strcmp(ext_func_name, "__cxa_begin_cleanup")) {
                 // do nothing
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "memcpy")) {
                 emit_code("void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)memcpy((void *)r0, (void *)r1, r2);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "__cxa_finalize")) {
+                // do nothing
+            } else if (!strcmp(ext_func_name, "__cxa_type_match")) {
+                // do nothing
+            } else if (!strcmp(ext_func_name, "__cxa_atexit")) {
+                // do nothing
+            } else if (!strcmp(ext_func_name, "__gnu_Unwind_Find_exidx")) {
+                // do nothing
+            } else if (!strcmp(ext_func_name, "AndroidBitmap_getInfo")) {
                 emit_code("void func_%04x() {", relp->address);
+                emit_code("    r0 = AndroidBitmap_getInfo((JNIEnv *)r0, (jobject)r1, "
+                    "(AndroidBitmapInfo*)r2);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "AndroidBitmap_lockPixels")) {
                 emit_code("void func_%04x() {", relp->address);
+                emit_code("    r0 = AndroidBitmap_lockPixels((JNIEnv *)r0, (jobject)r1, "
+                    "(void**)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AndroidBitmap_unlockPixels")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("    r0 = AndroidBitmap_unlockPixels((JNIEnv *)r0, (jobject)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "__android_log_print")) {
+                // TODO: variadic functions
+            } else if (!strcmp(ext_func_name, "abort")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("    abort();");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "sin")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("    reg.x_double = sin(reg.x_double);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "cos")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("    reg.x_double = cos(reg.x_double);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "gettimeofday")) {
+                emit_code("void func_%04x() {", relp->address);
+                emit_code("    r0 = gettimeofday((struct timeval *)r0, (struct timezone *)r1);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("void func_%04x() {", relp->address);
@@ -94,7 +129,6 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 printf("unhandled function %s\n", ext_func_name);
                 assert(0 && "unhandled import");
             }
-
         }
 
         if (!strcmp(relp->howto->name, "UNKNOWN")) {
