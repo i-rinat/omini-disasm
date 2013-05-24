@@ -19,7 +19,7 @@ void
 begin_function(uint32_t pc)
 {
     flag_function_end_found = 0;
-    emit_code("void func_%04x() {", pc);
+    emit_code("static void func_%04x() {", pc);
 }
 
 int

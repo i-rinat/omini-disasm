@@ -623,7 +623,7 @@ main(void)
     set_output_file("prototypes.inc");
     uint32_t func_pc;
     while (0 != (func_pc = func_list_pop_from_done_list())) {
-        emit_code("void func_%04x();", func_pc);
+        emit_code("static void func_%04x();", func_pc);
     }
 
     close_output_file();
