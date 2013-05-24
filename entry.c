@@ -584,6 +584,7 @@ main(void)
     emit_code("#include <stdlib.h>");
     emit_code("#include <string.h>");
     emit_code("#include <jni.h>");
+    emit_code("#include <math.h>");
     emit_code("#include <android/bitmap.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
