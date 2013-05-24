@@ -529,6 +529,8 @@ declare_data_arrays(bfd *abfd)
 
     while (sect) {
         if (!strcmp(sect->name, ".rodata")) {
+            emit_code("#define D_RODATA_START 0x%x", sect->vma);
+            emit_code("#define D_RODATA_LENGTH 0x%x", sect->size);
             emit_code("const uint32_t d_rodata[%d] = {", sect->size / 4);
             uint32_t *buf = malloc(sect->size);
             assert(buf);
@@ -543,6 +545,8 @@ declare_data_arrays(bfd *abfd)
             emit_code("};");
             free(buf);
         } else if (!strcmp(sect->name, ".data")) {
+            emit_code("#define D_DATA_START 0x%x", sect->vma);
+            emit_code("#define D_DATA_LENGTH 0x%x", sect->size);
             emit_code("uint32_t d_data[%d] = {", sect->size / 4);
             uint32_t *buf = malloc(sect->size);
             assert(buf);
@@ -557,6 +561,8 @@ declare_data_arrays(bfd *abfd)
             emit_code("};");
             free(buf);
         } else if (!strcmp(sect->name, ".bss")) {
+            emit_code("#define D_BSS_START 0x%x", sect->vma);
+            emit_code("#define D_BSS_LENGTH 0x%x", sect->size);
             emit_code("uint32_t d_bss[%d];", sect->size / 4);
         }
 
@@ -574,6 +580,9 @@ main(void)
     set_output_file("code.c");
 
     emit_code("#include <stdint.h>");
+    emit_code("#include <stdlib.h>");
+    emit_code("#include <string.h>");
+    emit_code("#include <jni.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
     emit_code("");
