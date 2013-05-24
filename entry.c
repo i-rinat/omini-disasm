@@ -452,17 +452,22 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
-            } else if (!strncmp(symname, "Java_", 5) || !strncmp(symname, "JNI_", 4)) {
-                // JNI entry
-                func_list_add(func_addr);
-            } else if (!strncmp(symname, "java", 4)) {
-                // maybe JNI entry
-                func_list_add(func_addr);
-            } else if (!strcmp(symname, "passed_paint_time_limit")) { // TODO: libom.so specific
-                func_list_add(func_addr);
             } else {
-                printf("unknown symbol %s\n", symname);
-                assert(0 && "not implemented");
+                if (!strncmp(symname, "_", 1)) {
+                    printf("unknown symbol %s\n", symname);
+                    assert(0 && "not implemented");
+                } else {
+                    // maybe JNI entry
+                    func_list_add(func_addr);
+                    if (!strcmp(symname, "Java_com_example_plasma_PlasmaView_renderPlasma")) {
+                        emit_code("JNIEXPORT void JNICALL Java_com_example_plasma_PlasmaView_renderPlasma(JNIEnv * env, jobject  obj, jobject bitmap,  jlong  time_ms) {");
+                        emit_code("    r0 = (uint32_t)env;");
+                        emit_code("    r1 = (uint32_t)obj;");
+                        emit_code("    r2 = (uint32_t)bitmap;");
+                        emit_code("    r3 = (uint32_t)time_ms;");
+                        emit_code("}");
+                    }
+                }
             }
         } else if (!strcmp(sectname, ".data")) {
             if (!strcmp(symname, ".data")) {
