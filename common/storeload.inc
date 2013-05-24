@@ -23,6 +23,8 @@ load(uint32_t addr)
         return d_data[addr/4 - D_DATA_START];
     } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
         return d_bss[addr/4 - D_BSS_START];
+    } else if (D_TEXT_START <= addr && addr < D_TEXT_START + D_TEXT_LENGTH) {
+        return d_text[addr/4 - D_TEXT_START];
     } else {
         return *((uint32_t *)addr);
     }

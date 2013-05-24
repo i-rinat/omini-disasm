@@ -552,6 +552,24 @@ declare_data_arrays(bfd *abfd)
             }
             emit_code("};");
             free(buf);
+        } else if (!strcmp(sect->name, ".text")) {
+            // this should not be here
+            // TODO: invent register tracing to avoid including whole .text section
+            emit_code("#define D_TEXT_START 0x%x", sect->vma);
+            emit_code("#define D_TEXT_LENGTH 0x%x", sect->size);
+            emit_code("const uint32_t d_text[%d] = {", sect->size / 4);
+            uint32_t *buf = malloc(sect->size);
+            assert(buf);
+            fseek(fp, sect->filepos, SEEK_SET);
+            fread(buf, 4, sect->size / 4, fp);
+            for (unsigned int k = 0; k < sect->size / 4; k ++) {
+                if (0 == k)
+                    emit_code("0x%x", buf[k]);
+                else
+                    emit_code(", 0x%x", buf[k]);
+            }
+            emit_code("};");
+            free(buf);
         } else if (!strcmp(sect->name, ".data")) {
             emit_code("#define D_DATA_START 0x%x", sect->vma);
             emit_code("#define D_DATA_LENGTH 0x%x", sect->size);
