@@ -4,16 +4,12 @@ static
 void
 store(uint32_t addr, uint32_t value)
 {
-    if (D_RODATA_START <= addr && addr < D_RODATA_START + D_RODATA_LENGTH) {
-        // failure.
-        // TODO: report error
-    } else if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
+    if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
         d_data[addr/4 - D_DATA_START] = value;
     } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
         d_bss[addr/4 - D_BSS_START] = value;
     } else {
-        // failure.
-        // TODO: report error
+        *((uint32_t *)addr) = value;
     }
 }
 
@@ -28,8 +24,7 @@ load(uint32_t addr)
     } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
         return d_bss[addr/4 - D_BSS_START];
     } else {
-        // failure.
-        // TODO: report error
+        return *((uint32_t *)addr);
     }
 }
 
@@ -39,33 +34,25 @@ store_halfword(uint32_t addr, uint32_t value)
 {
     if ((addr & 3) == 2) {
         // shifted
-        if (D_RODATA_START <= addr && addr < D_RODATA_START + D_RODATA_LENGTH) {
-            // failure.
-            // TODO: report error
-        } else if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
+        if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
             d_data[addr/4 - D_DATA_START] =
                 ((value & 0xffff) << 16) | (d_data[addr/4 - D_DATA_START] & 0xffff);
         } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
             d_bss[addr/4 - D_BSS_START] =
                 ((value & 0xffff) << 16) | (d_bss[addr/4 - D_BSS_START] & 0xffff);
         } else {
-            // failure.
-            // TODO: report error
+            *((uint16_t *)addr) = value;
         }
     } else {
         // aligned
-        if (D_RODATA_START <= addr && addr < D_RODATA_START + D_RODATA_LENGTH) {
-            // failure.
-            // TODO: report error
-        } else if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
+        if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
             d_data[addr/4 - D_DATA_START] =
                 (value & 0xffff) | (d_data[addr/4 - D_DATA_START] & 0xffff0000);
         } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
             d_bss[addr/4 - D_BSS_START] =
                 (value & 0xffff) | (d_bss[addr/4 - D_BSS_START] & 0xffff0000);
         } else {
-            // failure.
-            // TODO: report error
+            *((uint16_t *)addr) = value;
         }
     }
 }
@@ -83,8 +70,7 @@ load_halfword(uint32_t addr)
         } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
             return d_bss[addr/4 - D_BSS_START] >> 16;
         } else {
-            // failure.
-            // TODO: report error
+            return *((uint16_t *)addr);
         }
     } else {
         // aligned
@@ -95,8 +81,7 @@ load_halfword(uint32_t addr)
         } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
             return d_bss[addr/4 - D_BSS_START] & 0xffff;
         } else {
-            // failure.
-            // TODO: report error
+            return *((uint16_t *)addr);
         }
     }
 }
