@@ -567,9 +567,9 @@ p_and_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%d = %d;", Rd, (pc + 8) & imm32);
+        emit_code("    r%d = %uu;", Rd, (pc + 8) & imm32);
     } else {
-        emit_code("    r%d = r%d & %d;", Rd, Rn, imm32);
+        emit_code("    r%d = r%d & %uu;", Rd, Rn, imm32);
     }
 
     if (setflags) {
@@ -1004,7 +1004,7 @@ p_bic_immediate(uint32_t pc, uint32_t code)
     const uint32_t imm12 = code & 0xfff;
     const uint32_t imm32 = arm_expand_imm12(imm12);
 
-    emit_code("    r%d = r%d & %u;", Rd, Rn, ~imm32);
+    emit_code("    r%d = r%d & %uu;", Rd, Rn, ~imm32);
     if (setflags) {
         emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
         emit_code("    APSR.Z = (r%d == 0);", Rd);
