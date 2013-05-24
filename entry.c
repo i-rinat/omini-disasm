@@ -67,7 +67,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
             if (!strcmp(ext_func_name, "__cxa_begin_cleanup")) {
                 // do nothing
             } else if (!strcmp(ext_func_name, "memcpy")) {
-                emit_code("void func_%04x() {", relp->address);
+                emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = (uint32_t)memcpy((void *)r0, (void *)r1, r2);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "__cxa_finalize")) {
@@ -79,17 +79,17 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
             } else if (!strcmp(ext_func_name, "__gnu_Unwind_Find_exidx")) {
                 // do nothing
             } else if (!strcmp(ext_func_name, "AndroidBitmap_getInfo")) {
-                emit_code("void func_%04x() {", relp->address);
+                emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = AndroidBitmap_getInfo((JNIEnv *)r0, (jobject)r1, "
                     "(AndroidBitmapInfo*)r2);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "AndroidBitmap_lockPixels")) {
-                emit_code("void func_%04x() {", relp->address);
+                emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = AndroidBitmap_lockPixels((JNIEnv *)r0, (jobject)r1, "
                     "(void**)r2);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "AndroidBitmap_unlockPixels")) {
-                emit_code("void func_%04x() {", relp->address);
+                emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = AndroidBitmap_unlockPixels((JNIEnv *)r0, (jobject)r1);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "__android_log_print")) {
