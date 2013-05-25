@@ -14,6 +14,7 @@ enum SRType {
 };
 
 int flag_function_end_found = 0;
+int flag_last_instruction_ended_with_return = 0;
 
 void
 begin_function(uint32_t pc)
@@ -28,10 +29,17 @@ function_end_found()
     return flag_function_end_found;
 }
 
+int
+last_instruction_ended_with_return()
+{
+    return flag_last_instruction_ended_with_return;
+}
+
 void
 set_function_end_flag()
 {
     flag_function_end_found = 1;
+    flag_last_instruction_ended_with_return = 1;
 }
 
 void
@@ -1020,6 +1028,7 @@ void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
+    flag_last_instruction_ended_with_return = 0;
 
     emit_code("label_%04x:", pc);
 
