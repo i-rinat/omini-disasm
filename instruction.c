@@ -417,11 +417,11 @@ p_ldm(uint32_t pc, uint32_t code)
         mask = mask << 1;
     }
 
-    if (code && (1<<15))
+    if (code & (1<<15))
         offset += 4;
     if (wback)
         emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-    if (code && (1<<15)) {
+    if (code & (1<<15)) {
         set_function_end_flag();
         emit_code("    return;");
     } else {
