@@ -206,7 +206,39 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "AConfiguration_getKeysHidden")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    reg.r0_signed = AConfiguration_getKeysHidden((AConfiguration*)r0)");
+                emit_code("    reg.r0_signed = AConfiguration_getKeysHidden((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getNavHidden")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getNavHidden((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getSdkVersion")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getSdkVersion((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getScreenSize")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getScreenSize((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getScreenLong")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getScreenLong((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getUiModeType")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getUiModeType((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getUiModeNight")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getUiModeNight((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AInputQueue_detachLooper")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    AInputQueue_detachLooper((AInputQueue*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    ");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
