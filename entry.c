@@ -346,6 +346,56 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    reg.r0_signed = raise((int)r0);");
                 emit_code("}");
+            } else if (!strcmp(ext_func_name, "longjmp")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    longjmp((jmp_buf)r0, (int)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "setjmp")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = setjmp((jmp_buf)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_cond_signal")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_cond_signal((pthread_cond_t*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_getspecific")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)pthread_getspecific((pthread_key_t)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "memmove")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)memmove((void*)r0, (const void*)r1, (size_t)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "snprintf")) {
+                emit_code("static void func_%04x() {", relp->address);
+                // TODO: snprintf variadic function
+                emit_code("    ");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "syscall")) {
+                emit_code("static void func_%04x() {", relp->address);
+                // TODO: syscall variadic function
+                emit_code("    reg.r0_signed = syscall(r0, r1, r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "ceil")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.x_double = ceil(reg.x_double);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "setpriority")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = setpriority((int)r0, (int)r1, (int)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "qsort")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    qsort((void*)r0, (size_t)r1, (size_t)r2, (void*)r3);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_key_delete")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_key_delete((pthread_key_t)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_equal")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_equal((pthread_t)r0, (pthread_t)r1);");
+                emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    ");
