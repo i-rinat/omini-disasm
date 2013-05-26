@@ -45,4 +45,17 @@ load_halfword(uint32_t addr)
 {
     return *((uint16_t *)adjust_address(addr));
 }
+
+static
+void
+store_byte(uint32_t addr, uint32_t value)
+{
+    *((uint8_t *)adjust_address(addr)) = value;
+}
+
+static
+uint32_t
+load_byte(uint32_t addr)
+{
+    return *((uint8_t *)adjust_address(addr));
 }
