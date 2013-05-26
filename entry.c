@@ -236,17 +236,47 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    AInputQueue_detachLooper((AInputQueue*)r0);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "AInputQueue_attachLooper")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    ");
+                emit_code("    const uint32_t param5 = load(r13);");
+                emit_code("    AInputQueue_attachLooper((AInputQueue*)r0, (ALooper*)r1, (int)r2, "
+                                                "(ALooper_callbackFunc)r3, (void *)param5);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "pthread_cond_broadcast")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    ");
+                emit_code("    reg.r0_signed = pthread_cond_broadcast((pthread_cond_t*)r0);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "AConfiguration_fromAssetManager")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    ");
+                emit_code("    AConfiguration_fromAssetManager((AConfiguration*)r0, (AAssetManager*)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_delete")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    AConfiguration_delete((AConfiguration*)r0)");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AInputQueue_getEvent")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AInputQueue_getEvent((AInputQueue*)r0, (AInputEvent**)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AInputQueue_preDispatchEvent")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AInputQueue_preDispatchEvent((AInputQueue*)r0, (AInputEvent*)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AInputQueue_finishEvent")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    AInputQueue_finishEvent((AInputQueue*)r0, (AInputEvent*)r1, (int)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "__errno")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)__errno();");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "strerror")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)strerror((int)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_new")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)AConfiguration_new();");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
