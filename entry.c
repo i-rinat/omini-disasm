@@ -136,17 +136,89 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    reg.r0_signed = AKeyEvent_getAction((const AInputEvent*)r0);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "AKeyEvent_getKeyCode")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AKeyEvent_getKeyCode((const AInputEvent*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AKeyEvent_getMetaState")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AKeyEvent_getKeyCode((const AInputEvent*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "memset")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)memset((void *)r0, (int)r1, (size_t)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "ALooper_pollAll")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = ALooper_pollAll(reg.r0_signed, (int*)r1, (int*)r2, (void**)r3);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_mutex_lock")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_mutex_lock((pthread_mutex_t *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_mutex_unlock")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_mutex_unlock((pthread_mutex_t *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "free")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    free((void*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "read")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = read(r0, (void *)r1, (size_t)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getLanguage")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    AConfiguration_getLanguage((AConfiguration*)r0, (char*)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getCountry")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    AConfiguration_getCountry((AConfiguration*)r0, (char*)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getMcc")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getMcc((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getMnc")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getMnc((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getOrientation")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getOrientation((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getTouchscreen")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getTouchscreen((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getDensity")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getDensity((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getKeyboard")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getKeyboard((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getNavigation")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getNavigation((AConfiguration*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AConfiguration_getKeysHidden")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AConfiguration_getKeysHidden((AConfiguration*)r0)");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    ");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    ");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    ");
                 emit_code("}");
             } else {
                 printf("unhandled function %s\n", ext_func_name);
