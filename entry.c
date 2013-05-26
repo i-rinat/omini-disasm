@@ -115,8 +115,26 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = gettimeofday((struct timeval *)r0, (struct timezone *)r1);");
                 emit_code("}");
-            } else if (!strcmp(ext_func_name, "")) {
+            } else if (!strcmp(ext_func_name, "ANativeWindow_lock")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = ANativeWindow_lock((ANativeWindow*)r0, "
+                    "(ANativeWindow_Buffer*)r1, (ARect*)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "clock_gettime")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = clock_gettime(reg.r0_signed, (struct timespec *)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "ANativeWindow_unlockAndPost")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = ANativeWindow_unlockAndPost((ANativeWindow*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AInputEvent_getType")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AInputEvent_getType((const AInputEvent*)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "AKeyEvent_getAction")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = AKeyEvent_getAction((const AInputEvent*)r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -433,6 +451,10 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__div0")) {
                 // please don't divide by zero
+            } else if (!strcmp(symname, "__aeabi_ldiv0")) {
+                // please don't divide by zero
+            } else if (!strcmp(symname, "__aeabi_idiv0")) {
+                // please don't divide by zero
             } else if (!strcmp(symname, "__aeabi_cfcmple")) {
                 // do nothing
             } else if (!strcmp(symname, "__aeabi_cfrcmple")) {
@@ -448,8 +470,8 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_f2uiz")) {
                 emit_code("static void func_%04x(){ r0 = reg.x_float; }", func_addr);
                 func_list_add_to_done_list(func_addr);
-            } else if (!strcmp(symname, "")) {
-            } else if (!strcmp(symname, "")) {
+            } else if (!strcmp(symname, "__aeabi_uidiv")) {
+                emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
