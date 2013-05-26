@@ -1025,6 +1025,65 @@ p_bic_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrb_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t imm32 = code & 0xfff;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert(Rt != 15);
+
+    if (15 == Rn) {
+        assert(0 && "ldrb with Rn == 15 not implemented yet");
+    } else {
+        if (index && !wback) {
+            emit_code("    r%u = load_byte(r%u + %d);", Rt, Rn);
+        } else if (index && wback) {
+            emit_code("    r%u += %d;", Rn, offset);
+            emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+        } else if (!index && wback) {
+            emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+            emit_code("    r%u += %d;", Rn, offset);
+        }
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
+p_strb_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t imm32 = code & 0xfff;
+    const int32_t offset = add ? imm32 : -imm32;
+
+    assert(Rt != 15);
+    if (15 == Rn) {
+        assert(0 && "strb with Rn == 15 not implemented");
+    } else {
+        if (index && !wback) {
+            emit_code("    store_byte(r%u + %d, r%u);",  Rn, Rt);
+        } else if (index && wback) {
+            emit_code("    r%u += %d;", Rn, offset);
+            emit_code("    store_byte(r%u, r%u);", Rn, Rt);
+        } else if (!index && wback) {
+            emit_code("    store_byte(r%u, r%u);", Rn, Rt);
+            emit_code("    r%u += %d;", Rn, offset);
+        }
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1115,6 +1174,10 @@ process_instruction(uint32_t pc)
         p_ldr_register(pc, code);
     } else if ((code & 0x0fe00000) == 0x03c00000) {
         p_bic_immediate(pc, code);
+    } else if ((code & 0x0e500000) == 0x04500000) {
+        p_ldrb_immediate(pc, code);
+    } else if ((code & 0x0e500000) == 0x04400000) {
+        p_strb_immediate(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
