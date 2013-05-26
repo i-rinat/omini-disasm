@@ -606,7 +606,7 @@ declare_data_arrays(bfd *abfd)
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
     printf("rec started\n");
 
@@ -624,7 +624,13 @@ main(void)
 
     func_list_initialize();
 
-    bfd *abfd = bfd_openr("libplasma.so", NULL);
+    const char *so_name = "libplasma.so";
+    if (argc > 1) {
+        so_name = argv[1];
+    }
+
+    printf("so_name: %s\n", so_name);
+    bfd *abfd = bfd_openr(so_name, NULL);
     assert(abfd);
     if (!bfd_check_format(abfd, bfd_object))
         if (bfd_get_error() != bfd_error_file_ambiguously_recognized)
