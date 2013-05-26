@@ -1084,6 +1084,39 @@ p_strb_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrsb_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t imm4H = (code >> 8) & 0xf;
+    const uint32_t imm4L = code & 0xf;
+    const uint32_t imm32 = (imm4H << 4) | imm4L;
+    const uint32_t offset = add ? imm32 : -imm32;
+
+    assert(Rt != 15);
+
+    if (15 == Rn) {
+        assert(0 && "ldrsb with Rn == 15 not implemented yet");
+    } else {
+        if (index && !wback) {
+            emit_code("    r%u = load_byte(r%u + %d);", Rt, Rn);
+        } else if (index && wback) {
+            emit_code("    r%u += %d;", Rn, offset);
+            emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+        } else if (!index && wback) {
+            emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+            emit_code("    r%u += %d;", Rn, offset);
+        }
+        emit_code("    if (r%u & 0x80) r%u |= 0xffffff00;", Rt, Rt);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1178,6 +1211,8 @@ process_instruction(uint32_t pc)
         p_ldrb_immediate(pc, code);
     } else if ((code & 0x0e500000) == 0x04400000) {
         p_strb_immediate(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x005000d0) {
+        p_ldrsb_immediate(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
