@@ -278,6 +278,74 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    r0 = (uint32_t)AConfiguration_new();");
                 emit_code("}");
+            } else if (!strcmp(ext_func_name, "ALooper_prepare")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)ALooper_prepare((int)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "ALooper_addFd")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    const uint32_t param5 = load(r13);");
+                emit_code("    const uint32_t param6 = load(r13+4);");
+                emit_code("    reg.r0_signed = ALooper_addFd((ALooper*)r0, (int)r1, (int)r2, "
+                            "(int)r3, (ALooper_callbackFunc callback)param5, (void*)param6);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "malloc")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    r0 = (uint32_t)malloc((size_t)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_mutex_init")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_mutex_init((pthread_mutex_t *)r0, "
+                                                    "(const pthread_mutexattr_t *)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_cond_init")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_cond_init((pthread_cond_t *)r0, "
+                                                    "(const pthread_condattr_t *)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pipe")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pipe((int *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_attr_init")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_attr_init((pthread_attr_t *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_attr_setdetachstate")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_attr_setdetachstate((pthread_attr_t *)r0, "
+                                                            "(int)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_create")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_create((pthread_t *)r0, "
+                                    "(const pthread_attr_t *)r1, (void *)r2, (void *)r3);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_cond_wait")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_cond_wait((pthread_cond_t *)r0, "
+                                                    "(pthread_mutex_t *)r1);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "write")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = (uint32_t)write((int)r0, (const void *)r1, (size_t)r2);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "close")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = close((int)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_cond_destroy")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_cond_destroy((pthread_cond_t *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "pthread_mutex_destroy")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = pthread_mutex_destroy((pthread_mutex_t *)r0);");
+                emit_code("}");
+            } else if (!strcmp(ext_func_name, "raise")) {
+                emit_code("static void func_%04x() {", relp->address);
+                emit_code("    reg.r0_signed = raise((int)r0);");
+                emit_code("}");
             } else if (!strcmp(ext_func_name, "")) {
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    ");
