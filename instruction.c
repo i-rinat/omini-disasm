@@ -210,7 +210,16 @@ p_add_register(uint32_t pc, uint32_t code)
     const uint32_t Rm = (code) & 0x0f;
 
     assert(Rm != 15);   // needs different handling
-    assert(Rd != 15);   // this will be jump
+
+    if (Rd == 15) {
+        // check for known patterns
+        if (pattern_switch_case(pc)) {
+            // code will be generated in `pattern_switch_case`
+            return;
+        } else {
+            assert(0 && "unknown jump pattern");
+        }
+    }
 
     const uint32_t type = (code >> 5) & 0x03;
     const uint32_t imm5 = (code >> 7) & 0x1f;
