@@ -266,52 +266,6 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
 }
 
 void
-p_adc_register(uint32_t pc, uint32_t code)
-{
-    const uint32_t Rd = (code >> 12) & 0x0f;
-    const uint32_t Rn = (code >> 16) & 0x0f;
-    const uint32_t Rm = (code) & 0x0f;
-
-    assert(Rm != 15);   // needs different handling
-    assert(Rd != 15);
-
-    const uint32_t type = (code >> 5) & 0x03;
-    const uint32_t imm5 = (code >> 7) & 0x1f;
-    const uint32_t setflags = (code & (1<<20));
-    const uint32_t shift = arm_decode_imm_shift(type, imm5);
-
-    emit_code("    {");
-    switch (arm_decode_imm_type(type, imm5)) {
-    case SRType_LSL:
-        emit_code("      uint32_t tmp = (r%d << %d) + APSR.C;", Rm, shift);
-        break;
-    case SRType_LSR:
-        emit_code("      uint32_t tmp = (r%d >> %d) + APSR.C;", Rm, shift);
-        break;
-    default:
-        assert(0 && "shift type not implemented");
-    }
-    if (15 == Rn) {
-        emit_code("     r%d = %d + tmp;", Rd, pc + 8);
-        if (setflags)
-            assert(0 && "setflags not implemented for Rn == 15 case");
-    } else {
-        emit_code("     r%d = r%d + tmp;", Rd, Rn);
-        if (setflags) {
-            emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
-            emit_code("      APSR.Z = (0 == r%u);", Rd);
-            emit_code("      APSR.C = (r%u < tmp);", Rd);
-            emit_code("      APSR.V = !((r%u ^ tmp) & 0x80000000) && ((r%u ^ tmp) & 0x80000000);", Rn, Rd);
-        }
-    }
-
-    emit_code("    }");
-
-    pc_stack_push(pc + 4);
-}
-
-
-void
 p_add_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t setflags = code & (1 << 20);
