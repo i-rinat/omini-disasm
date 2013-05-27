@@ -98,6 +98,8 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 // TODO: variadic functions
                 emit_code("static void func_%04x() {", relp->address);
                 // for now nothing here
+                emit_code("    __android_log_print(r0, (const char *)r1, (const char *)r2, r3, "
+                    "load(r13), load(r13+4), load(r13+8), load(r13+12), load(r13+16));");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "abort")) {
                 emit_code("static void func_%04x() {", relp->address);
