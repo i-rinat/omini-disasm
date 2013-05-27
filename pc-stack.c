@@ -12,6 +12,7 @@ uint32_t pc_stack_element_count = 0;
 GHashTable *visited_bitmap;
 GHashTable *func_list;
 GHashTable *func_list_done;
+GHashTable *func_list_actually_done;
 
 void
 pc_stack_initialize()
@@ -79,6 +80,7 @@ func_list_initialize()
 {
     func_list = g_hash_table_new(g_direct_hash, g_direct_equal);
     func_list_done = g_hash_table_new(g_direct_hash, g_direct_equal);
+    func_list_actually_done = g_hash_table_new(g_direct_hash, g_direct_equal);
 }
 
 void
@@ -111,6 +113,7 @@ func_list_mark_done(uint32_t pc)
     if (already_in_1) {
         g_hash_table_remove(func_list, GINT_TO_POINTER(pc));
         g_hash_table_insert(func_list_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+        g_hash_table_insert(func_list_actually_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
     }
 
 }
@@ -135,7 +138,7 @@ func_list_pop_from_done_list()
     GHashTableIter iter;
     gpointer key, value;
 
-    g_hash_table_iter_init(&iter, func_list_done);
+    g_hash_table_iter_init(&iter, func_list_actually_done);
     if (g_hash_table_iter_next(&iter, &key, &value)) {
         g_hash_table_iter_remove(&iter);
         return GPOINTER_TO_INT(key);
@@ -158,12 +161,13 @@ func_list_free()
 {
     g_hash_table_destroy(func_list);
     g_hash_table_destroy(func_list_done);
+    g_hash_table_destroy(func_list_actually_done);
 }
 
 uint32_t
 func_list_get_done_count()
 {
-    return g_hash_table_size(func_list_done);
+    return g_hash_table_size(func_list_actually_done);
 }
 
 uint32_t
