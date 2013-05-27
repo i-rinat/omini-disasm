@@ -1144,6 +1144,29 @@ p_blx_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_umull(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1<<20);
+    const uint32_t RdHi = (code >> 16) & 0xf;
+    const uint32_t RdLo = (code >> 12) & 0xf;
+    const uint32_t Rm = (code >> 8) & 0xf;
+    const uint32_t Rn = code & 0xf;
+
+    emit_code("    {");
+    emit_code("      uint64_t tmp = r%u * r%u;", Rn, Rm);
+    emit_code("      r%u = tmp & 0xffffffff;", RdLo);
+    emit_code("      r%u = tmp >> 32;", RdHi);
+    if (setflags) {
+        emit_code("      APSR.N = !!(r%u & 0x80000000);", RdHi);
+        emit_code("      APSR.Z = (0 == r%u && 0 == r%u);", RdLo, RdHi);
+        // C and V unchanged
+    }
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1242,6 +1265,8 @@ process_instruction(uint32_t pc)
         p_ldrsb_immediate(pc, code);
     } else if ((code & 0x0ffffff0) == 0x012fff30) {
         p_blx_register(pc, code);
+    } else if ((code & 0x0fe000f0) == 0x00800090) {
+        p_umull(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
