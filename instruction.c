@@ -59,6 +59,15 @@ arm_expand_imm12(uint32_t imm12)
     return (imm8 >> rotation) | (imm8 << (32 - rotation));
 }
 
+uint32_t
+arm_sign_extend_imm24(uint32_t imm24)
+{
+    if (imm24 & 0x00800000)
+        return imm24 | 0xff000000;
+    else
+        return imm24;
+}
+
 enum SRType
 arm_decode_imm_type(uint32_t type, uint32_t imm5)
 {

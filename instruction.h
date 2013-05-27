@@ -9,3 +9,4 @@ int         last_instruction_ended_with_return();
 
 // aux functions
 uint32_t    arm_expand_imm12(uint32_t imm12);
+uint32_t    arm_sign_extend_imm24(uint32_t imm24);
