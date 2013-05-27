@@ -746,6 +746,16 @@ determine_target_functions(bfd *abfd)
                         emit_code("    r13 = d_stack_start;");
                         emit_code("    func_%04x();", func_addr);
                         emit_code("}");
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else if (!strcmp(symname, "")) {
+                    } else {
+                        printf("maybe JNI: %s\n", symname);
+                        assert(0);
                     }
                 }
             }
