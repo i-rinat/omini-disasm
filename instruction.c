@@ -203,8 +203,10 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
     pc_stack_push(pc + 4);
 }
 
+/** @brief does addition, subtraction with or without carry
+*/
 void
-p_add_register(uint32_t pc, uint32_t code)
+p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_carry)
 {
     const uint32_t Rd = (code >> 12) & 0x0f;
     const uint32_t Rn = (code >> 16) & 0x0f;
@@ -230,10 +232,16 @@ p_add_register(uint32_t pc, uint32_t code)
     emit_code("    {");
     switch (arm_decode_imm_type(type, imm5)) {
     case SRType_LSL:
-        emit_code("      uint32_t tmp = r%d << %d;", Rm, shift);
+        if (do_carry && do_add)         emit_code("      uint32_t tmp = r%u << %u + APSR.C;", Rm, shift);
+        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = r%u << %u;", Rm, shift);
+        else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u << %u) + APSR.C;", Rm, shift);
+        else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u << %u) + 1;", Rm, shift);
         break;
     case SRType_LSR:
-        emit_code("      uint32_t tmp = r%d >> %d;", Rm, shift);
+        if (do_carry && do_add)         emit_code("      uint32_t tmp = r%u >> %u + APSR.C;", Rm, shift);
+        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = r%u >> %u;", Rm, shift);
+        else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u >> %u) + APSR.C;", Rm, shift);
+        else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u >> %u) + 1;", Rm, shift);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1266,10 +1274,14 @@ process_instruction(uint32_t pc)
         p_ldr_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x004000d0) {
         p_ldrd_immediate(pc, code);
-    } else if ((code & 0x0fe00010) == 0x00800000) {
-        p_add_register(pc, code);
-    } else if ((code & 0x0fe00010) == 0x00a00000) {
-        p_adc_register(pc, code);
+    } else if ((code & 0x0fe00010) == 0x00800000) { // add register
+        p_addsubcarry_register(pc, code, /* do_add = */ 1, /* do_carry = */ 0);
+    } else if ((code & 0x0fe00010) == 0x00a00000) { // adc register
+        p_addsubcarry_register(pc, code, /* do_add = */ 1, /* do_carry = */ 1);
+    } else if ((code & 0x0fe00010) == 0x00400000) { // sub register
+        p_addsubcarry_register(pc, code, /* do_add = */ 0, /* do_carry = */ 0);
+    } else if ((code & 0x0fe00010) == 0x00c00000) { // sbc register
+        p_addsubcarry_register(pc, code, /* do_add = */ 0, /* do_carry = */ 1);
     } else if ((code & 0x0fe00000) == 0x02800000) {
         p_add_immediate(pc, code);
     } else if ((code & 0x0ff00000) == 0x03500000) {
