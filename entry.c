@@ -894,6 +894,7 @@ main(int argc, char *argv[])
     emit_code("#include <android/bitmap.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
+    emit_code("#include \"findfunction.inc\"");
     emit_code("");
 
     func_list_initialize();
@@ -934,14 +935,45 @@ main(int argc, char *argv[])
     close_output_file();
 
     // generate prototypes
-
     set_output_file("prototypes.inc");
+    char *buf_addr = malloc(256*1024); // TODO: is that enough?
+    char *buf_ptrs = malloc(256*1024); // TODO: is that enough?
+
+    assert(buf_addr);
+    assert(buf_ptrs);
+
+    strcpy(buf_addr, "int funclist_addr[] = { ");
+    strcpy(buf_ptrs, "void *funclist_ptr[] = { ");
+
     uint32_t func_pc;
+    uint32_t functions_count = 0;
     while (0 != (func_pc = func_list_pop_from_done_list())) {
+        char buf[1024];
         emit_code("static void func_%04x();", func_pc);
+
+        if (0 != functions_count) {
+            strcat(buf_addr, ", ");
+            strcat(buf_ptrs, ", ");
+        }
+
+        sprintf(buf, "0x%04x", func_pc);
+        strcat(buf_addr, buf);
+        sprintf(buf, "&func_%04x", func_pc);
+        strcat(buf_ptrs, buf);
+        functions_count ++;
     }
 
+    strcat(buf_addr, "};");
+    strcat(buf_ptrs, "};");
+
+    emit_code("const int funclist_cnt = %d;", functions_count);
+    emit_code(buf_addr);
+    emit_code(buf_ptrs);
+    free(buf_addr);
+    free(buf_ptrs);
+
     close_output_file();
+
 
     func_list_free();
 
