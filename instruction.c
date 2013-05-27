@@ -1234,6 +1234,25 @@ p_umull(uint32_t pc, uint32_t code)
 }
 
 void
+p_mla(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 16) & 0xf;
+    const uint32_t Ra = (code >> 12) & 0xf;
+    const uint32_t Rm = (code >> 8) & 0xf;
+    const uint32_t Rn = code & 0xf;
+
+    emit_code("    r%u = r%u * r%u + r%u;", Rd, Rn, Rm, Ra);
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        // V and C unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1340,6 +1359,8 @@ process_instruction(uint32_t pc)
         p_blx_register(pc, code);
     } else if ((code & 0x0fe000f0) == 0x00800090) {
         p_umull(pc, code);
+    } else if ((code & 0x0fe000f0) == 0x00200090) {
+        p_mla(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
