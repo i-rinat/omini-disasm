@@ -574,10 +574,7 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__eqdf2")) {
                 // alias for __cmpdf2
                 func_list_add_to_done_list(func_addr);
-            } else if (!strcmp(symname, "__floatdidf")) {
-                // alias for __aeabi_l2d
-                func_list_add_to_done_list(func_addr);
-            } else if (!strcmp(symname, "__aeabi_l2d")) {
+            } else if (!strcmp(symname, "__floatdidf") || !strcmp(symname, "__aeabi_l2d")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.x_uint64_t; }", func_addr);
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
@@ -616,10 +613,7 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_cdrcmple")) {
                 // do nothing
                 func_list_add_to_done_list(func_addr);
-            } else if (!strcmp(symname, "__floatsidf")) {
-                // alias for __aeabi_i2d
-                func_list_add_to_done_list(func_addr);
-            } else if (!strcmp(symname, "__aeabi_i2d")) {
+            } else if (!strcmp(symname, "__floatsidf") || !strcmp(symname, "__aeabi_i2d")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.r0_signed; }", func_addr);
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ui2d")) {
