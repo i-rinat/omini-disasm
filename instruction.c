@@ -2,6 +2,7 @@
 #include "output.h"
 #include "section.h"
 #include "pc-stack.h"
+#include "patterns.h"
 #include <stdio.h>
 #include <assert.h>
 

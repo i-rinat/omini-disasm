@@ -2,6 +2,7 @@
 #include "instruction.h"
 #include "section.h"
 #include "output.h"
+#include "pc-stack.h"
 #include <assert.h>
 
 /** @brief detect and handle switch-case pattern
