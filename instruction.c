@@ -386,7 +386,7 @@ p_mov_immediate(uint32_t pc, uint32_t code)
     const uint32_t carry = (rotation) ? !!(imm32 & 0x80000000) : 42;
 
     assert(Rd != 15);
-    emit_code("    r%d = %d;", Rd, imm32);
+    emit_code("    r%u = %uu;", Rd, imm32);
     if (setflags) {
         emit_code("    APSR.N = (r%d & 0x80000000);", Rd);
         emit_code("    APSR.Z = (r%d == 0);", Rd);
@@ -743,7 +743,7 @@ p_mvn_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
 
-    emit_code("    r%u = %u;", Rd, ~imm32);
+    emit_code("    r%u = %uu;", Rd, ~imm32);
     if (setflags) {
         emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
         emit_code("    APSR.Z = (0 == r%u);", Rd);
