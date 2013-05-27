@@ -813,6 +813,23 @@ determine_target_functions(bfd *abfd)
                         emit_code("    r13 = d_stack_start;");
                         emit_code("    func_%04x();", func_addr);
                         emit_code("}");
+                    } else if (!strcmp(symname, "android_main")) {
+                        emit_code("void android_main(struct android_app* state) {");
+                        emit_code("    r0 = (uint32_t)state;");
+                        emit_code("    app_dummy();");
+                        emit_code("    r13 = d_stack_start;");
+                        emit_code("    func_%04x();", func_addr);
+                        emit_code("}");
+                    } else if (!strcmp(symname, "app_dummy")) {
+                        // android_native_app_glue.o
+                    } else if (!strcmp(symname, "android_app_read_cmd")) {
+                        // android_native_app_glue.o
+                    } else if (!strcmp(symname, "android_app_pre_exec_cmd")) {
+                        // android_native_app_glue.o
+                    } else if (!strcmp(symname, "android_app_post_exec_cmd")) {
+                        // android_native_app_glue.o
+                    } else if (!strcmp(symname, "ANativeActivity_onCreate")) {
+                        // android_native_app_glue.o
                     } else if (!strcmp(symname, "")) {
                     } else if (!strcmp(symname, "")) {
                     } else if (!strcmp(symname, "")) {
@@ -971,6 +988,13 @@ main(int argc, char *argv[])
     emit_code("#include <jni.h>");
     emit_code("#include <math.h>");
     emit_code("#include <android/bitmap.h>");
+    emit_code("#include <android/log.h>");
+    emit_code("#include <android/looper.h>");
+    emit_code("#include <android/input.h>");
+    emit_code("#include <android/native_window.h>");
+    emit_code("#include <android/configuration.h>");
+    emit_code("#include <android_native_app_glue.h>");
+    emit_code("#include <pthread.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
     emit_code("#include \"findfunction.inc\"");
