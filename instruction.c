@@ -226,20 +226,32 @@ p_add_register(uint32_t pc, uint32_t code)
     const uint32_t setflags = (code & (1<<20));
     const uint32_t shift = arm_decode_imm_shift(type, imm5);
 
-    if (setflags)
-        assert(0 && "setflags not implemented");
-
+    emit_code("    {");
     switch (arm_decode_imm_type(type, imm5)) {
     case SRType_LSL:
-        if (15 == Rn) {
-            emit_code("   r%d = %d + (r%d << %d);", Rd, pc + 8, Rm, shift);
-        } else {
-            emit_code("   r%d = r%d + (r%d << %d);", Rd, Rn, Rm, shift);
-        }
+        emit_code("      uint32_t tmp = r%d << %d;", Rm, shift);
+        break;
+    case SRType_LSR:
+        emit_code("      uint32_t tmp = r%d >> %d;", Rm, shift);
         break;
     default:
-        assert(0 && "not implemented");
+        assert(0 && "shift type not implemented");
     }
+    if (15 == Rn) {
+        emit_code("     r%d = %d + tmp;", Rd, pc + 8);
+        if (setflags)
+            assert(0 && "setflags not implemented for Rn == 15 case");
+    } else {
+        emit_code("     r%d = r%d + tmp;", Rd, Rn);
+        if (setflags) {
+            emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
+            emit_code("      APSR.Z = (0 == r%u);", Rd);
+            emit_code("      APSR.C = (r%u < tmp);", Rd);
+            emit_code("      APSR.V = !((r%u ^ tmp) & 0x80000000) && ((r%u ^ tmp) & 0x80000000);", Rn, Rd);
+        }
+    }
+
+    emit_code("    }");
 
     pc_stack_push(pc + 4);
 }
