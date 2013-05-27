@@ -98,8 +98,10 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 // TODO: variadic functions
                 emit_code("static void func_%04x() {", relp->address);
                 // for now nothing here
-                emit_code("    __android_log_print(r0, (const char *)r1, (const char *)r2, r3, "
-                    "load(r13), load(r13+4), load(r13+8), load(r13+12), load(r13+16));");
+                emit_code("    __android_log_print(r0, adjust_address(r1), adjust_address(r2), "
+                    "adjust_address(r3), adjust_address(load(r13)), adjust_address(load(r13+4)), "
+                    "adjust_address(load(r13+8)), adjust_address(load(r13+12)), "
+                    "adjust_address(load(r13+16)), adjust_address(load(r13+20)));");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "abort")) {
                 emit_code("static void func_%04x() {", relp->address);
