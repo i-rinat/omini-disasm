@@ -1135,6 +1135,15 @@ p_ldrsb_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_blx_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rm = code & 0xf;
+
+    emit_code("    find_and_call_function(r%u);", Rm);
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1231,6 +1240,8 @@ process_instruction(uint32_t pc)
         p_strb_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x005000d0) {
         p_ldrsb_immediate(pc, code);
+    } else if ((code & 0x0ffffff0) == 0x012fff30) {
+        p_blx_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
