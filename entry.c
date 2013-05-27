@@ -252,7 +252,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "AConfiguration_delete")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    AConfiguration_delete((AConfiguration*)r0)");
+                emit_code("    AConfiguration_delete((AConfiguration*)r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "AInputQueue_getEvent")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -287,7 +287,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("    const uint32_t param5 = load(r13);");
                 emit_code("    const uint32_t param6 = load(r13+4);");
                 emit_code("    reg.r0_signed = ALooper_addFd((ALooper*)r0, (int)r1, (int)r2, "
-                            "(int)r3, (ALooper_callbackFunc callback)param5, (void*)param6);");
+                            "(int)r3, (ALooper_callbackFunc)param5, (void*)param6);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "malloc")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -630,7 +630,8 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__gnu_ldivmod_helper")) {
                 // do nothing
             } else if (!strcmp(symname, "__divdi3")) {
-                // do nothing. Let recompler do its work
+                emit_code("static void func_%04x(){ reg.x_int64_t /= reg.y_int64_t; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__divsf3")) {
                 emit_code("static void func_%04x(){ reg.x_float /= reg.y_float; }", func_addr);
                 func_list_add_to_done_list(func_addr);
@@ -667,7 +668,7 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_uldivmod")) {
                 // do nothing
             } else if (!strcmp(symname, "__udivsi3")) {
-                emit_code("static void func_%04x(){ r0 = r0 / r1; }", func_addr);
+                emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_i2f")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.r0_signed; }", func_addr);
@@ -724,6 +725,7 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uidiv")) {
                 emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
+                func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
