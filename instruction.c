@@ -513,19 +513,16 @@ p_strd_immediate(uint32_t pc, uint32_t code)
     assert(Rt2 != 15);
 
     if (index && !wback) {
-        emit_code("    store(r%d + %d, r%d);", Rn, offset, Rt1);
-        emit_code("    store(r%d + %d + 4, r%d);", Rn, offset, Rt2);
+        emit_code("    store(r%u + %d, r%u);", Rn, offset, Rt1);
+        emit_code("    store(r%u + %d, r%u);", Rn, offset + 4, Rt2);
     } else if (index && wback) {
-        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-        emit_code("    store(r%d, r%d);", Rn, Rt1);
-        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
-    } else if (!index && wback) {
-        emit_code("    store(r%d, r%d);", Rn, Rt1);
-        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
-        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-    } else { // !index &&  !wback
-        emit_code("    store(r%d, r%d);", Rn, Rt1);
-        emit_code("    store(r%d + 4, r%d);", Rn, Rt2);
+        emit_code("    r%u += %d;", Rn, offset);
+        emit_code("    store(r%u, r%u);", Rn, Rt1);
+        emit_code("    store(r%u + 4, r%u);", Rn, Rt2);
+    } else if (!index) {
+        emit_code("    store(r%u, r%u);", Rn, Rt1);
+        emit_code("    store(r%u + 4, r%u);", Rn, Rt2);
+        emit_code("    r%u += %d;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
