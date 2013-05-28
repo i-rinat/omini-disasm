@@ -435,7 +435,6 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
 void
 p_ldm(uint32_t pc, uint32_t code)
 {
-    (void)pc;
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t wback = code & (1 << 21);
 
@@ -444,7 +443,7 @@ p_ldm(uint32_t pc, uint32_t code)
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
             assert(!(k == Rn && wback));
-            emit_code("    r%d = load(r%d + %d);", k, Rn, offset);
+            emit_code("    r%u = load(r%u + %d);", k, Rn, offset);
             offset += 4;
         }
         mask = mask << 1;
@@ -453,7 +452,7 @@ p_ldm(uint32_t pc, uint32_t code)
     if (code & (1<<15))
         offset += 4;
     if (wback)
-        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("    r%u += %d;", Rn, offset);
     if (code & (1<<15)) {
         set_function_end_flag();
         emit_code("    return;");
