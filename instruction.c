@@ -691,13 +691,13 @@ p_orr_register(uint32_t pc, uint32_t code)
         // APSR.C will be changed only if setflags set and actual shift happens
         // otherwise it will be set to own value, i.e. unchanged
         if (setflags && (shift_n > 0))
-            emit_code("    APSR.C = !!((r%d << %d) & 0x80000000);", Rm, shift_n - 1);
-        emit_code("    r%d = r%d | (r%d << %d);", Rd, Rn, Rm, shift_n);
+            emit_code("    APSR.C = !!((r%u << %d) & 0x80000000);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u | (r%u << %d);", Rd, Rn, Rm, shift_n);
         break;
     case SRType_LSR:
         if (setflags && (shift_n > 0))
-            emit_code("    APSR.C = !!((r%d >> %d) & 1);", Rm, shift_n - 1);
-        emit_code("    r%d = r%d | (r%d >> %d);", Rd, Rn, Rm, shift_n);
+            emit_code("    APSR.C = !!((r%u >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u | (r%u >> %d);", Rd, Rn, Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented shift type");
@@ -705,8 +705,8 @@ p_orr_register(uint32_t pc, uint32_t code)
     }
 
     if (setflags) {
-        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // V unchanged
     }
 
