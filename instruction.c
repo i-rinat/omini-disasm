@@ -353,14 +353,14 @@ p_mov_register(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rm) {
-        emit_code("    r%d = %d;", Rd, pc + 8);
+        emit_code("    r%u = %u;", Rd, pc + 8);
     } else {
-        emit_code("    r%d = r%d;", Rd, Rm);
+        emit_code("    r%u = r%u;", Rd, Rm);
     }
 
     if (setflags) {
-        emit_code("    APSR.N = (r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // C and V are not changed
     }
 
