@@ -112,9 +112,9 @@ p_sub_immediate(uint32_t pc, uint32_t code)
     assert(Rd != 15);   // pc
 
     if (15 == Rn) {
-        emit_code("   r%d = %u;", Rd, pc + 8 - imm32);
+        emit_code("   r%u = %u;", Rd, pc + 8 - imm32);
     } else {
-        emit_code("   r%d = r%d - %u;", Rd, Rn, imm32);
+        emit_code("   r%u = r%u - %u;", Rd, Rn, imm32);
     }
 
     int setflags = (code >> 20) & 1;
@@ -140,26 +140,25 @@ p_sub_register_shifted_register(uint32_t pc, uint32_t code)
 void
 p_str_immediate(uint32_t pc, uint32_t code)
 {
-    const uint32_t index = !!(code & (1 << 24));
-    const uint32_t add = !!(code & (1 << 23));
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
     const uint32_t wback = !index || (code & (1 << 21));
     const uint32_t Rn = (code >> 16) & 0xf;
     const uint32_t Rt = (code >> 12) & 0xf;
-    const uint32_t imm32 = (code & 0xfff);
-    const int32_t offset = add ? imm32 : -imm32;
+    const uint32_t imm12 = (code & 0xfff);
+    const int32_t offset = add ? imm12 : -imm12;
 
     assert(Rn != 15);   // do not want stores into .text
     assert(Rt != 15);
 
     if (index && !wback) {
-        emit_code("   store(r%d + %d, r%d);", Rn, offset, Rt);
+        emit_code("   store(r%u + %d, r%u);", Rn, offset, Rt);
     } else if (index && wback) {
-        emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
-        emit_code("   store(r%d, r%d);", Rn, Rt);
+        emit_code("   r%u += %d;", Rn, offset);
+        emit_code("   store(r%u, r%u);", Rn, Rt);
     } else if (!index) {
-        emit_code("   store(r%d, r%d);", Rn, Rt);
-        if (wback)
-            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("   store(r%u, r%u);", Rn, Rt);
+        emit_code("   r%u += %d;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
