@@ -406,30 +406,27 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
 
     if (15 == Rn) {
         if (wback)
-            assert(0 && "writeback to pc");
+            assert(0 && "ldrd: writeback to pc");
 
         if (index) {
-            emit_code("    r%d = %d;", Rt1, get_word_at(pc + 8 + offset));
-            emit_code("    r%d = %d;", Rt2, get_word_at(pc + 8 + offset + 4));
+            emit_code("    r%u = %uu;", Rt1, get_word_at(pc + 8 + offset));
+            emit_code("    r%u = %uu;", Rt2, get_word_at(pc + 8 + offset + 4));
         } else {
-            emit_code("    r%d = %d;", Rt1, get_word_at(pc + 8));
-            emit_code("    r%d = %d;", Rt2, get_word_at(pc + 8 + 4));
+            emit_code("    r%u = %uu;", Rt1, get_word_at(pc + 8));
+            emit_code("    r%u = %uu;", Rt2, get_word_at(pc + 8 + 4));
         }
     }
     if (index && !wback) {
-        emit_code("    r%d = load(r%d + %d);", Rt1, Rn, offset);
-        emit_code("    r%d = load(r%d + %d);", Rt2, Rn, offset + 4);
+        emit_code("    r%u = load(r%u + %d);", Rt1, Rn, offset);
+        emit_code("    r%u = load(r%u + %d);", Rt2, Rn, offset + 4);
     } else if (index && wback) {
-        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-        emit_code("    r%d = load(r%d);", Rt1, Rn);
-        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
-    } else if (!index && wback) {
-        emit_code("    r%d = load(r%d);", Rt1, Rn);
-        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
-        emit_code("    r%d = r%d + %d;", Rn, Rn, offset);
-    } else {
-        emit_code("    r%d = load(r%d);", Rt1, Rn);
-        emit_code("    r%d = load(r%d + 4);", Rt2, Rn);
+        emit_code("    r%u += %d;", Rn, offset);
+        emit_code("    r%u = load(r%u);", Rt1, Rn);
+        emit_code("    r%u = load(r%u + 4);", Rt2, Rn);
+    } else if (!index) {
+        emit_code("    r%u = load(r%u);", Rt1, Rn);
+        emit_code("    r%u = load(r%u + 4);", Rt2, Rn);
+        emit_code("    r%u += %d;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
