@@ -922,10 +922,10 @@ p_str_register(uint32_t pc, uint32_t code)
     if (index && !wback) {
         switch (shift_t) {
         case SRType_LSL:
-            emit_code("    store(r%d %c (r%d << %u), r%d);", Rn, add_op, Rm, shift_n, Rt);
+            emit_code("    store(r%u %c (r%u << %u), r%u);", Rn, add_op, Rm, shift_n, Rt);
             break;
         case SRType_LSR:
-            emit_code("    store(r%d %c (r%d >> %u), r%d);", Rn, add_op, Rm, shift_n, Rt);
+            emit_code("    store(r%u %c (r%u >> %u), r%u);", Rn, add_op, Rm, shift_n, Rt);
             break;
         default:
             assert(0 && "not implemented shift operation");
@@ -933,29 +933,27 @@ p_str_register(uint32_t pc, uint32_t code)
     } else if (index && wback) {
         switch (shift_t) {
         case SRType_LSL:
-            emit_code("    r%d = r%d %c (r%d << %u);", Rn, Rn, add_op, Rm, shift_n);
+            emit_code("    r%u %c= (r%u << %u);", Rn, add_op, Rm, shift_n);
             break;
         case SRType_LSR:
-            emit_code("    r%d = r%d %c (r%d >> %u);", Rn, Rn, add_op, Rm, shift_n);
+            emit_code("    r%u %c= (r%u >> %u);", Rn, add_op, Rm, shift_n);
             break;
         default:
             assert(0 && "not implemented shift operation");
         }
 
-        emit_code("    store(r%d, r%d);", Rn, Rt);
+        emit_code("    store(r%u, r%u);", Rn, Rt);
     } else if (!index) {
-        emit_code("    store(r%d, r%d);", Rn, Rt);
-        if (wback) {
-            switch (shift_t) {
-            case SRType_LSL:
-                emit_code("    r%d = r%d %c (r%d << %u);", Rn, Rn, add_op, Rm, shift_n);
-                break;
-            case SRType_LSR:
-                emit_code("    r%d = r%d %c (r%d >> %u);", Rn, Rn, add_op, Rm, shift_n);
-                break;
-            default:
-                assert(0 && "not implemented shift operation");
-            }
+        emit_code("    store(r%u, r%u);", Rn, Rt);
+        switch (shift_t) {
+        case SRType_LSL:
+            emit_code("    r%u %c= (r%u << %u);", Rn, add_op, Rm, shift_n);
+            break;
+        case SRType_LSR:
+            emit_code("    r%u %c= (r%u >> %u);", Rn, add_op, Rm, shift_n);
+            break;
+        default:
+            assert(0 && "not implemented shift operation");
         }
     }
 
