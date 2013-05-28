@@ -572,13 +572,13 @@ p_lsl_immediate(uint32_t pc, uint32_t code)
     assert(shift_n > 0);
 
     if (setflags)
-        emit_code("    APSR.C = !!((r%d << %d) & 0x80000000);", Rm, shift_n - 1);
+        emit_code("    APSR.C = !!((r%u << %d) & 0x80000000);", Rm, shift_n - 1);
 
-    emit_code("    r%d = r%d << %d;", Rd, Rm, shift_n);
+    emit_code("    r%u = r%u << %d;", Rd, Rm, shift_n);
 
     if (setflags) {
-        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // V unchanged
     }
 
