@@ -591,20 +591,19 @@ p_and_immediate(uint32_t pc, uint32_t code)
     const uint32_t setflags = code & (1 << 20);
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t Rd = (code >> 12) & 0x0f;
-    const uint32_t imm12 = code & 0xfff;
-    const uint32_t imm32 = arm_expand_imm12(imm12);
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%d = %uu;", Rd, (pc + 8) & imm32);
+        emit_code("    r%u = %uu;", Rd, (pc + 8) & imm32);
     } else {
-        emit_code("    r%d = r%d & %uu;", Rd, Rn, imm32);
+        emit_code("    r%u = r%u & %uu;", Rd, Rn, imm32);
     }
 
     if (setflags) {
-        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
-        emit_code("    APSR.C = %d;", !!(imm32 & 0x80000000));
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        emit_code("    APSR.C = %u;", !!(imm32 & 0x80000000));
         // V unchanged
     }
 
