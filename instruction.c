@@ -336,8 +336,7 @@ p_b(uint32_t pc, uint32_t code)
 void
 p_bl(uint32_t pc, uint32_t code)
 {
-    const uint32_t imm24 = code & 0x00ffffff;
-    const uint32_t imm32 = (imm24 & (1<<23)) ? ((0xff000000 | imm24) << 2) : (imm24 << 2);
+    const uint32_t imm32 = arm_sign_extend_imm24(code & 0x00ffffff) << 2;
 
     emit_code("    func_%04x();", imm32 + 8 + pc);
 
