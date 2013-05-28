@@ -1202,10 +1202,10 @@ process_instruction(uint32_t pc)
     case 0b0111: emit_code("  if (!APSR.V) {"); break;
     case 0b1000: emit_code("  if (APSR.C && !APSR.Z) {"); break;
     case 0b1001: emit_code("  if (!APSR.C || APSR.Z) {"); break;
-    case 0b1010: emit_code("  if (!!APSR.N == !!APSR.V) {"); break;
-    case 0b1011: emit_code("  if (!!APSR.N != !!APSR.V) {"); break;
-    case 0b1100: emit_code("  if (!APSR.Z && !!APSR.N == !!APSR.V) {"); break;
-    case 0b1101: emit_code("  if (APSR.Z || !!APSR.N != !!APSR.V) {"); break;
+    case 0b1010: emit_code("  if (APSR.N == APSR.V) {"); break;
+    case 0b1011: emit_code("  if (APSR.N != APSR.V) {"); break;
+    case 0b1100: emit_code("  if (!APSR.Z && (APSR.N == APSR.V)) {"); break;
+    case 0b1101: emit_code("  if (APSR.Z || (APSR.N != APSR.V)) {"); break;
     case 0b1110: /* unconditional, no code emited */ break;
     default: assert(0 && "wierd condition"); break;
     }
