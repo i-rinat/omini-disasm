@@ -870,29 +870,30 @@ p_ldrh_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t index = !!(code & (1 << 24));
     const uint32_t add = !!(code & (1 << 23));
-    const uint32_t wback = !index && (code & (1 << 21));
+    const uint32_t wback = !index || (code & (1 << 21));
 
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t Rt = (code >> 12) & 0x0f;
-    const uint32_t imm32 = code & 0xfff;
+    const uint32_t imm4H = (code >> 8) & 0xf;
+    const uint32_t imm4L = code & 0xf;
+    const uint32_t imm32 = (imm4H << 4) | imm4L;
     const int32_t offset = add ? imm32 : -imm32;
 
     assert(Rt != 15);
 
     if (15 == Rn) {
         if (wback)
-            assert(0 && "writeback in ldrh with Rn = pc");
-        emit_code("   r%d = %u;", Rt, 0xffff & get_word_at(pc + 8 + (index ? offset : 0)));
+            assert(0 && "writeback in ldrh with Rn == pc");
+        emit_code("   r%u = %uu;", Rt, 0xffff & get_word_at(pc + 8 + (index ? offset : 0)));
     } else {
         if (index && !wback) {
-            emit_code("   r%d = load_halfword(r%d + %d);", Rt, Rn, offset);
+            emit_code("   r%u = load_halfword(r%u + %d);", Rt, Rn, offset);
         } else if (index && wback) {
-            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
-            emit_code("   r%d = load_halfword(r%d);", Rt, Rn);
+            emit_code("   r%u += %d;", Rn, offset);
+            emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
         } else if (!index) {
-            emit_code("   r%d = load_halfword(r%d);", Rt, Rn);
-            if (wback)
-                emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+            emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
+            emit_code("   r%u += %d;", Rn, offset);
         }
     }
 
