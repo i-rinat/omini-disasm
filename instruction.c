@@ -789,10 +789,10 @@ p_mul(uint32_t pc, uint32_t code)
     assert(Rm != 15);
     assert(Rn != 15);
 
-    emit_code("    r%d = r%d * r%d;", Rd, Rn, Rm);
+    emit_code("    r%u = r%u * r%u;", Rd, Rn, Rm);
     if (setflags) {
-        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // C unchanged
         // V unchanged
     }
