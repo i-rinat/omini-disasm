@@ -271,26 +271,26 @@ p_add_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%d = %d;", Rd, pc + 8 + imm32);
+        emit_code("    r%u = %u;", Rd, pc + 8 + imm32);
         if (setflags) {
             const uint32_t result = pc + 8 + imm32;
-            emit_code("    APSR.C = %d;", (result < imm32));
-            emit_code("    APSR.V = %d;",
+            emit_code("    APSR.C = %u;", (result < imm32));
+            emit_code("    APSR.V = %u;",
                 !(((pc+8) ^ imm32) & 0x80000000) && ((result ^ imm32) & 0x80000000));
         }
     } else {
         if (setflags) {
-            emit_code("    tmp = r%d + %d;", Rn, imm32);
-            emit_code("    APSR.C = (tmp < r%d);", Rn);
-            emit_code("    APSR.V = !((r%d ^ %d) & 0x80000000) && ((tmp ^ r%d) & 0x80000000);",
+            emit_code("    tmp = r%u + %u;", Rn, imm32);
+            emit_code("    APSR.C = (tmp < r%u);", Rn);
+            emit_code("    APSR.V = !((r%u ^ %u) & 0x80000000) && ((tmp ^ r%u) & 0x80000000);",
                 Rn, imm32, Rn);
         }
-        emit_code("    r%d = r%d + %d;", Rd, Rn, imm32);
+        emit_code("    r%u = r%u + %u;", Rd, Rn, imm32);
     }
 
     if (setflags) {
-        emit_code("    APSR.N = r%d & 0x80000000;", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
     }
 
     pc_stack_push(pc + 4);
