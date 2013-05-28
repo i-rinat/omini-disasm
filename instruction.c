@@ -908,7 +908,7 @@ p_str_register(uint32_t pc, uint32_t code)
     const uint32_t wback = !index || (code & (1 << 21));
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t Rt = (code >> 12) & 0x0f;
-    const uint32_t imm5 = (code >> 7) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
     const uint32_t type = (code >> 5) & 0x03;
     const uint32_t Rm = code & 0x0f;
     const enum SRType shift_t = arm_decode_imm_type(type, imm5);
@@ -968,7 +968,7 @@ p_ldr_register(uint32_t pc, uint32_t code)
     const uint32_t wback = !index || (code & (1 << 21));
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t Rt = (code >> 12) & 0x0f;
-    const uint32_t imm5 = (code >> 7) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
     const uint32_t type = (code >> 5) & 0x03;
     const uint32_t Rm = code & 0x0f;
     const enum SRType shift_t = arm_decode_imm_type(type, imm5);
