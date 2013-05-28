@@ -228,14 +228,14 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
     emit_code("    {");
     switch (arm_decode_imm_type(type, imm5)) {
     case SRType_LSL:
-        if (do_carry && do_add)         emit_code("      uint32_t tmp = r%u << %u + APSR.C;", Rm, shift);
+        if (do_carry && do_add)         emit_code("      uint32_t tmp = (r%u << %u) + APSR.C;", Rm, shift);
         else if (!do_carry && do_add)   emit_code("      uint32_t tmp = r%u << %u;", Rm, shift);
         else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u << %u) + APSR.C;", Rm, shift);
         else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u << %u) + 1;", Rm, shift);
         break;
     case SRType_LSR:
-        if (do_carry && do_add)         emit_code("      uint32_t tmp = r%u >> %u + APSR.C;", Rm, shift);
-        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = r%u >> %u;", Rm, shift);
+        if (do_carry && do_add)         emit_code("      uint32_t tmp = (r%u >> %u) + APSR.C;", Rm, shift);
+        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = (r%u >> %u);", Rm, shift);
         else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u >> %u) + APSR.C;", Rm, shift);
         else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u >> %u) + 1;", Rm, shift);
         break;
@@ -243,11 +243,11 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
         assert(0 && "shift type not implemented");
     }
     if (15 == Rn) {
-        emit_code("     r%d = %d + tmp;", Rd, pc + 8);
+        emit_code("     r%u = %u + tmp;", Rd, pc + 8);
         if (setflags)
             assert(0 && "setflags not implemented for Rn == 15 case");
     } else {
-        emit_code("     r%d = r%d + tmp;", Rd, Rn);
+        emit_code("     r%u = r%u + tmp;", Rd, Rn);
         if (setflags) {
             emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
             emit_code("      APSR.Z = (0 == r%u);", Rd);
