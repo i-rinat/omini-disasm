@@ -718,8 +718,7 @@ p_mvn_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t setflags = code & (1 << 20);
     const uint32_t Rd = (code >> 12) & 0x0f;
-    const uint32_t imm12 = code & 0xfff;
-    const uint32_t imm32 = arm_expand_imm12(imm12);
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
 
     assert(Rd != 15);
 
