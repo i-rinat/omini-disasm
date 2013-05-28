@@ -541,19 +541,19 @@ p_cmp_register(uint32_t pc, uint32_t code)
     emit_code("    {");
     switch (shift_t) {
     case SRType_LSL:
-        emit_code("      uint32_t rhs = ~(r%d << %d) + 1;", Rm, shift_n);
+        emit_code("      uint32_t rhs = ~(r%u << %d) + 1;", Rm, shift_n);
         break;
     case SRType_LSR:
-        emit_code("      uint32_t rhs = ~(r%d >> %d) + 1;", Rm, shift_n);
+        emit_code("      uint32_t rhs = ~(r%u >> %d) + 1;", Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented");
     }
-    emit_code("      uint32_t tmp = r%d + rhs;", Rn);
+    emit_code("      uint32_t tmp = r%u + rhs;", Rn);
     emit_code("      APSR.N = !!(tmp & 0x80000000);");
-    emit_code("      APSR.Z = (tmp == 0);");
+    emit_code("      APSR.Z = (0 == tmp);");
     emit_code("      APSR.C = (tmp < rhs);");
-    emit_code("      APSR.V = !((r%d ^ rhs) & 0x80000000) && ((tmp ^ rhs) & 0x80000000);", Rn);
+    emit_code("      APSR.V = !((r%u ^ rhs) & 0x80000000) && ((tmp ^ rhs) & 0x80000000);", Rn);
     emit_code("    }");
 
     pc_stack_push(pc + 4);
