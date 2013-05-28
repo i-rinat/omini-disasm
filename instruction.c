@@ -658,14 +658,13 @@ p_strh_immediate(uint32_t pc, uint32_t code)
     assert(Rn != 15);
 
     if (index && !wback) {
-        emit_code("   store_halfword(r%d + %d, r%d & 0xffff);", Rn, offset, Rt);
+        emit_code("   store_halfword(r%u + %d, r%u);", Rn, offset, Rt);
     } else if (index && wback) {
-        emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
-        emit_code("   store_halfword(r%d, r%d & 0xffff);", Rn, Rt);
+        emit_code("   r%u += %d;", Rn, offset);
+        emit_code("   store_halfword(r%u, r%u);", Rn, Rt);
     } else if (!index) {
-        emit_code("   store_halfword(r%d, r%d & 0xffff);", Rn, Rt);
-        if (wback)
-            emit_code("   r%d = r%d + %d;", Rn, Rn, offset);
+        emit_code("   store_halfword(r%u, r%u);", Rn, Rt);
+        emit_code("   r%u += %d;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
