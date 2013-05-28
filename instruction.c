@@ -479,17 +479,17 @@ p_stmdb(uint32_t pc, uint32_t code)
     mask = 1;
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
-            emit_code("    store(r%d - %d, r%d);", Rn, neg_offset, k);
+            emit_code("    store(r%u - %d, r%u);", Rn, neg_offset, k);
             neg_offset -= 4;
         }
         mask <<= 1;
     }
 
     if (code & (1 << 15))
-        emit_code("    store(r%d - %d, %d);", Rn, neg_offset, pc + 8);
+        emit_code("    store(r%u - %d, %uu);", Rn, neg_offset, pc + 8);
 
     if (wback)
-        emit_code("    r%d = r%d - %d;", Rn, Rn, storage_size);
+        emit_code("    r%u -= %d;", Rn, storage_size);
 
     pc_stack_push(pc + 4);
 }
