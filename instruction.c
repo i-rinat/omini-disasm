@@ -1056,11 +1056,11 @@ p_ldrb_immediate(uint32_t pc, uint32_t code)
         assert(0 && "ldrb with Rn == 15 not implemented yet");
     } else {
         if (index && !wback) {
-            emit_code("    r%u = load_byte(r%u + %d);", Rt, Rn);
+            emit_code("    r%u = load_byte(r%u + %d);", Rt, Rn, offset);
         } else if (index && wback) {
             emit_code("    r%u += %d;", Rn, offset);
             emit_code("    r%u = load_byte(r%u);", Rt, Rn);
-        } else if (!index && wback) {
+        } else if (!index) {
             emit_code("    r%u = load_byte(r%u);", Rt, Rn);
             emit_code("    r%u += %d;", Rn, offset);
         }
