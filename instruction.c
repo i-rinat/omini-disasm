@@ -370,22 +370,17 @@ p_mov_register(uint32_t pc, uint32_t code)
 void
 p_mov_immediate(uint32_t pc, uint32_t code)
 {
-    (void)pc;
     const uint32_t setflags = code & (1 << 20);
-    const uint32_t Rd = (code >> 12) & 0x0f;
-    const uint32_t imm8 = code & 0xff;
-    const uint32_t rotation = ((code >> 8) & 0xf) * 2;
-
-    const uint32_t imm32 = (imm8 >> rotation) | (imm8 << (32 - rotation));
-    const uint32_t carry = (rotation) ? !!(imm32 & 0x80000000) : 42;
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
 
     assert(Rd != 15);
     emit_code("    r%u = %uu;", Rd, imm32);
     if (setflags) {
-        emit_code("    APSR.N = (r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
-        if (42 != carry)
-            emit_code("    APSR.C = %d;", carry);
+        emit_code("    APSR.N = (r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        if (0 != (code & 0xf00))
+            emit_code("    APSR.C = %u;", !!(imm32 & 0x80000000));
         // V unchanged
     }
 
