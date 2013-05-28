@@ -1150,7 +1150,7 @@ p_umull(uint32_t pc, uint32_t code)
     const uint32_t Rn = code & 0xf;
 
     emit_code("    {");
-    emit_code("      uint64_t tmp = r%u * r%u;", Rn, Rm);
+    emit_code("      uint64_t tmp = (uint64_t)r%u * r%u;", Rn, Rm);
     emit_code("      r%u = tmp & 0xffffffff;", RdLo);
     emit_code("      r%u = tmp >> 32;", RdHi);
     if (setflags) {
