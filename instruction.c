@@ -623,18 +623,18 @@ p_asr_immediate(uint32_t pc, uint32_t code)
     assert(shift_n > 0);
 
     if (15 == Rm) {
-        emit_code("    r%d = %u;", Rd, (uint32_t)((int32_t)(pc+8) >> shift_n));
+        emit_code("    r%u = %uu;", Rd, (uint32_t)((int32_t)(pc+8) >> shift_n));
         if (setflags)
-            emit_code("    APSR.C = %d;", (uint32_t)((int32_t)(pc+8) >> (shift_n - 1)) & 1);
+            emit_code("    APSR.C = %u;", (uint32_t)((int32_t)(pc+8) >> (shift_n - 1)) & 1);
     } else {
-        emit_code("    r%d = (uint32_t)((int32_t)r%d >> %d);", Rd, Rm, shift_n);
+        emit_code("    r%u = (uint32_t)((int32_t)r%u >> %d);", Rd, Rm, shift_n);
         if (setflags)
-            emit_code("    APSR.C = (uint32_t)((int32_t)r%d >> %d) & 1;", Rm, shift_n - 1);
+            emit_code("    APSR.C = (uint32_t)((int32_t)r%u >> %d) & 1;", Rm, shift_n - 1);
     }
 
     if (setflags) {
-        emit_code("    APSR.N = !!(r%d & 0x80000000);", Rd);
-        emit_code("    APSR.Z = (r%d == 0);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // V unchanged
     }
 
