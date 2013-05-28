@@ -781,7 +781,14 @@ determine_target_functions(bfd *abfd)
                 // do nothing
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ldivmod")) {
-                // do nothing
+                emit_code("static void func_%04x(){", func_addr);
+                // TODO: division by zero handling
+                emit_code("     if (0 == reg.y_int64_t) return;");
+                emit_code("     int64_t q = reg.x_int64_t / reg.y_int64_t;");
+                emit_code("     int64_t r = reg.x_int64_t %% reg.y_int64_t;");
+                emit_code("     reg.x_int64_t = q;");
+                emit_code("     reg.y_int64_t = r;");
+                emit_code("}");
                 func_list_add_to_done_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_f2uiz")) {
                 emit_code("static void func_%04x(){ r0 = reg.x_float; }", func_addr);
