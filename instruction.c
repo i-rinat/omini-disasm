@@ -167,14 +167,14 @@ p_str_immediate(uint32_t pc, uint32_t code)
 void
 p_ldr_immediate(uint32_t pc, uint32_t code)
 {
-    const uint32_t index = !!(code & (1 << 24));
-    const uint32_t add = !!(code & (1 << 23));
-    const uint32_t wback = !index && (code & (1 << 21));
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
 
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t Rt = (code >> 12) & 0x0f;
     const uint32_t imm12 = code & 0xfff;
-    const int32_t imm32 = add ? imm12 : -imm12;
+    const int32_t offset = add ? imm12 : -imm12;
 
     if (15 == Rt)   // ldr pc, <something>
         assert(0);
@@ -183,19 +183,16 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
         if (wback) {
             assert(0 && "writeback in ldr with Rn = pc");
         }
-
-        emit_code("   r%d = %d;", Rt, get_word_at(pc + 8 + (index ? imm32 : 0)));
+        emit_code("   r%u = %u;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
     } else {
         if (index && !wback) {
-            emit_code("   r%d = load(r%d + %d);", Rt, Rn, imm32);
+            emit_code("   r%u = load(r%u + %d);", Rt, Rn, offset);
         } else if (index && wback) {
-            emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
-            emit_code("   r%d = load(r%d);", Rt, Rn);
-        } else if (!index && wback) {
-            emit_code("   r%d = load(r%d);", Rt, Rn);
-            emit_code("   r%d = r%d + %d;", Rn, Rn, imm32);
-        } else {
-            emit_code("   r%d = load(r%d);", Rt, Rn);
+            emit_code("   r%u += %d;", Rn, offset);
+            emit_code("   r%u = load(r%u);", Rt, Rn);
+        } else if (!index) {
+            emit_code("   r%u = load(r%u);", Rt, Rn);
+            emit_code("   r%u += %d;", Rn, offset);
         }
     }
 
