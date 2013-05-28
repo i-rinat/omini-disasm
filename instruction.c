@@ -1085,11 +1085,11 @@ p_strb_immediate(uint32_t pc, uint32_t code)
         assert(0 && "strb with Rn == 15 not implemented");
     } else {
         if (index && !wback) {
-            emit_code("    store_byte(r%u + %d, r%u);",  Rn, Rt);
+            emit_code("    store_byte(r%u + %d, r%u);",  Rn, offset, Rt);
         } else if (index && wback) {
             emit_code("    r%u += %d;", Rn, offset);
             emit_code("    store_byte(r%u, r%u);", Rn, Rt);
-        } else if (!index && wback) {
+        } else if (!index) {
             emit_code("    store_byte(r%u, r%u);", Rn, Rt);
             emit_code("    r%u += %d;", Rn, offset);
         }
