@@ -50,7 +50,7 @@ void do_sbb(uint32_t old_C)
 
     uint8_t tmp = q.x + ~q.y + old_C;
     APSR.C = (tmp < q.x);
-    APSR.V = !((q.x ^ (~q.y)) & 0x80) && ((tmp ^ q.x) & 0x80);
+    APSR.V = !((q.x ^ (~q.y + old_C)) & 0x80) && ((tmp ^ q.x) & 0x80);
     if (old_C) {
         if (q.y == 0x80) APSR.V = !(q.x & 0x80);
         APSR.C = APSR.C || !q.y;
