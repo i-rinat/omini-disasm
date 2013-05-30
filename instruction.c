@@ -176,8 +176,11 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
     const uint32_t imm12 = code & 0xfff;
     const int32_t offset = add ? imm12 : -imm12;
 
-    if (15 == Rt)   // ldr pc, <something>
-        assert(0);
+    if (15 == Rt) {     // ldr pc, <something>
+        emit_code("    find_and_call_function(load(r%u + %d));", Rn, offset);
+        pc_stack_push(pc + 4);
+        return;
+    }
 
     if (15 == Rn) {
         if (wback) {
