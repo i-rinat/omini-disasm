@@ -996,7 +996,7 @@ main(int argc, char *argv[])
     emit_code("#include <android/input.h>");
     emit_code("#include <android/native_window.h>");
     emit_code("#include <android/configuration.h>");
-    emit_code("#include <android_native_app_glue.h>");
+    //emit_code("#include <android_native_app_glue.h>");
     emit_code("#include <pthread.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
