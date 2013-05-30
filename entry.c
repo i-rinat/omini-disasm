@@ -812,8 +812,9 @@ determine_target_functions(bfd *abfd)
                         emit_code("    r0 = (uint32_t)env;");
                         emit_code("    r1 = (uint32_t)obj;");
                         emit_code("    r2 = (uint32_t)bitmap;");
-                        emit_code("    r3 = (uint32_t)time_ms;");
                         emit_code("    r13 = d_stack_start;");
+                        emit_code("    store(r13, time_ms);");
+                        emit_code("    store(r13 + 4, time_ms >> 32);");
                         emit_code("    func_%04x();", func_addr);
                         emit_code("}");
                     } else if (!strcmp(symname, "android_main")) {
