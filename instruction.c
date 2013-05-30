@@ -319,19 +319,20 @@ void
 p_cmp_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
-    const uint32_t imm32rev = ~imm32 + 1;
     const uint32_t Rn = (code >> 16) & 0x0f;
 
     emit_code("    {");
     if (15 == Rn) {
         assert(0 && "Rn == 15 in cmp");
     } else {
-        emit_code("      uint32_t tmp = r%u + %uu;", Rn, imm32rev);
-        emit_code("      APSR.C = (tmp > r%u);", Rn);
-        emit_code("      APSR.N = !!(tmp & 0x80000000);");
-        emit_code("      APSR.Z = (0 == tmp);");
-        emit_code("      APSR.V = !((r%u ^ %uu) & 0x80000000) && ((tmp ^ r%u) & 0x80000000);",
-            Rn, imm32rev, Rn);
+        emit_code("      const uint32_t qx = r%u;", Rn);
+        emit_code("      const uint32_t qy = %uu;", imm32);
+        emit_code("      const uint32_t result = qx + ~qy + 1;");
+        emit_code("      APSR.C = (result < qx) || !qy;");
+        emit_code("      APSR.V = !((qx ^ (~qy + 1)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+        emit_code("      if (0x80000000 == qy) APSR.V = !(qx & 0x80000000);");
+        emit_code("      APSR.N = !!(result & 0x80000000);");
+        emit_code("      APSR.Z = (0 == result);");
     }
     emit_code("    }");
 
