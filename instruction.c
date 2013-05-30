@@ -774,27 +774,25 @@ p_rsb_register(uint32_t pc, uint32_t code)
     emit_code("    {");
     switch (shift_t) {
     case SRType_LSL:
-        emit_code("      uint32_t rhs = (r%u << %d) + 1;", Rm, shift_n);
+        emit_code("      const uint32_t qx = r%u << %u;", Rm, shift_n);
         break;
     case SRType_LSR:
-        emit_code("      uint32_t rhs = (r%u >> %d) + 1;", Rm, shift_n);
+        emit_code("      const uint32_t qx = r%u >> %u;", Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented");
-        break;
     }
 
+    emit_code("      const uint32_t qy = r%u;", Rn);
+    emit_code("      const uint32_t result = qx + ~qy + 1;");
     if (setflags) {
-        emit_code("      uint32_t tmp = ~r%u + rhs;", Rn);
-        emit_code("      APSR.N = !!(tmp & 0x80000000);");
-        emit_code("      APSR.Z = (0 == tmp);");
-        emit_code("      APSR.C = (tmp < rhs);");
-        emit_code("      APSR.V = !(((~r%u) ^ rhs) & 0x80000000) && ((tmp ^ rhs) & 0x80000000));", Rn);
-        emit_code("      r%u = tmp;", Rd);
-    } else {
-        emit_code("      r%u = ~r%u + rhs;", Rd, Rn);
+        emit_code("      APSR.N = !!(result & 0x80000000);");
+        emit_code("      APSR.Z = (0 == result);");
+        emit_code("      APSR.C = (result < qx) || !qy;");
+        emit_code("      APSR.V = !((qx ^ (~qy + 1)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+        emit_code("      if (0x80000000 == qy) APSR.V = !(qx & 0x80000000);");
     }
-
+    emit_code("      r%u = result;", Rd);
     emit_code("    }");
 
     pc_stack_push(pc + 4);
