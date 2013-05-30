@@ -226,36 +226,55 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
     const uint32_t shift = arm_decode_imm_shift(type, imm5);
 
     emit_code("    {");
+    if (do_carry && do_add)         emit_code("      const uint32_t old_C = APSR.C;");
+    else if (!do_carry && do_add)   emit_code("      const uint32_t old_C = 0;");
+    else if (do_carry && !do_add)   emit_code("      const uint32_t old_C = APSR.C;");
+    else if (!do_carry && !do_add)  emit_code("      const uint32_t old_C = 1;");
+
+    if (15 == Rn) {
+        emit_code("      const uint32_t qx = %uu;", pc + 8);
+        if (setflags)
+            assert(0 && "setflags not implemented for Rn == 15 case");
+    } else {
+        emit_code("      const uint32_t qx = r%u;", Rn);
+    }
+
     switch (arm_decode_imm_type(type, imm5)) {
     case SRType_LSL:
-        if (do_carry && do_add)         emit_code("      uint32_t tmp = (r%u << %u) + APSR.C;", Rm, shift);
-        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = r%u << %u;", Rm, shift);
-        else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u << %u) + APSR.C;", Rm, shift);
-        else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u << %u) + 1;", Rm, shift);
+        emit_code("      uint32_t qy = (r%u << %u);", Rm, shift);
         break;
     case SRType_LSR:
-        if (do_carry && do_add)         emit_code("      uint32_t tmp = (r%u >> %u) + APSR.C;", Rm, shift);
-        else if (!do_carry && do_add)   emit_code("      uint32_t tmp = (r%u >> %u);", Rm, shift);
-        else if (do_carry && !do_add)   emit_code("      uint32_t tmp = ~(r%u >> %u) + APSR.C;", Rm, shift);
-        else if (!do_carry && !do_add)  emit_code("      uint32_t tmp = ~(r%u >> %u) + 1;", Rm, shift);
+        emit_code("      uint32_t qy = (r%u >> %u);", Rm, shift);
         break;
     default:
         assert(0 && "shift type not implemented");
     }
-    if (15 == Rn) {
-        emit_code("     r%u = %u + tmp;", Rd, pc + 8);
-        if (setflags)
-            assert(0 && "setflags not implemented for Rn == 15 case");
-    } else {
-        emit_code("     r%u = r%u + tmp;", Rd, Rn);
-        if (setflags) {
-            emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
-            emit_code("      APSR.Z = (0 == r%u);", Rd);
-            emit_code("      APSR.C = (r%u < tmp);", Rd);
-            emit_code("      APSR.V = !((r%u ^ tmp) & 0x80000000) && ((r%u ^ tmp) & 0x80000000);", Rn, Rd);
+
+    if (do_add) emit_code("      const uint32_t result = qx + qy + old_C;");
+    else        emit_code("      const uint32_t result = qx + ~qy + old_C;");
+
+    if (setflags) {
+        emit_code("      APSR.N = !!(result & 0x80000000);");
+        emit_code("      APSR.Z = (0 == result);");
+        emit_code("      APSR.C = (result < qx);");
+
+        if (do_add)
+            emit_code("      APSR.V = !((qx ^ (qy + old_C)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+        else
+            emit_code("      APSR.V = !((qx ^ (~qy + old_C)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+
+        emit_code("      if (old_C) {");
+        if (do_add) {
+            emit_code("        if (qy == 0x7fffffff) APSR.V = !(qx & 0x80000000);");
+            emit_code("        APSR.C = APSR.C || (qy == 0xffffffff);");
+        } else {
+            emit_code("        if (qy == 0x80000000) APSR.V = !(qx & 0x80000000);");
+            emit_code("        APSR.C = APSR.C || !qy;");
         }
+        emit_code("      }");
     }
 
+    emit_code("      r%u = result;", Rd);
     emit_code("    }");
 
     pc_stack_push(pc + 4);
