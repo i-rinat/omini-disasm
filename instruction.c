@@ -1849,6 +1849,50 @@ p_bic_register_shifted_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_bic_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x3;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+    const uint32_t Rm = code & 0xf;
+
+    switch (shift_t) {
+    case SRType_LSL:
+        if (setflags && shift_n > 0) {
+            emit_code("    APSR.C = !!(0x80000000 & (r%u << %u));", Rm, shift_n - 1);
+        }
+        emit_code("    r%u = r%u & ~(r%u << %u);", Rd, Rn, Rm, shift_n);
+        break;
+    case SRType_LSR:
+        if (setflags && shift_n > 0) {
+            emit_code("    APSR.C = !!(0x1 & (r%u >> %u));", Rm, shift_n - 1);
+        }
+        emit_code("    r%u = r%u & ~(r%u >> %u);", Rd, Rn, Rm, shift_n);
+        break;
+    case SRType_ASR:
+        if (setflags && shift_n > 0) {
+            emit_code("    APSR.C = !!(0x1 & ((int32_t)r%u >> %u));", Rm, shift_n - 1);
+        }
+        emit_code("    r%u = r%u & ~((int32_t)r%u >> %u);", Rd, Rn, Rm, shift_n);
+        break;
+    default:
+        assert(0 && "shift type not implemented");
+    }
+
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rm);
+        emit_code("    APSR.Z = (0 == r%u);", Rm);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1999,6 +2043,8 @@ process_instruction(uint32_t pc)
         p_strd_register(pc, code);
     } else if ((code & 0x0fe00090) == 0x01c00010) {
         p_bic_register_shifted_register(pc, code);
+    } else if ((code & 0x0fe00010) == 0x01c00000) {
+        p_bic_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
