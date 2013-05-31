@@ -933,7 +933,7 @@ p_mul(uint32_t pc, uint32_t code)
 }
 
 void
-p_rsb_immediate(uint32_t pc, uint32_t code)
+p_rsb_rsc_immediate(uint32_t pc, uint32_t code, uint32_t do_carry)
 {
     const uint32_t setflags = code & (1 << 20);
     const uint32_t Rn = (code >> 16) & 0x0f;
@@ -944,17 +944,23 @@ p_rsb_immediate(uint32_t pc, uint32_t code)
     assert(Rd != 15);
 
     emit_code("    {");
+    if (do_carry)
+        emit_code("      const uint32_t old_C = APSR.C;");
+    else
+        emit_code("      const uint32_t old_C = 1;");
     emit_code("      const uint32_t qx = %uu;", imm32);
     emit_code("      const uint32_t qy = r%u;", Rn);
-    emit_code("      const uint32_t result = qx + ~qy + 1;");
+    emit_code("      const uint32_t result = qx + ~qy + old_C;");
     if (setflags) {
         emit_code("      APSR.N = !!(result & 0x80000000);");
         emit_code("      APSR.Z = (0 == result);");
 
         emit_code("      APSR.C = (result < qx);");
-        emit_code("      APSR.V = !((qx ^ (~qy + 1)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
-        emit_code("      if (0x80000000 == qy) APSR.V = !(qx & 0x80000000);");
-        emit_code("      APSR.C = APSR.C || !qy;");
+        emit_code("      APSR.V = !((qx ^ (~qy + old_C)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+        emit_code("      if (old_C) {");
+        emit_code("        if (0x80000000 == qy) APSR.V = !(qx & 0x80000000);");
+        emit_code("        APSR.C = APSR.C || !qy;");
+        emit_code("      }");
     }
 
     emit_code("      r%u = result;", Rd);
@@ -1774,7 +1780,9 @@ process_instruction(uint32_t pc)
     } else if ((code & 0x0fe000f0) == 0x00000090) {
         p_mul(pc, code);
     } else if ((code & 0x0fe00000) == 0x02600000) {
-        p_rsb_immediate(pc, code);
+        p_rsb_rsc_immediate(pc, code, 0); // rsb
+    } else if ((code & 0x0fe00000) == 0x02e00000) {
+        p_rsb_rsc_immediate(pc, code, 1); // rsc
     } else if ((code & 0x0fe00070) == 0x01a00020) {
         p_lsr_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x005000b0) {
