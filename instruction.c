@@ -954,8 +954,11 @@ p_rsb_rsc_register(uint32_t pc, uint32_t code, uint32_t do_carry)
     case SRType_LSR:
         emit_code("      const uint32_t qx = r%u >> %u;", Rm, shift_n);
         break;
+    case SRType_ASR:
+        emit_code("      const uint32_t qx = (int32_t)r%u >> %u;", Rm, shift_n);
+        break;
     default:
-        assert(0 && "not implemented");
+        assert(0 && "shift type not implemented");
     }
 
     emit_code("      const uint32_t qy = r%u;", Rn);
