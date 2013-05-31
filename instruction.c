@@ -1729,6 +1729,40 @@ p_ldrsh_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrsb_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const char addop = add ? '+' : '-';
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t Rm = code & 0xf;
+
+    assert(Rm != 15);
+    assert(Rt != 15);
+
+    if (index && !wback) {
+        if (15 == Rn)
+            emit_code("    r%u = load_byte(%uu %c r%u);", Rt, pc + 8, addop, Rm);
+        else
+            emit_code("    r%u = load_byte(r%u %c r%u);", Rt, Rn, addop, Rm);
+    } else if (index && wback) {
+        assert(Rn != 15);
+        emit_code("    r%u %c= r%u;", Rn, addop, Rm);
+        emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+    } else if (!index) {
+        assert(Rn != 15);
+        emit_code("    r%u = load_byte(r%u);", Rt, Rn);
+        emit_code("    r%u %c= r%u;", Rn, addop, Rm);
+    }
+
+    emit_code("    if (r%u & 0x80) r%u |= 0xffffff00;", Rt, Rt);
+
+    pc_stack_push(pc + 4);
+}
+
+void
 p_strd_register(uint32_t pc, uint32_t code)
 {
     const uint32_t index = code & (1 << 24);
@@ -1911,6 +1945,8 @@ process_instruction(uint32_t pc)
         p_ldrsh_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x09100000) {
         p_ldmdb(pc, code);
+    } else if ((code & 0x0e500ff0) == 0x001000d0) {
+        p_ldrsb_register(pc, code);
     } else if ((code & 0x0e5000f0) == 0x000000f0) {
         p_strd_register(pc, code);
     } else {
