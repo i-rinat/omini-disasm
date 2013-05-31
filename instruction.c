@@ -328,7 +328,7 @@ p_add_immediate(uint32_t pc, uint32_t code)
 }
 
 void
-p_adc_immediate(pc, code)
+p_adc_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t setflags = code & (1 << 20);
     const uint32_t Rn = (code >> 16) & 0xf;
