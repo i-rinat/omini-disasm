@@ -1454,7 +1454,7 @@ p_lsr_register(uint32_t pc, uint32_t code)
     emit_code("    {");
     emit_code("      const uint32_t shift_n = r%u & 0xff;", Rm);
     if (setflags)
-        emit_code("      APSR.C = !!((r%u >> (shift_n - 1)) & 0x1);", Rn);
+        emit_code("      if (shift_n > 0) APSR.C = !!((r%u >> (shift_n - 1)) & 0x1);", Rn);
     emit_code("      r%u = r%u >> shift_n;", Rd, Rn);
     if (setflags) {
         emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
