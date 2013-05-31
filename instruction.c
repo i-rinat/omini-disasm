@@ -771,6 +771,11 @@ p_orr_register(uint32_t pc, uint32_t code)
             emit_code("    APSR.C = !!((r%u >> %d) & 1);", Rm, shift_n - 1);
         emit_code("    r%u = r%u | (r%u >> %d);", Rd, Rn, Rm, shift_n);
         break;
+    case SRType_ASR:
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!((r%u >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u | ((int32_t)r%u >> %d);", Rd, Rn, Rm, shift_n);
+        break;
     default:
         assert(0 && "not implemented shift type");
         break;
