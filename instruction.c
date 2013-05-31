@@ -1801,6 +1801,54 @@ p_strd_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_bic_register_shifted_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t Rs = (code >> 8) & 0xf;
+    const uint32_t Rm = code & 0xf;
+    const uint32_t type = (code >> 5) & 0x3;
+    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+
+    assert(Rn != 15);
+    assert(Rd != 15);
+    assert(Rs != 15);
+    assert(Rm != 15);
+
+    emit_code("    {");
+    emit_code("      const uint32_t shift_n = r%u & 0xff;", Rs);
+    switch (shift_t) {
+    case SRType_LSL:
+        if (setflags)
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x80000000 & (r%u << (shift_n - 1)));", Rm);
+        emit_code("      r%u = r%u & ~(r%u << shift_n);", Rd, Rn, Rm);
+        break;
+    case SRType_LSR:
+        if (setflags)
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u >> (shift_n - 1)));", Rm);
+        emit_code("      r%u = r%u & ~(r%u >> shift_n);", Rd, Rn, Rm);
+        break;
+    case SRType_ASR:
+        if (setflags)
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
+        emit_code("      r%u = r%u & ~((int32_t)r%u >> shift_n);", Rd, Rn, Rm);
+        break;
+    default:
+        assert(0 && "shift type not implemented");
+    }
+
+    if (setflags) {
+        emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("      APSR.Z = (0 == r%u);", Rd);
+        // V unchanged
+    }
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1949,6 +1997,8 @@ process_instruction(uint32_t pc)
         p_ldrsb_register(pc, code);
     } else if ((code & 0x0e5000f0) == 0x000000f0) {
         p_strd_register(pc, code);
+    } else if ((code & 0x0fe00090) == 0x01c00010) {
+        p_bic_register_shifted_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
