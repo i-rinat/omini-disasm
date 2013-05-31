@@ -2232,7 +2232,7 @@ p_and_register_shifted_register(uint32_t pc, uint32_t code)
     const uint32_t Rs = (code >> 8) & 0xf;
     const uint32_t type = (code >> 5) & 0x3;
     const uint32_t Rm = code & 0xf;
-    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+    const enum SRType shift_t = arm_decode_imm_type(type, 1);
 
     assert(Rn != 15);
     assert(Rd != 15);
@@ -2257,6 +2257,11 @@ p_and_register_shifted_register(uint32_t pc, uint32_t code)
         if (setflags)
             emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
         emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
+        break;
+    case SRType_ROR:
+        if (setflags)
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u >> (shift_n - 1)));", Rm);
+        emit_code("      const uint32_t qy = (r%u >> shift_n) | (r%u << (32 - shift_n));", Rm, Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
