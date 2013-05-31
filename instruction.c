@@ -1062,6 +1062,31 @@ p_lsr_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_ror_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t Rm = code & 0x0f;
+    const uint32_t shift_n = arm_decode_imm_shift(0b11, imm5);
+
+    assert(Rd != 15);
+    assert(Rm != 15);
+
+    if (setflags && (shift_n > 0))
+        emit_code("    APSR.C = (r%u >> %d) & 1;", Rm, shift_n - 1);
+
+    emit_code("    r%u = (r%u >> %u) | (r%u << %u);", Rd, Rm, shift_n, Rm, 32 - shift_n);
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 p_bx(uint32_t pc, uint32_t code)
 {
     (void)pc;
@@ -2040,6 +2065,8 @@ process_instruction(uint32_t pc)
         p_rsb_rsc_immediate(pc, code, 1); // rsc
     } else if ((code & 0x0fe00070) == 0x01a00020) {
         p_lsr_immediate(pc, code);
+    } else if ((code & 0x0fe00070) == 0x01a00060) {
+        p_ror_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x005000b0) {
         p_ldrh_immediate(pc, code);
     } else if ((code & 0x0ff000f0) == 0x01200010) {
