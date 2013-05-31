@@ -328,6 +328,34 @@ p_add_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_adc_immediate(pc, code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
+
+    emit_code("    {");
+    emit_code("      const uint32_t old_C = APSR.C;");
+    emit_code("      const uint32_t qx = r%u;", Rn);
+    emit_code("      const uint32_t qy = %uu;", imm32);
+    emit_code("      const uint32_t result = qx + qy + old_C;");
+    if (setflags) {
+        emit_code("      APSR.N = !!(result & 0x80000000);");
+        emit_code("      APSR.Z = (0 == result);");
+        emit_code("      APSR.C = (result < qx);");
+        emit_code("      APSR.V = !((qx ^ (qy + old_C)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+        emit_code("      if (old_C) {");
+        emit_code("        if (0x7fffffff == qy) APSR.V = !(qx & 0x80000000);");
+        emit_code("        APSR.C = APSR.C || (qy == 0xffffffff);");
+        emit_code("      }");
+    }
+    emit_code("      r%u = result;", Rd);
+    emit_code("    }");
+    pc_stack_push(pc + 4);
+}
+
+void
 p_cmp_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
@@ -1473,6 +1501,8 @@ process_instruction(uint32_t pc)
         p_tst_immediate(pc, code);
     } else if ((code & 0x0fe00000) == 0x03800000) {
         p_orr_immediate(pc, code);
+    } else if ((code & 0x0fe00000) == 0x02a00000) {
+        p_adc_immediate(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
