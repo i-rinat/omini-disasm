@@ -1401,6 +1401,44 @@ p_cmn_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_mvn_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x3;
+    const uint32_t Rm = code & 0xf;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+
+    emit_code("    {");
+    switch (shift_t) {
+    case SRType_LSL:
+        emit_code("      const uint32_t shifted = r%u << %u;", Rm, shift_n);
+        if (setflags && (shift_n > 0))
+            emit_code("      APSR.C = !!((r%u << %u) & 0x80000000);", Rm, shift_n - 1);
+        break;
+    case SRType_LSR:
+        emit_code("      const uint32_t shifted = r%u >> %u;", Rm, shift_n);
+        if (setflags && (shift_n > 0))
+            emit_code("      APSR.C = !!((r%u >> %u) & 0x1);", Rm, shift_n - 1);
+        break;
+    default:
+        assert(0 && " shift type not implemented");
+    }
+
+    emit_code("      r%u = ~shifted;", Rd);
+    if (setflags) {
+        emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("      APSR.Z = (0 == r%u);", Rd);
+        // V unchanged
+    }
+
+    emit_code("    }");
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1523,6 +1561,8 @@ process_instruction(uint32_t pc)
         p_adc_immediate(pc, code);
     } else if ((code & 0x0ff0f000) == 0x03700000) {
         p_cmn_immediate(pc, code);
+    } else if ((code & 0x0fef0010) == 0x01e00000) {
+        p_mvn_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
