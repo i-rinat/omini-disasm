@@ -1217,52 +1217,41 @@ p_ldr_register(uint32_t pc, uint32_t code)
     const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
     const char add_op = add ? '+' : '-';
 
-    assert(Rt != 15);
     assert(Rm != 15);
 
+    char Rm_part[200];
+    switch (shift_t) {
+    case SRType_LSL:
+        sprintf(Rm_part, "(r%u << %u)", Rm, shift_n);
+        break;
+    case SRType_LSR:
+        sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
+        break;
+    case SRType_ASR:
+        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        break;
+    default:
+        assert(0 && "shift type not implemented");
+    }
+
     if (index && !wback) {
-        switch (shift_t) {
-        case SRType_LSL:
-            if (15 == Rn)
-                emit_code("    r%u = load(%uu %c (r%u << %u));", Rt, pc+8, add_op, Rm, shift_n);
-            else
-                emit_code("    r%u = load(r%u %c (r%u << %u));", Rt, Rn, add_op, Rm, shift_n);
-            break;
-        case SRType_LSR:
-            if (15 == Rn)
-                emit_code("    r%u = load(%uu %c (r%u >> %u));", Rt, pc+8, add_op, Rm, shift_n);
-            else
-                emit_code("    r%u = load(r%u %c (r%u >> %u));", Rt, Rn, add_op, Rm, shift_n);
-            break;
-        default:
-            assert(0 && "not implemented shift operation");
-        }
+        char Rn_part[200];
+        if (15 == Rn)   sprintf(Rn_part, "%uu", pc + 8);
+        else            sprintf(Rn_part, "r%u", Rn);
+
+        if (15 == Rt) emit_code("    find_and_call_function(%s %c %s);", Rn_part, add_op, Rm_part);
+        else          emit_code("    r%u = load(%s %c %s);", Rt, Rn_part, add_op, Rm_part);
+
     } else if (index && wback) {
         assert(Rn != 15 && "wback to pc");
-        switch (shift_t) {
-        case SRType_LSL:
-            emit_code("    r%u %c= (r%u << %u);", Rn, add_op, Rm, shift_n);
-            break;
-        case SRType_LSR:
-            emit_code("    r%d %c= (r%u >> %u);", Rn, add_op, Rm, shift_n);
-            break;
-        default:
-            assert(0 && "not implemented shift operation");
-        }
+        assert(Rt != 15);
+        emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
         emit_code("    r%u = load(r%u);", Rt, Rn);
     } else if (!index) {
         assert(Rn != 15 && "wback to pc");
+        assert(Rt != 15);
         emit_code("    r%u = load(r%u);", Rt, Rn);
-        switch (shift_t) {
-        case SRType_LSL:
-            emit_code("    r%u %c= (r%u << %u);", Rn, add_op, Rm, shift_n);
-            break;
-        case SRType_LSR:
-            emit_code("    r%u %c= (r%u >> %u);", Rn, add_op, Rm, shift_n);
-            break;
-        default:
-            assert(0 && "not implemented shift operation");
-        }
+        emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
     }
 
     pc_stack_push(pc + 4);
