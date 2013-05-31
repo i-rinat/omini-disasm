@@ -1274,6 +1274,35 @@ p_ldrb_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_stm(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t wback = code & (1 << 21);
+
+    uint32_t mask = 1;
+    uint32_t offset = 0;
+
+    for (uint32_t k = 0; k <= 14; k ++) {
+        if (code & mask) {
+            emit_code("    store(r%u + %uu, r%u);", Rn, offset, k);
+            offset += 4;
+        }
+        mask = mask << 1;
+    }
+
+    if (code & (1 << 15)) {
+        emit_code("    store(r%u + %uu, %uu);", Rn, offset, pc + 8);
+        offset += 4;
+    }
+
+    if (wback) {
+        emit_code("    r%u += %u;", Rn, offset);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1384,6 +1413,8 @@ process_instruction(uint32_t pc)
         p_mla(pc, code);
     } else if ((code & 0x0e500010) == 0x06500000) {
         p_ldrb_register(pc, code);
+    } else if ((code & 0x0fd00000) == 0x08800000) {
+        p_stm(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
