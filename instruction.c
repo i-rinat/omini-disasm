@@ -1885,7 +1885,7 @@ p_eor_register(uint32_t pc, uint32_t code)
 }
 
 void
-p_ldrsh_register(uint32_t pc, uint32_t code)
+p_ldrh_ldrsh_register(uint32_t pc, uint32_t code, uint32_t signed_flag)
 {
     const uint32_t index = code & (1 << 24);
     const uint32_t add = code & (1 << 23);
@@ -1915,7 +1915,8 @@ p_ldrsh_register(uint32_t pc, uint32_t code)
         }
     }
 
-    emit_code("    if (r%u & 0x8000) r%u |= 0xffff0000;", Rt, Rt);
+    if (signed_flag)
+        emit_code("    if (r%u & 0x8000) r%u |= 0xffff0000;", Rt, Rt);
 
     pc_stack_push(pc + 4);
 }
@@ -2270,8 +2271,10 @@ process_instruction(uint32_t pc)
         p_orr_register_shifted_register(pc, code);
     } else if ((code & 0x0fe00010) == 0x00200000) {
         p_eor_register(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x001000b0) {
+        p_ldrh_ldrsh_register(pc, code, 0); // ldrh
     } else if ((code & 0x0e500ff0) == 0x001000f0) {
-        p_ldrsh_register(pc, code);
+        p_ldrh_ldrsh_register(pc, code, 1); //ldrsh
     } else if ((code & 0x0fd00000) == 0x09100000) {
         p_ldmdb(pc, code);
     } else if ((code & 0x0e500ff0) == 0x001000d0) {
