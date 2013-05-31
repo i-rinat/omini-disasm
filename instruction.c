@@ -1379,6 +1379,30 @@ p_umull(uint32_t pc, uint32_t code)
 }
 
 void
+p_smull(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1<<20);
+    const uint32_t RdHi = (code >> 16) & 0xf;
+    const uint32_t RdLo = (code >> 12) & 0xf;
+    const uint32_t Rm = (code >> 8) & 0xf;
+    const uint32_t Rn = code & 0xf;
+
+    emit_code("    {");
+    emit_code("      int64_t tmp = (int64_t)(int32_t)r%u * (int32_t)r%u;", Rn, Rm);
+    emit_code("      r%u = tmp & 0xffffffff;", RdLo);
+    emit_code("      r%u = (uint64_t)tmp >> 32;", RdHi);
+    if (setflags) {
+        emit_code("      APSR.N = !!(r%u & 0x80000000);", RdHi);
+        emit_code("      APSR.Z = (0 == r%u && 0 == r%u);", RdLo, RdHi);
+        // C and V unchanged
+    }
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+
+}
+
+void
 p_mla(uint32_t pc, uint32_t code)
 {
     const uint32_t setflags = code & (1 << 20);
@@ -2078,6 +2102,8 @@ process_instruction(uint32_t pc)
         p_bic_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x09900000) {
         p_ldmib(pc, code);
+    } else if ((code & 0x0fe000f0) == 0x00c00090) {
+        p_smull(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
