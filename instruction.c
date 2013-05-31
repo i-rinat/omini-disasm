@@ -683,6 +683,9 @@ p_cmp_register(uint32_t pc, uint32_t code)
     case SRType_LSR:
         emit_code("      const uint32_t qy = r%u >> %u;", Rm, shift_n);
         break;
+    case SRType_ASR:
+        emit_code("      const uint32_t qy = (int32_t)r%u >> %u;", Rm, shift_n);
+        break;
     default:
         assert(0 && "not implemented");
     }
