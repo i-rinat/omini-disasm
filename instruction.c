@@ -1729,6 +1729,44 @@ p_ldrsh_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_strd_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (1 << 21);
+    const char addop = add ? '+' : '-';
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt1 = (code >> 12) & 0xf;
+    const uint32_t Rt2 = Rt1 + 1;
+    const uint32_t Rm = code & 0xf;
+
+    if (Rt1 == 15) {
+        emit_code("    // WTF?");
+        return;
+        // TODO: remove this workaround
+    }
+
+    assert(Rt1 != 15);
+    assert(Rt2 != 15);
+    assert(Rm != 15);
+
+    if (index && !wback) {
+        emit_code("    store(r%u %c r%u, r%u);", Rn, addop, Rm, Rt1);
+        emit_code("    store(r%u %c r%u + 4, r%u);", Rn, addop, Rm, Rt2);
+    } else if (index && wback) {
+        emit_code("    r%u %c= r%u;", Rn, addop, Rm);
+        emit_code("    store(r%u, r%u);", Rn, Rt1);
+        emit_code("    store(r%u + 4, r%u);", Rn, Rt2);
+    } else if (!index) {
+        emit_code("    store(r%u, r%u);", Rn, Rt1);
+        emit_code("    store(r%u + 4, r%u);", Rn, Rt2);
+        emit_code("    r%u %c= r%u;", Rn, addop, Rm);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1873,6 +1911,8 @@ process_instruction(uint32_t pc)
         p_ldrsh_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x09100000) {
         p_ldmdb(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x000000f0) {
+        p_strd_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
