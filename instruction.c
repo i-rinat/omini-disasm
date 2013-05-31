@@ -1818,6 +1818,41 @@ p_ldrsh_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_strh_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const char addop = add ? '+' : '-';
+
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t Rm = code & 0xf;
+
+    assert(Rt != 15);
+    assert(Rm != 15);
+
+    if (15 == Rn) {
+        if (wback)
+            assert(0 && "writeback in ldrh with Rn == pc");
+        emit_code("   store_halfword(%uu %c r%u, r%u);", pc + 8, addop, Rm, Rt);
+    } else {
+        if (index && !wback) {
+            emit_code("   store_halfword(r%u %c r%u, r%u);", Rn, addop, Rm, Rt);
+        } else if (index && wback) {
+            emit_code("   r%u %c= r%u;", Rn, addop, Rm);
+            emit_code("   store_halfword(r%u, r%u);", Rn, Rt);
+        } else if (!index) {
+            emit_code("   store_halfword(r%u, r%u);", Rn, Rt);
+            emit_code("   r%u %c= r%u;", Rn, addop, Rm);
+        }
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+
+void
 p_ldrsb_register(uint32_t pc, uint32_t code)
 {
     const uint32_t index = code & (1 << 24);
@@ -2142,6 +2177,8 @@ process_instruction(uint32_t pc)
         p_ldmib(pc, code);
     } else if ((code & 0x0fe000f0) == 0x00c00090) {
         p_smull(pc, code);
+    } else if ((code & 0x0e5000f0) == 0x000000b0) {
+        p_strh_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
