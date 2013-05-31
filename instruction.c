@@ -773,7 +773,7 @@ p_orr_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags && (shift_n > 0))
-            emit_code("    APSR.C = !!((r%u >> %d) & 1);", Rm, shift_n - 1);
+            emit_code("    APSR.C = !!(((int32_t)r%u >> %d) & 1);", Rm, shift_n - 1);
         emit_code("    r%u = r%u | ((int32_t)r%u >> %d);", Rd, Rn, Rm, shift_n);
         break;
     default:
@@ -789,6 +789,55 @@ p_orr_register(uint32_t pc, uint32_t code)
 
     pc_stack_push(pc + 4);
 }
+
+void
+p_and_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t Rd = (code >> 12) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x03;
+    const uint32_t Rm = code & 0x0f;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+
+    assert(Rd != 15);
+    assert(Rn != 15);
+    assert(Rm != 15);
+
+    switch (shift_t) {
+    case SRType_LSL:
+        // APSR.C will be changed only if setflags set and actual shift happens
+        // otherwise it will be set to own value, i.e. unchanged
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!((r%u << %d) & 0x80000000);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u & (r%u << %d);", Rd, Rn, Rm, shift_n);
+        break;
+    case SRType_LSR:
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!((r%u >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u & (r%u >> %d);", Rd, Rn, Rm, shift_n);
+        break;
+    case SRType_ASR:
+        if (setflags && (shift_n > 0))
+            emit_code("    APSR.C = !!(((int32_t)r%u >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u & ((int32_t)r%u >> %d);", Rd, Rn, Rm, shift_n);
+        break;
+    default:
+        assert(0 && "not implemented shift type");
+        break;
+    }
+
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
 
 void
 p_mvn_immediate(uint32_t pc, uint32_t code)
@@ -1670,6 +1719,8 @@ process_instruction(uint32_t pc)
         p_strh_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x01800000) {
         p_orr_register(pc, code);
+    } else if ((code & 0x0fe00010) == 0x00000000) {
+        p_and_register(pc, code);
     } else if ((code & 0x0fe00000) == 0x03e00000) {
         p_mvn_immediate(pc, code);
     } else if ((code & 0x0fe00010) == 0x00600000) {
