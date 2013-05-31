@@ -1630,6 +1630,25 @@ p_orr_immediate(uint32_t pc, uint32_t code)
 }
 
 void
+p_eor_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t setflags = code & (1 << 20);
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rd = (code >> 12) & 0xf;
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
+
+    emit_code("    r%u = r%u ^ %uu;", Rd, Rn, imm32);
+    if (setflags) {
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
+        emit_code("    APSR.C = %u;", !!(imm32 & 0x80000000));
+        // V unchanged
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 p_cmn_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t Rn = (code >> 16) & 0xf;
@@ -2201,6 +2220,8 @@ process_instruction(uint32_t pc)
         p_tst_immediate(pc, code);
     } else if ((code & 0x0fe00000) == 0x03800000) {
         p_orr_immediate(pc, code);
+    } else if ((code & 0x0fe00000) == 0x02200000) {
+        p_eor_immediate(pc, code);
     } else if ((code & 0x0fe00000) == 0x02a00000) {
         p_adc_immediate(pc, code);
     } else if ((code & 0x0ff0f000) == 0x03700000) {
