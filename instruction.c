@@ -531,6 +531,37 @@ p_ldm(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldmib(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t wback = code & (1 << 21);
+
+    uint32_t mask = 1;
+    uint32_t offset = 0;
+    for (uint32_t k = 0; k <= 14; k ++) {
+        if (code & mask) {
+            assert(!(k == Rn && wback));
+            emit_code("    r%u = load(r%u + %d);", k, Rn, offset + 4);
+            offset += 4;
+        }
+        mask = mask << 1;
+    }
+
+    if (code & (1 << 15))
+        offset += 4;
+
+    if (wback)
+        emit_code("    r%u += %d;", Rn, offset);
+
+    if (code & (1 << 15)) {
+        set_function_end_flag();
+        emit_code("    return;");
+    } else {
+        pc_stack_push(pc + 4);
+    }
+}
+
+void
 p_stmdb(uint32_t pc, uint32_t code)
 {
     const uint32_t wback = code & (1 << 21);
@@ -2045,6 +2076,8 @@ process_instruction(uint32_t pc)
         p_bic_register_shifted_register(pc, code);
     } else if ((code & 0x0fe00010) == 0x01c00000) {
         p_bic_register(pc, code);
+    } else if ((code & 0x0fd00000) == 0x09900000) {
+        p_ldmib(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
