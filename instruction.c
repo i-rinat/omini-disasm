@@ -1511,6 +1511,9 @@ p_ldrb_register(uint32_t pc, uint32_t code)
     case SRType_LSR:
         sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
         break;
+    case SRType_ASR:
+        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        break;
     default:
         assert(0 && "shift type not implemented");
     }
