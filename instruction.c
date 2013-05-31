@@ -1815,7 +1815,7 @@ p_orr_register_shifted_register(uint32_t pc, uint32_t code)
     const uint32_t Rs = (code >> 8) & 0xf;
     const uint32_t Rm = code & 0xf;
     const uint32_t type = (code >> 5) & 0x3;
-    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+    const enum SRType shift_t = arm_decode_imm_type(type, 1);
 
     emit_code("    {");
     emit_code("      const uint32_t shift_n = r%u & 0xff;", Rs);
@@ -2043,7 +2043,7 @@ p_bic_register_shifted_register(uint32_t pc, uint32_t code)
     const uint32_t Rs = (code >> 8) & 0xf;
     const uint32_t Rm = code & 0xf;
     const uint32_t type = (code >> 5) & 0x3;
-    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+    const enum SRType shift_t = arm_decode_imm_type(type, 1);
 
     assert(Rn != 15);
     assert(Rd != 15);
@@ -2135,7 +2135,7 @@ p_add_register_shifted_register(uint32_t pc, uint32_t code)
     const uint32_t Rs = (code >> 8) & 0xf;
     const uint32_t type = (code >> 5) & 0x3;
     const uint32_t Rm = code & 0xf;
-    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+    const enum SRType shift_t = arm_decode_imm_type(type, 1);
 
     assert(Rn != 15);
     assert(Rd != 15);
@@ -2181,7 +2181,7 @@ p_eor_register_shifted_register(uint32_t pc, uint32_t code)
     const uint32_t Rs = (code >> 8) & 0xf;
     const uint32_t type = (code >> 5) & 0x3;
     const uint32_t Rm = code & 0xf;
-    const enum SRType shift_t = arm_decode_imm_type(type, 0);
+    const enum SRType shift_t = arm_decode_imm_type(type, 1);
 
     assert(Rn != 15);
     assert(Rd != 15);
