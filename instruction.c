@@ -1643,6 +1643,42 @@ p_eor_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldrsh_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const char addop = add ? '+' : '-';
+
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t Rm = code & 0xf;
+
+    assert(Rt != 15);
+    assert(Rm != 15);
+
+    if (15 == Rn) {
+        if (wback)
+            assert(0 && "writeback in ldrh with Rn == pc");
+        emit_code("   r%u = load_halfword(%uu %c r%u);", Rt, pc + 8, addop, Rm);
+    } else {
+        if (index && !wback) {
+            emit_code("   r%u = load_halfword(r%u %c r%u);", Rt, Rn, addop, Rm);
+        } else if (index && wback) {
+            emit_code("   r%u %c= r%u;", Rn, addop, Rm);
+            emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
+        } else if (!index) {
+            emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
+            emit_code("   r%u %c= r%u;", Rn, addop, Rm);
+        }
+    }
+
+    emit_code("    if (r%u & 0x8000) r%u |= 0xffff0000;", Rt, Rt);
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1779,6 +1815,8 @@ process_instruction(uint32_t pc)
         p_orr_register_shifted_register(pc, code);
     } else if ((code & 0x0fe00010) == 0x00200000) {
         p_eor_register(pc, code);
+    } else if ((code & 0x0e500ff0) == 0x001000f0) {
+        p_ldrsh_register(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
