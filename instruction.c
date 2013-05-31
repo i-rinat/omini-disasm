@@ -353,9 +353,17 @@ p_b(uint32_t pc, uint32_t code)
 {
     const uint32_t imm32 = arm_sign_extend_imm24(code & 0x00ffffff) << 2;
 
-    emit_code("    goto label_%04x;", imm32 + 8 + pc);
+    if (0xe == (code >> 28) && address_in_section(imm32 + 8 + pc, ".plt")) {
+        // this is a tail-call to .plt function
+        emit_code("    func_%04x();", imm32 + 8 + pc);
+        emit_code("    return;");
+        set_function_end_flag();
+        return;
+    }
 
+    emit_code("    goto label_%04x;", imm32 + 8 + pc);
     pc_stack_push(imm32 + 8 + pc);
+
     if (((code >> 28) & 0x0f) != 0x0e) {
         // if branch was conditional, continue to explore forward
         pc_stack_push(pc + 4);
