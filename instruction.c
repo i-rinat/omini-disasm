@@ -1303,6 +1303,23 @@ p_stm(uint32_t pc, uint32_t code)
 }
 
 void
+p_tst_immediate(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
+
+    emit_code("    {");
+    emit_code("      const uint32_t result = r%u & %uu;", Rn, imm32);
+    emit_code("      APSR.N = !!(result & 0x80000000);");
+    emit_code("      APSR.Z = (0 == result);");
+    emit_code("      APSR.C = %u;", !!(imm32 & 0x80000000));
+    // V unchanged
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+}
+
+void
 process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
@@ -1415,6 +1432,8 @@ process_instruction(uint32_t pc)
         p_ldrb_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x08800000) {
         p_stm(pc, code);
+    } else if ((code & 0x0ff0f000) == 0x03100000) {
+        p_tst_immediate(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
