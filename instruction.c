@@ -1099,7 +1099,7 @@ p_bx(uint32_t pc, uint32_t code)
 }
 
 void
-p_ldrh_immediate(uint32_t pc, uint32_t code)
+p_ldrh_ldrsh_immediate(uint32_t pc, uint32_t code, uint32_t signed_flag)
 {
     const uint32_t index = !!(code & (1 << 24));
     const uint32_t add = !!(code & (1 << 23));
@@ -1110,25 +1110,31 @@ p_ldrh_immediate(uint32_t pc, uint32_t code)
     const uint32_t imm4H = (code >> 8) & 0xf;
     const uint32_t imm4L = code & 0xf;
     const uint32_t imm32 = (imm4H << 4) | imm4L;
-    const int32_t offset = add ? imm32 : -imm32;
+    const char addop = add ? '+' : '-';
 
     assert(Rt != 15);
 
     if (15 == Rn) {
         if (wback)
             assert(0 && "writeback in ldrh with Rn == pc");
-        emit_code("   r%u = %uu;", Rt, 0xffff & get_word_at(pc + 8 + (index ? offset : 0)));
+        uint32_t tgt_addr = pc + 8;
+        if (index && add) tgt_addr += imm32;
+        if (index && !add) tgt_addr -= imm32;
+        emit_code("   r%u = %uu;", Rt, 0xffff & get_word_at(tgt_addr));
     } else {
         if (index && !wback) {
-            emit_code("   r%u = load_halfword(r%u + %d);", Rt, Rn, offset);
+            emit_code("   r%u = load_halfword(r%u %c %u);", Rt, Rn, addop, imm32);
         } else if (index && wback) {
-            emit_code("   r%u += %d;", Rn, offset);
+            emit_code("   r%u %c= %d;", Rn, addop, imm32);
             emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
         } else if (!index) {
             emit_code("   r%u = load_halfword(r%u);", Rt, Rn);
-            emit_code("   r%u += %d;", Rn, offset);
+            emit_code("   r%u %c= %d;", Rn, addop, imm32);
         }
     }
+
+    if (signed_flag)
+        emit_code("    if (r%u & 0x8000) r%u |= 0xffff0000;", Rt, Rt);
 
     pc_stack_push(pc + 4);
 }
@@ -2068,7 +2074,9 @@ process_instruction(uint32_t pc)
     } else if ((code & 0x0fe00070) == 0x01a00060) {
         p_ror_immediate(pc, code);
     } else if ((code & 0x0e5000f0) == 0x005000b0) {
-        p_ldrh_immediate(pc, code);
+        p_ldrh_ldrsh_immediate(pc, code, 0); // ldrh
+    } else if ((code & 0x0e5000f0) == 0x005000f0) {
+        p_ldrh_ldrsh_immediate(pc, code, 1); // ldrsh
     } else if ((code & 0x0ff000f0) == 0x01200010) {
         p_bx(pc, code);
     } else if ((code & 0x0e500010) == 0x06000000) {
