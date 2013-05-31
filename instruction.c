@@ -564,6 +564,42 @@ p_stmdb(uint32_t pc, uint32_t code)
 }
 
 void
+p_ldmdb(uint32_t pc, uint32_t code)
+{
+    const uint32_t wback = code & (1 << 21);
+    const uint32_t Rn = (code >> 16) & 0x0f;
+
+    uint32_t mask = 1;
+    uint32_t neg_offset = 0;
+    for (uint32_t k = 0; k <= 15; k ++) {
+        if (code & mask)
+            neg_offset += 4;
+        mask <<= 1;
+    }
+    uint32_t storage_size = neg_offset;
+
+    mask = 1;
+    for (uint32_t k = 0; k <= 14; k ++) {
+        if (code & mask) {
+            emit_code("    r%u = load(r%u - %d);", k, Rn, neg_offset);
+            neg_offset -= 4;
+        }
+        mask <<= 1;
+    }
+
+    if (wback)
+        emit_code("    r%u -= %d;", Rn, storage_size);
+
+    if (code & (1 << 15)) {
+        // restores pc. I believe this is return statement
+        emit_code("    return;");
+        set_function_end_flag();
+    } else {
+        pc_stack_push(pc + 4);
+    }
+}
+
+void
 p_strd_immediate(uint32_t pc, uint32_t code)
 {
     const uint32_t index = code & (1 << 24);
@@ -1835,6 +1871,8 @@ process_instruction(uint32_t pc)
         p_eor_register(pc, code);
     } else if ((code & 0x0e500ff0) == 0x001000f0) {
         p_ldrsh_register(pc, code);
+    } else if ((code & 0x0fd00000) == 0x09100000) {
+        p_ldmdb(pc, code);
     } else {
         printf("process_instruction(0x%04x, 0x%08x)\n", pc, code);
         assert(0 && "instruction code not implemented");
