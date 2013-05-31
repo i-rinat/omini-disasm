@@ -2153,7 +2153,7 @@ p_add_register_shifted_register(uint32_t pc, uint32_t code)
         emit_code("      const uint32_t qy = r%u >> shift_n;", Rm);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qy = r(int32_t)%u >> shift_n;", Rm);
+        emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2205,7 +2205,7 @@ p_eor_register_shifted_register(uint32_t pc, uint32_t code)
     case SRType_ASR:
         if (setflags)
             emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
-        emit_code("      const uint32_t qy = r(int32_t)%u >> shift_n;", Rm);
+        emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
