@@ -1274,13 +1274,14 @@ p_ldrb_register(uint32_t pc, uint32_t code)
 }
 
 void
-p_stm(uint32_t pc, uint32_t code)
+p_stm_stmib(uint32_t pc, uint32_t code)
 {
     const uint32_t Rn = (code >> 16) & 0xf;
     const uint32_t wback = code & (1 << 21);
+    const uint32_t inc_before = code & (1 << 24);
 
     uint32_t mask = 1;
-    uint32_t offset = 0;
+    uint32_t offset = inc_before ? 4 : 0;
 
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
@@ -1296,7 +1297,10 @@ p_stm(uint32_t pc, uint32_t code)
     }
 
     if (wback) {
-        emit_code("    r%u += %u;", Rn, offset);
+        if (inc_before)
+            emit_code("    r%u += %u;", Rn, offset - 4);
+        else
+            emit_code("    r%u += %u;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
@@ -1431,7 +1435,9 @@ process_instruction(uint32_t pc)
     } else if ((code & 0x0e500010) == 0x06500000) {
         p_ldrb_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x08800000) {
-        p_stm(pc, code);
+        p_stm_stmib(pc, code);
+    } else if ((code & 0x0fd00000) == 0x09800000) {
+        p_stm_stmib(pc, code);
     } else if ((code & 0x0ff0f000) == 0x03100000) {
         p_tst_immediate(pc, code);
     } else {
