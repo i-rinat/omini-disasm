@@ -1507,6 +1507,60 @@ p_ldrb_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_strb_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t index = code & (1 << 24);
+    const uint32_t add = code & (1 << 23);
+    const uint32_t wback = !index || (code & (1 << 21));
+    const uint32_t Rn = (code >> 16) & 0xf;
+    const uint32_t Rt = (code >> 12) & 0xf;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x3;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+    const uint32_t Rm = code & 0xf;
+    const char add_op = add ? '+' : '-';
+
+    assert(Rt != 15);
+    assert(Rm != 15);
+
+    char Rm_part[200];
+    switch (shift_t) {
+    case SRType_LSL:
+        sprintf(Rm_part, "(r%u << %u)", Rm, shift_n);
+        break;
+    case SRType_LSR:
+        sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
+        break;
+    case SRType_ASR:
+        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        break;
+    default:
+        assert(0 && "shift type not implemented");
+    }
+
+    char Rn_part[200];
+    if (15 == Rn)
+        sprintf(Rn_part, "%uu", pc + 8);
+    else
+        sprintf(Rn_part, "r%u", Rn);
+
+    if (index && !wback) {
+        emit_code("    store_byte(%s %c %s, r%u);", Rn_part, add_op, Rm_part, Rt);
+    } else if (index && wback) {
+        assert(Rn != 15);
+        emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
+        emit_code("    store_byte(r%u, r%u);", Rn, Rt);
+    } else if (!index) {
+        assert(Rn != 15);
+        emit_code("    store_byte(r%u, r%u);", Rn, Rt);
+        emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
+    }
+
+    pc_stack_push(pc + 4);
+}
+
+void
 p_stm_stmib(uint32_t pc, uint32_t code)
 {
     const uint32_t Rn = (code >> 16) & 0xf;
@@ -2137,6 +2191,8 @@ process_instruction(uint32_t pc)
         p_mla(pc, code);
     } else if ((code & 0x0e500010) == 0x06500000) {
         p_ldrb_register(pc, code);
+    } else if ((code & 0x0e500010) == 0x06400000) {
+        p_strb_register(pc, code);
     } else if ((code & 0x0fd00000) == 0x08800000) {
         p_stm_stmib(pc, code);
     } else if ((code & 0x0fd00000) == 0x09800000) {
