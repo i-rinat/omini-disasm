@@ -702,6 +702,42 @@ p_cmp_register(uint32_t pc, uint32_t code)
 }
 
 void
+p_cmn_register(uint32_t pc, uint32_t code)
+{
+    const uint32_t Rn = (code >> 16) & 0x0f;
+    const uint32_t imm5 = (code >> 7) & 0x1f;
+    const uint32_t type = (code >> 5) & 0x03;
+    const uint32_t Rm = code & 0x0f;
+    const enum SRType shift_t = arm_decode_imm_type(type, imm5);
+    const uint32_t shift_n = arm_decode_imm_shift(type, imm5);
+
+    emit_code("    {");
+    emit_code("      const uint32_t qx = r%u;", Rn);
+    switch (shift_t) {
+    case SRType_LSL:
+        emit_code("      const uint32_t qy = r%u << %u;", Rm, shift_n);
+        break;
+    case SRType_LSR:
+        emit_code("      const uint32_t qy = r%u >> %u;", Rm, shift_n);
+        break;
+    case SRType_ASR:
+        emit_code("      const uint32_t qy = (int32_t)r%u >> %u;", Rm, shift_n);
+        break;
+    default:
+        assert(0 && "shift type not implemented");
+    }
+
+    emit_code("      const uint32_t result = qx + qy;");
+    emit_code("      APSR.N = !!(result & 0x80000000);");
+    emit_code("      APSR.Z = (0 == result);");
+    emit_code("      APSR.C = (result < qx);");
+    emit_code("      APSR.V = !((qx ^ qy) & 0x80000000) && ((result ^ qx) & 0x80000000);");
+    emit_code("    }");
+
+    pc_stack_push(pc + 4);
+}
+
+void
 p_tst_register(uint32_t pc, uint32_t code)
 {
     const uint32_t Rn = (code >> 16) & 0x0f;
@@ -2346,6 +2382,8 @@ process_instruction(uint32_t pc)
         p_strd_immediate(pc, code);
     } else if ((code & 0x0ff00010) == 0x01500000) {
         p_cmp_register(pc, code);
+    } else if ((code & 0x0ff00010) == 0x01700000) {
+        p_cmn_register(pc, code);
     } else if ((code & 0x0ff00010) == 0x01100000) {
         p_tst_register(pc, code);
     } else if ((code & 0x0fe00070) == 0x01a00000) {
