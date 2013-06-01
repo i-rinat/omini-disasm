@@ -76,19 +76,25 @@ get_word_at(uint32_t addr)
     return 0;
 }
 
-char
-get_char_at(uint32_t addr)
+char *
+get_charptr_at(uint32_t addr)
 {
     section_t *ptr = sections;
     while (NULL != ptr) {
         if (ptr->start <= addr && addr < ptr->start + ptr->length)
-            return *((char *)ptr->buf + (addr - ptr->start));
+            return (char *)ptr->buf + (addr - ptr->start);
 
         ptr = ptr->next;
     }
-    printf("get_char_at(0x%04x)\n", addr);
-    assert(0 && "can't get char at address");
+    printf("get_charptr_at(0x%04x)\n", addr);
+    assert(0 && "can't get charptr at address");
     return 0;
+}
+
+char
+get_char_at(uint32_t addr)
+{
+    return *get_charptr_at(addr);
 }
 
 int
