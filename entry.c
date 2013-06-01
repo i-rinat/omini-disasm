@@ -1172,6 +1172,7 @@ main(int argc, char *argv[])
 
     read_section(abfd, ".text");
     read_section(abfd, ".plt");
+    read_section(abfd, ".data.rel.ro");
 
     declare_data_arrays(abfd);
     emit_code("#include \"storeload.inc\"");
