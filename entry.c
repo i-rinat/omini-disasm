@@ -806,6 +806,8 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uldivmod")) {
                 emit_code("static void func_%04x() {", func_addr);
+                // TODO: division by zero handling
+                emit_code("    if (0 == reg.y_uint64_t) return;");
                 emit_code("    const uint64_t q = reg.x_uint64_t / reg.y_uint64_t;");
                 emit_code("    const uint64_t r = reg.x_uint64_t % reg.y_uint64_t;");
                 emit_code("    reg.x_uint64_t = q;");
