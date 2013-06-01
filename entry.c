@@ -1162,8 +1162,6 @@ main(int argc, char *argv[])
     compute_hash_of_so(so_name);
     printf("md5: %s\n", so_md5_hash);
 
-    apply_target_specific_quirks();
-
     bfd *abfd = bfd_openr(so_name, NULL);
     assert(abfd);
     if (!bfd_check_format(abfd, bfd_object))
@@ -1173,6 +1171,9 @@ main(int argc, char *argv[])
     read_section(abfd, ".text");
     read_section(abfd, ".plt");
     read_section(abfd, ".data.rel.ro");
+    read_section(abfd, ".rodata");
+
+    apply_target_specific_quirks();
 
     declare_data_arrays(abfd);
     emit_code("#include \"storeload.inc\"");
