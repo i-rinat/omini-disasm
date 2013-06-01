@@ -870,7 +870,14 @@ determine_target_functions(bfd *abfd)
                 // do nothing
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_idivmod")) {
-                // do nothing
+                emit_code("static void func_%04x() {", func_addr);
+                // TODO: division by zero handling
+                emit_code("    if (0 == r1) return;");
+                emit_code("    const int32_t q = reg.r0_signed / reg.r1_signed;");
+                emit_code("    const int32_t r = reg.r0_signed % reg.r1_signed;");
+                emit_code("    reg.r0_signed = q;");
+                emit_code("    reg.r1_signed = r;");
+                emit_code("}");
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ldivmod")) {
                 emit_code("static void func_%04x(){", func_addr);
