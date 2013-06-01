@@ -5,6 +5,7 @@
 // int funclist_addr[]
 // void *funclist_ptr[]
 
+static
 void  find_and_call_function(uint32_t addr)
 {
     int p_left = 0;
