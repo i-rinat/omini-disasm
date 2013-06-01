@@ -14,3 +14,22 @@ compute_hash_of_so(const char *so_name)
     for (int k = 0; k < 16; k ++)
         sprintf(so_md5_hash + 2*k, "%02x", md5_hash[k]);
 }
+
+static
+void
+apply_quirks_for_c3630424f7c9514b203301154218db40(void)
+{
+
+}
+
+void
+apply_target_specific_quirks(void)
+{
+    if (!strcmp(so_md5_hash, "c3630424f7c9514b203301154218db40")) {
+        printf("applying quirks for Opera Mini's libom.so\n");
+        apply_quirks_for_c3630424f7c9514b203301154218db40();
+    } else if (!strcmp(so_md5_hash, "<place-hash-here>")) {
+    } else {
+        printf("unknown target, no quirks\n");
+    }
+}

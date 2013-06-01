@@ -1297,6 +1297,8 @@ main(int argc, char *argv[])
     compute_hash_of_so(so_name);
     printf("md5: %s\n", so_md5_hash);
 
+    apply_target_specific_quirks();
+
     bfd *abfd = bfd_openr(so_name, NULL);
     assert(abfd);
     if (!bfd_check_format(abfd, bfd_object))
