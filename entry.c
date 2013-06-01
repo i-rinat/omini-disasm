@@ -353,11 +353,11 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "longjmp")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    longjmp((jmp_buf)r0, (int)r1);");
+                emit_code("    longjmp((long int *)r0, (int)r1);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "setjmp")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    reg.r0_signed = setjmp((jmp_buf)r0);");
+                emit_code("    reg.r0_signed = setjmp((long int *)r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_cond_signal")) {
                 emit_code("static void func_%04x() {", relp->address);
