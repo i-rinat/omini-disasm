@@ -775,7 +775,7 @@ determine_target_functions(bfd *abfd)
                 emit_code("static void func_%04x(){ reg.x_float /= reg.y_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixsfsi")) {
-                emit_code("static void func_%04x(){ reg.x_signed = reg.x_float; }", func_addr);
+                emit_code("static void func_%04x(){ reg.r0_signed = reg.x_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fadd")) {
                 emit_code("static void func_%04x(){ reg.x_float += reg.y_float; }", func_addr);
@@ -1271,6 +1271,7 @@ main(int argc, char *argv[])
     emit_code("#include <stdint.h>");
     emit_code("#include <stdlib.h>");
     emit_code("#include <string.h>");
+    emit_code("#include <setjmp.h>");
     emit_code("#include <jni.h>");
     emit_code("#include <math.h>");
     emit_code("#include <android/bitmap.h>");

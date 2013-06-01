@@ -119,7 +119,7 @@ p_sub_immediate(uint32_t pc, uint32_t code)
     emit_code("      const uint32_t qy = %uu;", imm32);
     emit_code("      const uint32_t result = qx + ~qy + 1;");
     if (setflags) {
-        emit_code("      APSR.C = (result < qx) || !q.y;");
+        emit_code("      APSR.C = (result < qx) || !qy;");
         emit_code("      APSR.V = !((qx ^ (~qy + 1)) & 0x80000000) && ((result ^ qx) & 0x80000000);");
         emit_code("      if (0x80000000 == qy) APSR.V = !(qx & 0x80000000);");
         emit_code("      APSR.N = !!(result & 0x80000000);");
