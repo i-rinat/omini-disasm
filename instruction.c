@@ -394,7 +394,7 @@ p_b(uint32_t pc, uint32_t code)
     if (0xe == (code >> 28) && address_in_section(imm32 + 8 + pc, ".plt")) {
         // this is a tail-call to .plt function
         emit_code("    func_%04x();", imm32 + 8 + pc);
-        pc_stack_push(imm32 + 8 + pc);
+        func_list_add(imm32 + 8 + pc);
         emit_code("    return;");
         set_function_end_flag();
         return;
