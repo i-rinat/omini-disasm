@@ -805,7 +805,12 @@ determine_target_functions(bfd *abfd)
                 emit_code("static void func_%04x() { r0 = reg.x_float > reg.y_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uldivmod")) {
-                // do nothing
+                emit_code("static void func_%04x() {", func_addr);
+                emit_code("    const uint64_t q = reg.x_uint64_t / reg.y_uint64_t;");
+                emit_code("    const uint64_t r = reg.x_uint64_t % reg.y_uint64_t;");
+                emit_code("    reg.x_uint64_t = q;");
+                emit_code("    reg.y_uint64_t = r;");
+                emit_code("}");
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivsi3")) {
                 emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
