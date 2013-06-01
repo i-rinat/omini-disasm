@@ -11,8 +11,9 @@ uint32_t pc_stack_element_count = 0;
 
 GHashTable *visited_bitmap;
 GHashTable *func_list;
-GHashTable *func_list_done;
+GHashTable *func_list_do_not_touch;
 GHashTable *func_list_actually_done;
+
 
 void
 pc_stack_initialize()
@@ -79,7 +80,7 @@ void
 func_list_initialize()
 {
     func_list = g_hash_table_new(g_direct_hash, g_direct_equal);
-    func_list_done = g_hash_table_new(g_direct_hash, g_direct_equal);
+    func_list_do_not_touch = g_hash_table_new(g_direct_hash, g_direct_equal);
     func_list_actually_done = g_hash_table_new(g_direct_hash, g_direct_equal);
 }
 
@@ -87,7 +88,7 @@ void
 func_list_add(uint32_t pc)
 {
     gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
-    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+    gpointer already_in_2 = g_hash_table_lookup(func_list_do_not_touch, GINT_TO_POINTER(pc));
 
     if (! (already_in_1 || already_in_2)) {
         g_hash_table_insert(func_list, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
@@ -98,10 +99,10 @@ void
 func_list_add_to_done_list(uint32_t pc)
 {
     gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
-    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+    gpointer already_in_2 = g_hash_table_lookup(func_list_do_not_touch, GINT_TO_POINTER(pc));
 
     if (! (already_in_1 || already_in_2)) {
-        g_hash_table_insert(func_list_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+        g_hash_table_insert(func_list_do_not_touch, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
     }
 }
 
@@ -112,7 +113,7 @@ func_list_mark_done(uint32_t pc)
 
     if (already_in_1) {
         g_hash_table_remove(func_list, GINT_TO_POINTER(pc));
-        g_hash_table_insert(func_list_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+        g_hash_table_insert(func_list_do_not_touch, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
         g_hash_table_insert(func_list_actually_done, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
     }
 
@@ -150,7 +151,7 @@ func_list_pop_from_done_list()
 int
 func_list_already_in_done_list(uint32_t pc)
 {
-    gpointer already_in_2 = g_hash_table_lookup(func_list_done, GINT_TO_POINTER(pc));
+    gpointer already_in_2 = g_hash_table_lookup(func_list_do_not_touch, GINT_TO_POINTER(pc));
     if (already_in_2)
         return 1;
     return 0;
@@ -160,7 +161,7 @@ void
 func_list_free()
 {
     g_hash_table_destroy(func_list);
-    g_hash_table_destroy(func_list_done);
+    g_hash_table_destroy(func_list_do_not_touch);
     g_hash_table_destroy(func_list_actually_done);
 }
 
