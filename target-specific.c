@@ -3,6 +3,8 @@
 #include <string.h>
 #include "pc-stack.h"
 #include "output.h"
+#include "section.h"
+#include <assert.h>
 
 char so_md5_hash[33];
 
@@ -23,6 +25,43 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 {
     func_list_mark_as_non_returning(0x7840);    // directly calls longjmp
     func_list_mark_as_non_returning(0x4da4);    // longjmp
+
+    uint32_t addr_table = 0x5CBC4;
+
+    char *string_table = get_charptr_at(0x57888);
+
+    char *ptr = string_table;
+    if (strcmp(ptr, "com/opera/mini/android/Browser")) {
+        assert(0 && "assuming com/opera/mini/android/Browser");
+    }
+
+    char *class_name;
+    char *method_name;
+    char *signature;
+
+    while (1) {
+        if (!*ptr)
+            break;
+        class_name = ptr;
+        printf("class: %s\n", class_name);
+        ptr += strlen(ptr) + 1;
+        while (1) {
+            if (!*ptr)
+                break;
+            method_name = ptr;
+
+            ptr += strlen(ptr) + 1;
+            if (!*ptr)
+                break;
+            signature = ptr;
+
+            printf("    %s->%s, signature: %s\n", class_name, method_name, signature);
+
+            ptr += strlen(ptr) + 1;
+        }
+        ptr ++;
+    }
+
 }
 
 void
