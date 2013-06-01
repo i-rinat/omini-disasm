@@ -29,7 +29,7 @@ process_function(uint32_t start_pc)
         visited_bitmap_mark_visited(pc);
         predicted_pc = pc + 4;
     }
-    if (!last_instruction_ended_with_return())
+    if (!last_instruction_ended_with_return() && !last_instruction_ended_with_goto())
         emit_code("    goto label_%04x;", predicted_pc);
 
     assert(function_end_found());

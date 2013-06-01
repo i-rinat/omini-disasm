@@ -16,6 +16,7 @@ enum SRType {
 
 int flag_function_end_found = 0;
 int flag_last_instruction_ended_with_return = 0;
+int flag_last_instruction_ended_with_goto = 0;
 
 void
 begin_function(uint32_t pc)
@@ -34,6 +35,12 @@ int
 last_instruction_ended_with_return()
 {
     return flag_last_instruction_ended_with_return;
+}
+
+int
+last_instruction_ended_with_goto()
+{
+    return flag_last_instruction_ended_with_goto;
 }
 
 void
@@ -399,6 +406,9 @@ p_b(uint32_t pc, uint32_t code)
     if (((code >> 28) & 0x0f) != 0x0e) {
         // if branch was conditional, continue to explore forward
         pc_stack_push(pc + 4);
+    } else {
+        // it was just goto, without conditions
+        flag_last_instruction_ended_with_goto = 1;
     }
 }
 
@@ -2324,6 +2334,7 @@ process_instruction(uint32_t pc)
 {
     uint32_t code = get_word_at(pc);
     flag_last_instruction_ended_with_return = 0;
+    flag_last_instruction_ended_with_goto = 0;
 
     emit_code("label_%04x:", pc);
 
