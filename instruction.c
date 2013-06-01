@@ -199,7 +199,7 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
         if (wback) {
             assert(0 && "writeback in ldr with Rn = pc");
         }
-        emit_code("   r%u = %u;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
+        emit_code("   r%u = %uu;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
     } else {
         if (index && !wback) {
             emit_code("   r%u = load(r%u + %d);", Rt, Rn, offset);
@@ -309,7 +309,7 @@ p_add_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%u = %u;", Rd, pc + 8 + imm32);
+        emit_code("    r%u = %uu;", Rd, pc + 8 + imm32);
         if (setflags) {
             const uint32_t result = pc + 8 + imm32;
             emit_code("    APSR.C = %u;", (result < imm32));
@@ -318,12 +318,12 @@ p_add_immediate(uint32_t pc, uint32_t code)
         }
     } else {
         if (setflags) {
-            emit_code("    tmp = r%u + %u;", Rn, imm32);
+            emit_code("    tmp = r%u + %uu;", Rn, imm32);
             emit_code("    APSR.C = (tmp < r%u);", Rn);
             emit_code("    APSR.V = !((r%u ^ %u) & 0x80000000) && ((tmp ^ r%u) & 0x80000000);",
                 Rn, imm32, Rn);
         }
-        emit_code("    r%u = r%u + %u;", Rd, Rn, imm32);
+        emit_code("    r%u = r%u + %uu;", Rd, Rn, imm32);
     }
 
     if (setflags) {
