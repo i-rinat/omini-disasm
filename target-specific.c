@@ -1,6 +1,7 @@
 #include "target-specific.h"
 #include <rhash/rhash.h>
 #include <string.h>
+#include "pc-stack.h"
 
 char so_md5_hash[33];
 
@@ -19,7 +20,8 @@ static
 void
 apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 {
-
+    func_list_mark_as_non_returning(0x7840);    // directly calls longjmp
+    func_list_mark_as_non_returning(0x4da4);    // longjmp
 }
 
 void
