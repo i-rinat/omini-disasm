@@ -418,11 +418,12 @@ p_bl(uint32_t pc, uint32_t code)
     const uint32_t imm32 = arm_sign_extend_imm24(code & 0x00ffffff) << 2;
 
     emit_code("    func_%04x();", imm32 + 8 + pc);
+    func_list_add(imm32 + 8 + pc);
+
     if (func_list_is_non_returning(imm32 + 8 + pc)) {
         emit_code("    return;");
         set_function_end_flag();
     } else {
-        func_list_add(imm32 + 8 + pc);
         pc_stack_push(pc + 4);
     }
 }
