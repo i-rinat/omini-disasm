@@ -13,6 +13,7 @@ GHashTable *visited_bitmap;
 GHashTable *func_list;
 GHashTable *func_list_do_not_touch;
 GHashTable *func_list_actually_done;
+GHashTable *func_list_non_returning;
 
 
 void
@@ -82,6 +83,7 @@ func_list_initialize()
     func_list = g_hash_table_new(g_direct_hash, g_direct_equal);
     func_list_do_not_touch = g_hash_table_new(g_direct_hash, g_direct_equal);
     func_list_actually_done = g_hash_table_new(g_direct_hash, g_direct_equal);
+    func_list_non_returning = g_hash_table_new(g_direct_hash, g_direct_equal);
 }
 
 void
@@ -163,6 +165,7 @@ func_list_free()
     g_hash_table_destroy(func_list);
     g_hash_table_destroy(func_list_do_not_touch);
     g_hash_table_destroy(func_list_actually_done);
+    g_hash_table_destroy(func_list_non_returning);
 }
 
 uint32_t
@@ -175,4 +178,19 @@ uint32_t
 func_list_get_count()
 {
     return g_hash_table_size(func_list);
+}
+
+
+void
+func_list_mark_as_non_returning(uint32_t pc)
+{
+    g_hash_table_insert(func_list_non_returning, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+}
+
+int
+func_list_is_non_returning(uint32_t pc)
+{
+    if (g_hash_table_lookup(func_list_non_returning, GINT_TO_POINTER(pc)))
+        return 1;
+    return 0;
 }
