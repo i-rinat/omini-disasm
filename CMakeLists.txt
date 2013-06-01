@@ -15,6 +15,7 @@ add_executable (rec
     section.c
     output.c
     patterns.c
-    pc-stack.c)
+    pc-stack.c
+    target-specific.c)
 
-target_link_libraries(rec ${SOMELIBS_LIBRARIES} -lbfd-2.22-multiarch)
+target_link_libraries(rec ${SOMELIBS_LIBRARIES} -lbfd-2.22-multiarch -lrhash)

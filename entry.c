@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <bfd.h>
 #include <string.h>
+#include "target-specific.h"
 
 void
 process_function(uint32_t start_pc)
@@ -1250,6 +1251,9 @@ main(int argc, char *argv[])
     }
 
     printf("so_name: %s\n", so_name);
+    compute_hash_of_so(so_name);
+    printf("md5: %s\n", so_md5_hash);
+
     bfd *abfd = bfd_openr(so_name, NULL);
     assert(abfd);
     if (!bfd_check_format(abfd, bfd_object))
