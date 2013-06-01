@@ -96,7 +96,7 @@ func_list_add(uint32_t pc)
 }
 
 void
-func_list_add_to_done_list(uint32_t pc)
+func_list_add_to_ignore_list(uint32_t pc)
 {
     gpointer already_in_1 = g_hash_table_lookup(func_list, GINT_TO_POINTER(pc));
     gpointer already_in_2 = g_hash_table_lookup(func_list_do_not_touch, GINT_TO_POINTER(pc));

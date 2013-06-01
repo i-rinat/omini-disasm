@@ -536,337 +536,337 @@ determine_target_functions(bfd *abfd)
                 // do nothing
             } else if (!strcmp(symname, "__gnu_Unwind_Backtrace")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_ForcedUnwind")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_RaiseException")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP_D_16_to_31")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP_D")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Restore_VFP")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Restore_WMMXC")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Restore_WMMXD")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Resume")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Resume_or_Rethrow")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP_D_16_to_31")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP_D")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Save_VFP")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Save_WMMXC")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_Unwind_Save_WMMXD")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "___Unwind_Backtrace")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_Backtrace")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_Complete")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_DeleteException")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "___Unwind_ForcedUnwind")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_ForcedUnwind")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_GetCFA")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_GetDataRelBase")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_GetLanguageSpecificData")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_GetRegionStart")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_GetTextRelBase")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "___Unwind_RaiseException")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_RaiseException")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "___Unwind_Resume")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_Resume")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "___Unwind_Resume_or_Rethrow")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_Resume_or_Rethrow")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_VRS_Get")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_VRS_Pop")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_Unwind_VRS_Set")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_unwind_execute")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmpeq")) {
                 emit_code("static void func_%04x() { r0 = reg.x_double == reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmplt")) {
                 emit_code("static void func_%04x() { r0 = reg.x_double < reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmple")) {
                 emit_code("static void func_%04x() { r0 = reg.x_double <= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmpge")) {
                 emit_code("static void func_%04x() { r0 = reg.x_double >= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dcmpgt")) {
                 emit_code("static void func_%04x() { r0 = reg.x_double > reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__cmpdf2")) {
                 // this is some underlying stuff, skip it
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__eqdf2")) {
                 // alias for __cmpdf2
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatdidf") || !strcmp(symname, "__aeabi_l2d")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.x_uint64_t; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr1")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr2")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_unwind_frame")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gtdf2")) {
                 // frontend for __cmpdf2
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__ledf2")) {
                 // frontend for __cmpdf2
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__ltdf2")) {
                 // frontend for __cmpdf2
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cdcmple")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cdcmpeq")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__restore_core_regs")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "restore_core_regs")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cdrcmple")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatsidf") || !strcmp(symname, "__aeabi_i2d")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.r0_signed; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ui2d")) {
                 emit_code("static void func_%04x() { reg.x_double = r0; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dsub")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.x_double - reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_drsub")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.y_double - reg.x_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__extendsfdf2")) {
                 emit_code("static void func_%04x() { reg.x_double = reg.x_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ddiv")) {
                 emit_code("static void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__divdf3")) {
                 emit_code("static void func_%04x() { reg.x_double /= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__adddf3")) {
                 emit_code("static void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__subdf3")) {
                 emit_code("static void func_%04x(){ reg.x_double -= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dmul")) {
                 emit_code("static void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__muldf3")) {
                 emit_code("static void func_%04x(){ reg.x_double *= reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_dadd")) {
                 emit_code("static void func_%04x(){ reg.x_double += reg.y_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatunsidf")) {
                 emit_code("static void func_%04x(){ reg.x_double = r0; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixdfsi")) {
                 emit_code("static void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ul2d")) {
                 emit_code("static void func_%04x(){ reg.x_double = reg.x_uint64_t; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatundidf")) {
                 emit_code("static void func_%04x(){ reg.x_double = r0; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__nedf2")) {
                 emit_code("static void func_%04x(){ r0 = (reg.x_double != reg.y_double); }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gedf2")) {
                 emit_code("static void func_%04x(){ r0 = (reg.x_double >= reg.y_double); }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_d2iz")) {
                 emit_code("static void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_f2d")) {
                 emit_code("static void func_%04x(){ reg.x_double = reg.x_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_uldivmod_helper")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gnu_ldivmod_helper")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__divdi3")) {
                 emit_code("static void func_%04x(){ reg.x_int64_t /= reg.y_int64_t; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__divsf3")) {
                 emit_code("static void func_%04x(){ reg.x_float /= reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixsfsi")) {
                 emit_code("static void func_%04x(){ reg.x_signed = reg.x_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fadd")) {
                 emit_code("static void func_%04x(){ reg.x_float += reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_frsub")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.y_float - reg.x_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__subsf3")) {
                 emit_code("static void func_%04x(){ reg.x_float -= reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__mulsf3")) {
                 emit_code("static void func_%04x(){ reg.x_float *= reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmpeq")) {
                 emit_code("static void func_%04x() { r0 = reg.x_float == reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmplt")) {
                 emit_code("static void func_%04x() { r0 = reg.x_float < reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmple")) {
                 emit_code("static void func_%04x() { r0 = reg.x_float <= reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmpge")) {
                 emit_code("static void func_%04x() { r0 = reg.x_float >= reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmpgt")) {
                 emit_code("static void func_%04x() { r0 = reg.x_float > reg.y_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uldivmod")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivsi3")) {
                 emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_i2f")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.r0_signed; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__lesf2")) {
                 emit_code("static void func_%04x(){ r0 = (reg.x_float <= reg.y_float); }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gtsf2")) {
                 emit_code("static void func_%04x(){ r0 = (reg.x_float > reg.y_float); }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__nesf2")) {
                 emit_code("static void func_%04x(){ r0 = (reg.x_float != reg.y_float); }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixunsdfsi")) {
                 emit_code("static void func_%04x(){ reg.r0_signed = reg.x_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivdi3")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_d2f")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.x_double; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatdisf")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.x_int64_t; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_idiv")) {
                 emit_code("static void func_%04x(){ reg.r0_signed /= reg.r1_signed; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatundisf")) {
                 emit_code("static void func_%04x(){ reg.x_float = reg.x_uint64_t; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ui2f")) {
                 emit_code("static void func_%04x(){ reg.x_float = r0; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__div0")) {
                 // please don't divide by zero
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ldiv0")) {
                 // please don't divide by zero
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_idiv0")) {
                 // please don't divide by zero
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cfcmple")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cfrcmple")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_cfcmpeq")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uidivmod")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_idivmod")) {
                 // do nothing
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_ldivmod")) {
                 emit_code("static void func_%04x(){", func_addr);
                 // TODO: division by zero handling
@@ -876,13 +876,13 @@ determine_target_functions(bfd *abfd)
                 emit_code("     reg.x_int64_t = q;");
                 emit_code("     reg.y_int64_t = r;");
                 emit_code("}");
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_f2uiz")) {
                 emit_code("static void func_%04x(){ r0 = reg.x_float; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uidiv")) {
                 emit_code("static void func_%04x(){ r0 /= r1; }", func_addr);
-                func_list_add_to_done_list(func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
