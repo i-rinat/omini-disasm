@@ -18,6 +18,7 @@ void  find_and_call_function(uint32_t addr)
             __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: "
                                                 "found in static table, func_%04x", addr);
             ((void (*)(void))(funclist_ptr[k]))();
+            return;
         }
     }
 
