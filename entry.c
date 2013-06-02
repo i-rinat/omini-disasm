@@ -351,6 +351,12 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "sigaction")) {
                 emit_code("static void func_%04x() {", relp->address);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling sigaction(%%d, %%p, %%p)\", r0, aa(r1), aa(r2));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"   sigaction->sa_handler = %%p\", ((const struct sigaction *)aa(r1))->sa_handler);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)aa(r1))->sa_sigaction);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"   sigaction->sa_mask = %%x\", ((const struct sigaction *)aa(r1))->sa_mask);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"   sigaction->sa_flags = %%x\", ((const struct sigaction *)aa(r1))->sa_flags);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)aa(r1))->sa_restorer);");
                 emit_code("    reg.r0_signed = sigaction((int)r0, (const struct sigaction *)aa(r1), "
                      "(struct sigaction *)aa(r2));");
                 emit_code("}");
@@ -358,6 +364,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling dlsym(%%p, %%s)\", aa(r0), aa(r1));");
                 emit_code("    r0 = (uint32_t)dlsym((void *)aa(r0), (const char *)aa(r1));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"dlsym returned %%p\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_self")) {
                 emit_code("static void func_%04x() {", relp->address);
