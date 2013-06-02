@@ -223,14 +223,16 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     }
 
     // produce JNI_OnLoad
-
     emit_code("jint JNI_OnLoad(JavaVM* aVm, void* aReserved) {");
     // TODO:  gJavaVM = aVm;
     emit_code("    JNIEnv* env;");
+    emit_code("    JavaVM_functions = **aVm;");
     emit_code("    if ((*aVm)->GetEnv(aVm, (void **)&env, JNI_VERSION_1_4) != JNI_OK) {");
     emit_code("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", \"Failed to get the environment\");");
     emit_code("      return -1;");
     emit_code("    }");
+    emit_code("    JNIEnv_functions = **env;");
+
     emit_code("    jclass aClass;\n");
     emit_code("    JNINativeMethod methodTable;");
 
