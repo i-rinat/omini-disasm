@@ -1173,11 +1173,11 @@ main(int argc, char *argv[])
     read_section(abfd, ".data.rel.ro");
     read_section(abfd, ".rodata");
 
-    apply_target_specific_quirks();
-
     declare_data_arrays(abfd);
     emit_code("#include \"storeload.inc\"");
     determine_target_functions(abfd);
+
+    apply_target_specific_quirks();
 
     while (func_list_get_count() > 0) {
         printf("functions in list: %u (%u)\n", func_list_get_count(), func_list_get_done_count());

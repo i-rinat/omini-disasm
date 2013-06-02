@@ -166,21 +166,20 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             char *buf_ptr = &buf[0];
 
             // printf("%s ", signature);
-            buf_ptr += sprintf(buf_ptr, "static %s proxy_%04x(", signature_return_type(signature),
+            buf_ptr += sprintf(buf_ptr, "static %s proxy_%04x(uint32_t env, uint32_t obj", signature_return_type(signature),
                 func_addr);
             for (int k = 0; k < signature_get_param_count(signature); k ++) {
-                if (0 != k)
-                    buf_ptr += sprintf(buf_ptr, ", ");
-
-                buf_ptr += sprintf(buf_ptr, "%s param%d", signature_get_param(signature, k), k);
+                buf_ptr += sprintf(buf_ptr, ", %s param%d", signature_get_param(signature, k), k);
             }
             buf_ptr += sprintf(buf_ptr, ") {");
 
             emit_code("%s", buf);
             emit_code("    r13 = d_stack_start;");
+            emit_code("    r0 = env;");
+            emit_code("    r1 = obj;");
 
             buf_ptr = &buf[0];
-            uint32_t param_offset = 0;
+            uint32_t param_offset = 2;
             for (int k = 0; k < signature_get_param_count(signature); k ++) {
                 if (!strcmp(signature_get_param(signature, k), "uint64_t")) {
                     if (param_offset & 1)
@@ -228,12 +227,12 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     emit_code("jint JNI_OnLoad(JavaVM* aVm, void* aReserved) {");
     // TODO:  gJavaVM = aVm;
     emit_code("    JNIEnv* env;");
-    emit_code("    if (aVm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_4) != JNI_OK) {");
+    emit_code("    if ((*aVm)->GetEnv(aVm, (void **)&env, JNI_VERSION_1_4) != JNI_OK) {");
     emit_code("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", \"Failed to get the environment\");");
     emit_code("      return -1;");
     emit_code("    }");
     emit_code("    jclass aClass;\n");
-    emit_code("    struct JNINativeMethod methodTable;");
+    emit_code("    JNINativeMethod methodTable;");
 
     addr_table_offset = 0;
     ptr = string_table;
@@ -241,7 +240,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
         if (!*ptr)
             break;
         const char *class_name = ptr;
-        emit_code("    aClass = env->FindClass(\"%s\");", class_name);
+        emit_code("    aClass = (*env)->FindClass(env, \"%s\");", class_name);
         ptr += strlen(ptr) + 1;
         while (1) {
             if (!*ptr)
@@ -259,8 +258,9 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             emit_code("    methodTable.name = \"%s\";", method_name);
             emit_code("    methodTable.signature = \"%s\";", signature);
             emit_code("    methodTable.fnPtr = (void *)&proxy_%04x;", func_addr);
-            emit_code("    env->RegisterNatives(aClass, &methodTable, 1);");
+            emit_code("    (*env)->RegisterNatives(env, aClass, &methodTable, 1);");
 
+            func_list_add(func_addr);
 
             addr_table_offset += 4;
             ptr += strlen(ptr) + 1;
