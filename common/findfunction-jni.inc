@@ -76,7 +76,6 @@ find_and_call_function_runtime(void *addr)
     }
 
 
-
     // ===================
 
     if (addr == JavaVM_functions.GetEnv) {  //  6

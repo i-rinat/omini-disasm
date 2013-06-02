@@ -10,32 +10,20 @@
 static
 void  find_and_call_function(uint32_t addr)
 {
-    int p_left = 0;
-    int p_right = funclist_cnt - 1;
+    int k;
+
     __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: enter, 0x%08x", addr);
+    for (k = 0; k < funclist_cnt; k ++) {
+        if (addr == funclist_addr[k]) {
+            __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: "
+                                                "found in static table, func_%04x", addr);
+            ((void (*)(void))(funclist_ptr[k]))();
+        }
+    }
 
-    if (addr < funclist_addr[0] || addr > funclist_addr[funclist_cnt-1]) {
-        // that's not good.
-        // TODO: report error
-        find_and_call_function_runtime((void*)addr);
+    if (find_and_call_function_runtime((void*)addr))
         return;
-    }
 
-    while (p_left != p_right) {
-        const int p_middle = (p_left + p_right) / 2;
-        if (addr == funclist_addr[p_middle]) {
-            __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: found, func_%04x", addr);
-            ((void (*)(void))(funclist_ptr[p_middle]))();
-            return;
-        }
-        if (addr > funclist_addr[p_middle]) {
-            p_left = p_middle;
-        } else {
-            p_right = p_middle;
-        }
-    }
-
-    __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: should not happen");
-
-    // TODO: report error
+    __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: "
+                                            "function %p not found", addr);
 }
