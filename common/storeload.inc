@@ -1,5 +1,7 @@
 // storeload.inc
 
+#define aa(addr)    adjust_address(addr)
+
 static
 inline
 char *
