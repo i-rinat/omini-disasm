@@ -140,34 +140,25 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     func_list_mark_as_non_returning(0x4da4);    // longjmp
 
     uint32_t addr_table = 0x5CBC4;
-
     char *string_table = get_charptr_at(0x57888);
 
     char *ptr = string_table;
-    if (strcmp(ptr, "com/opera/mini/android/Browser")) {
-        assert(0 && "assuming com/opera/mini/android/Browser");
-    }
-
-    char *class_name;
-    char *method_name;
-    char *signature;
-
     uint32_t addr_table_offset = 0;
     while (1) {
         if (!*ptr)
             break;
-        class_name = ptr;
+        // class_name = ptr;
         // printf("class: %s\n", class_name);
         ptr += strlen(ptr) + 1;
         while (1) {
             if (!*ptr)
                 break;
-            method_name = ptr;
+            // method_name = ptr;
 
             ptr += strlen(ptr) + 1;
             if (!*ptr)
                 break;
-            signature = ptr;
+            const char *signature = ptr;
 
             const uint32_t func_addr = get_word_at(addr_table + addr_table_offset);
             // printf("    %s->%s, signature: %s\n", class_name, method_name, signature);
@@ -231,6 +222,54 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
         }
         ptr ++;
     }
+
+    // produce JNI_OnLoad
+
+    printf("jint JNI_OnLoad(JavaVM* aVm, void* aReserved) {\n");
+    // TODO:  gJavaVM = aVm;
+    printf("    JNIEnv* env;\n");
+    printf("    if (aVm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_4) != JNI_OK) {\n");
+    printf("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", \"Failed to get the environment\");\n");
+    printf("      return -1;\n");
+    printf("    }\n");
+    printf("    jclass aClass;\n\n");
+    printf("    struct JNINativeMethod methodTable;\n");
+
+
+    addr_table_offset = 0;
+    ptr = string_table;
+    while (1) {
+        if (!*ptr)
+            break;
+        const char *class_name = ptr;
+        // printf("class: %s\n", class_name);
+        printf("    aClass = env->FindClass(\"%s\");\n", class_name);
+        ptr += strlen(ptr) + 1;
+        while (1) {
+            if (!*ptr)
+                break;
+            const char *method_name = ptr;
+
+            ptr += strlen(ptr) + 1;
+            if (!*ptr)
+                break;
+            const char *signature = ptr;
+
+            const uint32_t func_addr = get_word_at(addr_table + addr_table_offset);
+
+            printf("    methodTable.name = \"%s\";\n", method_name);
+            printf("    methodTable.signature = \"%s\";\n", signature);
+            printf("    methodTable.fnPtr = (void *)&proxy_%04x;\n", func_addr);
+            printf("    env->RegisterNatives(aClass, &methodTable, 1);\n");
+            printf("\n");
+
+            addr_table_offset += 4;
+            ptr += strlen(ptr) + 1;
+        }
+        ptr ++;
+    }
+
+    printf("}\n");
 
 }
 
