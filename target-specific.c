@@ -165,7 +165,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             char buf[2048];
             char *buf_ptr = &buf[0];
 
-            printf("%s ", signature);
+            // printf("%s ", signature);
             buf_ptr += sprintf(buf_ptr, "static %s proxy_%04x(", signature_return_type(signature),
                 func_addr);
             for (int k = 0; k < signature_get_param_count(signature); k ++) {
@@ -176,8 +176,8 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             }
             buf_ptr += sprintf(buf_ptr, ") {");
 
-            printf("%s\n", buf);
-            printf("    r13 = d_stack_start;\n");
+            emit_code("%s", buf);
+            emit_code("    r13 = d_stack_start;");
 
             buf_ptr = &buf[0];
             uint32_t param_offset = 0;
@@ -186,36 +186,36 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
                     if (param_offset & 1)
                         param_offset ++;
                     if (param_offset < 4) {
-                        printf("    r%u = param%u;\n", param_offset, k);
-                        printf("    r%u = param%u >> 32;\n", param_offset + 1, k);
+                        emit_code("    r%u = param%u;", param_offset, k);
+                        emit_code("    r%u = param%u >> 32;", param_offset + 1, k);
                     } else {
-                        printf("    store(r13 + %u, param%u);\n", 4*(param_offset - 4), k);
-                        printf("    store(r13 + %u, param%u >> 32);\n", 4*(param_offset - 4) + 4, k);
+                        emit_code("    store(r13 + %u, param%u);", 4*(param_offset - 4), k);
+                        emit_code("    store(r13 + %u, param%u >> 32);", 4*(param_offset - 4) + 4, k);
                     }
 
                     param_offset += 2;
                 } else {
                     if (param_offset < 4)
-                        printf("    r%u = param%u;\n", param_offset, k);
+                        emit_code("    r%u = param%u;", param_offset, k);
                     else
-                        printf("    store(r13 + %u, param%u);\n", 4*(param_offset - 4), k);
+                        emit_code("    store(r13 + %u, param%u);", 4*(param_offset - 4), k);
 
                     param_offset += 1;
                 }
             }
-            printf("    func_%04x();\n", func_addr);
+            emit_code("    func_%04x();", func_addr);
 
             if (!strcmp(signature_return_type(signature), "void")) {
-                printf("    return;\n");
+                emit_code("    return;");
             } else if (!strcmp(signature_return_type(signature), "uint32_t")) {
-                printf("    return r0;\n");
+                emit_code("    return r0;");
             } else if (!strcmp(signature_return_type(signature), "uint64_t")) {
-                printf("    return reg.x_uint64_t;\n");
+                emit_code("    return reg.x_uint64_t;");
             } else {
                 assert(0);
             }
 
-            printf("}\n");
+            emit_code("}");
 
             addr_table_offset += 4;
             ptr += strlen(ptr) + 1;
@@ -225,16 +225,15 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 
     // produce JNI_OnLoad
 
-    printf("jint JNI_OnLoad(JavaVM* aVm, void* aReserved) {\n");
+    emit_code("jint JNI_OnLoad(JavaVM* aVm, void* aReserved) {");
     // TODO:  gJavaVM = aVm;
-    printf("    JNIEnv* env;\n");
-    printf("    if (aVm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_4) != JNI_OK) {\n");
-    printf("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", \"Failed to get the environment\");\n");
-    printf("      return -1;\n");
-    printf("    }\n");
-    printf("    jclass aClass;\n\n");
-    printf("    struct JNINativeMethod methodTable;\n");
-
+    emit_code("    JNIEnv* env;");
+    emit_code("    if (aVm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_4) != JNI_OK) {");
+    emit_code("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", \"Failed to get the environment\");");
+    emit_code("      return -1;");
+    emit_code("    }");
+    emit_code("    jclass aClass;\n");
+    emit_code("    struct JNINativeMethod methodTable;");
 
     addr_table_offset = 0;
     ptr = string_table;
@@ -242,8 +241,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
         if (!*ptr)
             break;
         const char *class_name = ptr;
-        // printf("class: %s\n", class_name);
-        printf("    aClass = env->FindClass(\"%s\");\n", class_name);
+        emit_code("    aClass = env->FindClass(\"%s\");", class_name);
         ptr += strlen(ptr) + 1;
         while (1) {
             if (!*ptr)
@@ -257,11 +255,12 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 
             const uint32_t func_addr = get_word_at(addr_table + addr_table_offset);
 
-            printf("    methodTable.name = \"%s\";\n", method_name);
-            printf("    methodTable.signature = \"%s\";\n", signature);
-            printf("    methodTable.fnPtr = (void *)&proxy_%04x;\n", func_addr);
-            printf("    env->RegisterNatives(aClass, &methodTable, 1);\n");
-            printf("\n");
+            emit_code("\n");
+            emit_code("    methodTable.name = \"%s\";", method_name);
+            emit_code("    methodTable.signature = \"%s\";", signature);
+            emit_code("    methodTable.fnPtr = (void *)&proxy_%04x;", func_addr);
+            emit_code("    env->RegisterNatives(aClass, &methodTable, 1);");
+
 
             addr_table_offset += 4;
             ptr += strlen(ptr) + 1;
@@ -269,7 +268,8 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
         ptr ++;
     }
 
-    printf("}\n");
+    emit_code("    return JNI_VERSION_1_4;");
+    emit_code("}");
 
 }
 
