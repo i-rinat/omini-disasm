@@ -1148,7 +1148,6 @@ main(int argc, char *argv[])
     emit_code("#include <pthread.h>");
     emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
-    emit_code("#include \"findfunction.inc\"");
     emit_code("");
 
     func_list_initialize();
@@ -1175,6 +1174,7 @@ main(int argc, char *argv[])
 
     declare_data_arrays(abfd);
     emit_code("#include \"storeload.inc\"");
+    emit_code("#include \"findfunction.inc\"");
     determine_target_functions(abfd);
 
     apply_target_specific_quirks();
