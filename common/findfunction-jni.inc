@@ -9,15 +9,15 @@ void
 find_and_call_function_runtime(void *addr)
 {
     if (addr == JNIEnv_functions.GetJavaVM) {   // 219
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetJavaVM");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetJavaVM (%x, %x)", r0, r1);
         reg.r0_signed = JNIEnv_functions.GetJavaVM((JNIEnv*)adjust_address(r0), (JavaVM**)adjust_address(r1));
         return;
     } else if (addr == JNIEnv_functions.GetVersion) {   // 4
-    __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetVersion");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetVersion (%x)", r0);
         reg.r0_signed = JNIEnv_functions.GetVersion((JNIEnv *)adjust_address(r0));
         return;
     } else if (addr == JNIEnv_functions.ThrowNew) { // 14
-    __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ThrowNew");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ThrowNew");
         reg.r0_signed = JNIEnv_functions.ThrowNew((JNIEnv *)adjust_address(r0), (jclass)adjust_address(r1), (const char *)adjust_address(r2));
         return;
     }
