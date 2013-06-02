@@ -8,6 +8,15 @@
 #include "findfunction-jni.inc"
 
 static
+void
+func_ffff0fc0(void)
+{
+    //original: typedef int (__kernel_cmpxchg_t) (int oldval, int newval, int *ptr);
+    r0 = !__sync_bool_compare_and_swap_4((int *)r2, (int)r0, (int)r1);
+}
+
+
+static
 void  find_and_call_function(uint32_t addr)
 {
     int k;
