@@ -2337,7 +2337,8 @@ process_instruction(uint32_t pc)
     flag_last_instruction_ended_with_return = 0;
     flag_last_instruction_ended_with_goto = 0;
 
-    emit_code("label_%04x:", pc);
+    //emit_code("label_%04x:", pc);
+    emit_code("label_%04x: __android_log_print(ANDROID_LOG_INFO, \"libfranken\", \"trace label_%04x\");", pc, pc);
 
     const uint32_t condition = (code >> 28) & 0x0f;
     switch (condition) {
