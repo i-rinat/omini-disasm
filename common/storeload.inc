@@ -15,6 +15,8 @@ adjust_address(uint32_t addr)
         return (char *)&d_bss + addr - D_BSS_START;
     } else if (D_TEXT_START <= addr && addr < D_TEXT_START + D_TEXT_LENGTH) {
         return (char *)&d_text + addr - D_TEXT_START;
+    } else if (D_GOT_START <= addr && addr < D_GOT_START + D_GOT_LENGTH) {
+        return (char *)&d_text + addr - D_GOT_START;
     } else {
         return (char *)addr;
     }
