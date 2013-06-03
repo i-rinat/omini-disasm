@@ -88,6 +88,22 @@ find_and_call_function_runtime(void *addr)
         (void)JNIEnv_functions.ReleasePrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
                                                                     (void*)aa(r2), (jint)r3);
         return 1;
+    } else if (addr == JNIEnv_functions.GetObjectClass) {       // 31
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectClass");
+        r0 = (uint32_t)JNIEnv_functions.GetObjectClass((JNIEnv*)aa(r0), (jobject)aa(r1));
+        return 1;
+    } else if (addr == JNIEnv_functions.GetObjectField) {   // 95
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectField");
+        r0 = (uint32_t)JNIEnv_functions.GetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r3));
+        return 1;
+    } else if (addr == JNIEnv_functions.GetIntArrayElements) {  // 187
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetIntArrayElements");
+        r0 = (uint32_t)JNIEnv_functions.GetIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jboolean*)aa(r2));
+        return 1;
+    } else if (addr == JNIEnv_functions.ReleaseIntArrayElements) {  // 195
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleaseIntArrayElements");
+        (void)JNIEnv_functions.ReleaseIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jint*)aa(r2), (jint)r3);
+        return 1;
     }
 
 
