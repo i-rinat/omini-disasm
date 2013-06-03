@@ -141,6 +141,10 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 
     func_list_add(0x43448);
     func_list_add(0x401f4);
+    func_list_add(0x1fc1c);
+    func_list_add(0x29d6c);
+    func_list_add(0x31fe8);
+    func_list_add(0x27b6c);
 
     func_list_add(0xffff0fc0);
     func_list_mark_done(0xffff0fc0);
