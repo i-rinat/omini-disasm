@@ -65,8 +65,9 @@ find_and_call_function_runtime(void *addr)
         (void)JNIEnv_functions.ExceptionClear((JNIEnv*)aa(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ExceptionCheck) {   // 228
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ExceptionCheck");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ExceptionCheck(%p)", aa(r0));
         r0 = (uint32_t)JNIEnv_functions.ExceptionCheck((JNIEnv*)aa(r0));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ExceptionCheck returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetLongField) {   // 101
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetLongField");

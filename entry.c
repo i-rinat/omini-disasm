@@ -138,13 +138,15 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_mutex_lock")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_mutex_lock(%%p)\", aa(r0));");
                 emit_code("    reg.r0_signed = pthread_mutex_lock((pthread_mutex_t *)aa(r0));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_mutex_lock returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_mutex_unlock")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_mutex_unlock(%%p)\", aa(r0));");
                 emit_code("    reg.r0_signed = pthread_mutex_unlock((pthread_mutex_t *)aa(r0));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_mutex_unlock returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "free")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -304,8 +306,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_equal")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_equal(%%d, %%d)\", r0, r1);");
                 emit_code("    reg.r0_signed = pthread_equal((pthread_t)r0, (pthread_t)r1);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_equal returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "vsnprintf")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -377,8 +380,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_self")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_self()\");");
                 emit_code("    r0 = (uint32_t)pthread_self();");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_self returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "ceilf")) {
                 emit_code("static void func_%04x() {", relp->address);
