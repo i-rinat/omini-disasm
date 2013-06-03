@@ -36,6 +36,7 @@ static
 uint32_t
 load(uint32_t addr)
 {
+    // __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "load from %p (before adjust)", addr);
     return *((uint32_t *)adjust_address(addr));
 }
 
