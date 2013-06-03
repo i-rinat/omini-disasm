@@ -21,11 +21,9 @@ void  find_and_call_function(uint32_t addr)
 {
     int k;
 
-    __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: enter, 0x%08x", addr);
     for (k = 0; k < funclist_cnt; k ++) {
         if (addr == funclist_addr[k]) {
-            __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: "
-                                                "found in static table, func_%04x", addr);
+            __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "find_and_call_function: func_%04x", addr);
             ((void (*)(void))(funclist_ptr[k]))();
             return;
         }
@@ -34,6 +32,6 @@ void  find_and_call_function(uint32_t addr)
     if (find_and_call_function_runtime((void*)addr))
         return;
 
-    __android_log_print(ANDROID_LOG_INFO, "libfranken", "find_and_call_function: "
+    __android_log_print(ANDROID_LOG_ERROR, "libfranken", "find_and_call_function: "
                                             "function %p not found", addr);
 }

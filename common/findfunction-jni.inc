@@ -105,7 +105,7 @@ find_and_call_function_runtime(void *addr)
 
     for (k = 0; k < table_size; k ++) {
         if (table[k] == addr) {
-            __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "find_and_call_function_runtime: "
+            __android_log_print(ANDROID_LOG_ERROR, "libfranken", "find_and_call_function_runtime: "
                 "function %p found in table JNIEnv_functions at %d, but not called", addr, k);
             return 1;
         }
@@ -116,7 +116,7 @@ find_and_call_function_runtime(void *addr)
 
     for (k = 0; k < table_size; k ++) {
         if (table[k] == addr) {
-            __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "find_and_call_function_runtime: "
+            __android_log_print(ANDROID_LOG_ERROR, "libfranken", "find_and_call_function_runtime: "
                 "function %p found in table JavaVM_functions at %d, but not called", addr, k);
             return 1;
         }

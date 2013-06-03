@@ -28,6 +28,7 @@ static
 void
 store(uint32_t addr, uint32_t value)
 {
+    // __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "store %x to %p (before adjust)", value, addr);
     *((uint32_t *)adjust_address(addr)) = value;
 }
 
