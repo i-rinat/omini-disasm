@@ -139,12 +139,17 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     func_list_mark_as_non_returning(0x7840);    // directly calls longjmp
     func_list_mark_as_non_returning(0x4da4);    // longjmp
 
-    func_list_add(0x43448);
-    func_list_add(0x401f4);
-    func_list_add(0x1fc1c);
-    func_list_add(0x29d6c);
-    func_list_add(0x31fe8);
-    func_list_add(0x27b6c);
+
+    uint32_t additional_functions[] = {
+        0x43448, 0x401f4, 0x1fc1c, 0x29d6c, 0x31fe8,
+        0x27b6c, 0x21e9c, 0x33b54, 0x278a0, 0x27b0c,
+        0x29d54
+    };
+
+    uint32_t k;
+    for (k = 0; k < sizeof(additional_functions)/sizeof(additional_functions[0]); k ++) {
+        func_list_add(additional_functions[k]);
+    }
 
     func_list_add(0xffff0fc0);
     func_list_mark_done(0xffff0fc0);
