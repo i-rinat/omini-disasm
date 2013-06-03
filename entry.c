@@ -173,12 +173,13 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "malloc")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling malloc(%%d)\", r0);");
                 emit_code("    r0 = (uint32_t)malloc((size_t)r0);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"malloc returned %%p\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_mutex_init")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_mutex_init(%%p, %%p)\", r0, r1);");
                 emit_code("    reg.r0_signed = pthread_mutex_init((pthread_mutex_t *)aa(r0), "
                                                     "(const pthread_mutexattr_t *)aa(r1));");
                 emit_code("}");
@@ -206,7 +207,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_create")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_create(%%p, %%p, %%p, %%p)\", r0, r1, r2, r3);");
                 emit_code("    reg.r0_signed = pthread_create((pthread_t *)aa(r0), "
                                     "(const pthread_attr_t *)aa(r1), (void *)aa(r2), (void *)aa(r3));");
                 emit_code("}");
@@ -316,8 +317,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "calloc")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling calloc(%%d, %%d)\", r0, r1);");
                 emit_code("    r0 = (uint32_t)calloc((size_t)r0, (size_t)r1);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calloc returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_key_create")) {
                 emit_code("static void func_%04x() {", relp->address);
