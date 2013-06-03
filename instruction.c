@@ -1194,6 +1194,11 @@ p_bx(uint32_t pc, uint32_t code)
 
     set_function_end_flag();
     emit_code("    return;");
+
+    if ((code >> 28) != 0xe) {
+        // continue exploring if that was conditional instruction
+        pc_stack_push(pc + 4);
+    }
 }
 
 void
