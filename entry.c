@@ -798,6 +798,14 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_uidivmod")) {
                 // do nothing
+                emit_code("static void func_%04x(){", func_addr);
+                // TODO: division by zero handling
+                emit_code("     if (0 == r1) return;");
+                emit_code("     uint32_t q = r0 / r1;");
+                emit_code("     uint32_t r = r0 % r1;");
+                emit_code("     r0 = q;");
+                emit_code("     r1 = r;");
+                emit_code("}");
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_idivmod")) {
                 emit_code("static void func_%04x() {", func_addr);
