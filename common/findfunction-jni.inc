@@ -107,6 +107,26 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleaseIntArrayElements");
         (void)JNIEnv_functions.ReleaseIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jint*)aa(r2), (jint)r3);
         return 1;
+    } else if (addr == JNIEnv_functions.GetByteArrayRegion) {   // 200
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetByteArrayRegion");
+        (void)JNIEnv_functions.GetByteArrayRegion((JNIEnv*)aa(r0), (jbyteArray)aa(r1), (jsize)r2,
+                                                    (jsize)r3, (jbyte*)aa(load(r13)));
+        return 1;
+    } else if (addr == JNIEnv_functions.SetByteArrayRegion) {   // 208
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling SetByteArrayRegion");
+        (void)JNIEnv_functions.SetByteArrayRegion((JNIEnv*)aa(r0), (jbyteArray)aa(r1), (jsize)r2,
+                                                    (jsize)r3, (const jbyte*)aa(load(r13)));
+        return 1;
+    } else if (addr == JNIEnv_functions.CallVoidMethod) {   // 61
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling CallVoidMethod(%p, %p, %p, ... )",
+            aa(r0), aa(r1), aa(r2));
+        // TODO: what if jlong comes unaligned?
+        (void)JNIEnv_functions.CallVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        return 1;
     }
 
 
