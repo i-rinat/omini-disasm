@@ -18,7 +18,7 @@ union {
 	struct {
 		float x_float, y_float, z_float, w_float;
 	};
-} reg;
+} reg = { 0 };
 
 __thread
 uint32_t tmp;
@@ -27,7 +27,7 @@ struct {
 	int V;
 	int N;
 	int Z;
-} APSR;
+} APSR = { 0 };
 
 #define r0	reg.r0
 #define r1	reg.r1
