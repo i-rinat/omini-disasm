@@ -213,9 +213,14 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_create")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling (fake) pthread_create(%%p, %%p, %%p, %%p)\", r0, r1, r2, r3);");
-                //emit_code("    reg.r0_signed = pthread_create((pthread_t *)aa(r0), "
-                                    //"(const pthread_attr_t *)aa(r1), (void *)aa(r2), (void *)aa(r3));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_create(%%p, %%p, %%p, %%p)\", r0, r1, r2, r3);");
+                // TODO: remove hardcode
+                emit_code("    if (r2 == 0x38450) {");
+                emit_code("    reg.r0_signed = pthread_create((pthread_t *)aa(r0), "
+                                    "(const pthread_attr_t *)aa(r1), &proxy_38450, (void *)aa(r3));");
+                emit_code("    } else {");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"start_routine not found\");");
+                emit_code("    }");
                 emit_code("    r0 = 0;"); //fake success
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_cond_wait")) {
@@ -1064,8 +1069,8 @@ declare_data_arrays(bfd *abfd)
 
     // define stack
     emit_code("#define D_STACK_LENGTH   2000");
-    emit_code("uint32_t d_stack[D_STACK_LENGTH];");
-    emit_code("const uint32_t d_stack_start = (uint32_t)(&(d_stack[D_STACK_LENGTH - 32]));");
+    emit_code("uint32_t __thread d_stack[D_STACK_LENGTH];");
+    emit_code("#define d_stack_start    ((uint32_t)(&(d_stack[D_STACK_LENGTH - 32])))");
 }
 
 void

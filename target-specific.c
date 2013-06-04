@@ -131,6 +131,18 @@ signature_get_param(const char *signature, int n)
     return 0;
 }
 
+static
+void
+generate_pthread_proxy(uint32_t addr)
+{
+    emit_code("// start_routine for pthread_create");
+    emit_code("static void *proxy_%04x(void *param) {", addr);
+    emit_code("    r13 = d_stack_start;");
+    emit_code("    r0 = (uint32_t)param;");
+    emit_code("    func_%04x();", addr);
+    emit_code("    return (void *)r0;");
+    emit_code("}");
+}
 
 static
 void
@@ -143,8 +155,11 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     uint32_t additional_functions[] = {
         0x43448, 0x401f4, 0x1fc1c, 0x29d6c, 0x31fe8,
         0x27b6c, 0x21e9c, 0x33b54, 0x278a0, 0x27b0c,
-        0x29d54, 0x5888, 0x5814, 0xc5fc
+        0x29d54, 0x5888, 0x5814, 0xc5fc,
+        0x38450 // pthread
     };
+
+    generate_pthread_proxy(0x38450);
 
     uint32_t k;
     for (k = 0; k < sizeof(additional_functions)/sizeof(additional_functions[0]); k ++) {
