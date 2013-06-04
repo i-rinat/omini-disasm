@@ -212,6 +212,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                                                             "(int)r1);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_create")) {
+                emit_code("static void *proxy_38450(void *param);"); // TODO: remove hardcode
                 emit_code("static void func_%04x() {", relp->address);
                 emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_create(%%p, %%p, %%p, %%p)\", r0, r1, r2, r3);");
                 // TODO: remove hardcode
@@ -340,8 +341,10 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_key_create")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_key_create(%%p, %%p)\", aa(r0), r1);");
+                // TODO: what to do if (r1 != 0) ? Need some proxy.
                 emit_code("    reg.r0_signed = pthread_key_create((pthread_key_t*)aa(r0), (void *)aa(r1));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_key_create returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "strstr")) {
                 emit_code("static void func_%04x() {", relp->address);
