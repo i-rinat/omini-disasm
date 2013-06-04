@@ -146,7 +146,15 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling JavaVM_functions.GetEnv");
         reg.r0_signed = JavaVM_functions.GetEnv((JavaVM*)aa(r0), (void**)aa(r1), (jint)r2);
         return 1;
+    } else if (addr == JavaVM_functions.AttachCurrentThread) {   //  4
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken",
+            "calling JavaVM_functions.AttachCurrentThread(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
+        reg.r0_signed = JavaVM_functions.AttachCurrentThread((JavaVM*)aa(r0), (JNIEnv**)aa(r1), (void*)aa(r2));
+        return 1;
     }
+
+
+    // ===================
 
 
     uint32_t k;
