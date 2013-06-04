@@ -157,6 +157,10 @@ find_and_call_function_runtime(void *addr)
     } else if (addr == JavaVM_functions.AttachCurrentThread) {   //  4
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken",
             "calling JavaVM_functions.AttachCurrentThread(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
+        if (0 != r2) {
+            JavaVMAttachArgs *attach_args = (void *)(aa(r2));
+            attach_args->name = aa((uint32_t)(attach_args->name));
+        }
         reg.r0_signed = JavaVM_functions.AttachCurrentThread((JavaVM*)aa(r0), (JNIEnv**)aa(r1), (void*)aa(r2));
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        JavaVM_functions.AttachCurrentThread returned %d", r0);
         return 1;
