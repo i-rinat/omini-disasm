@@ -46,10 +46,11 @@ find_and_call_function_runtime(void *addr)
                                             (const char*)aa(r2), (const char*)aa(r3));
         return 1;
     } else if (addr == JNIEnv_functions.GetMethodID) {  // 33
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetMethodID(%p, %p, %s, %s)",
-                                                            aa(r0), aa(r1), aa(r2), aa(r3));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetMethodID(%p, %p, %p \"%s\", %p \"%s\")",
+                                                            aa(r0), aa(r1), aa(r2), aa(r2), aa(r3), aa(r3));
         r0 = (uint32_t)JNIEnv_functions.GetMethodID((JNIEnv*)aa(r0), (jclass)aa(r1),
                                                     (const char*)aa(r2), (const char*)aa(r3));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetMethodID returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticMethodID) {    // 113
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetStaticMethodID(%p, %p, %s, %s)",
@@ -121,6 +122,7 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling CallVoidMethod(%p, %p, %p, ... )",
             aa(r0), aa(r1), aa(r2));
         // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
         (void)JNIEnv_functions.CallVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
             aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
             aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),

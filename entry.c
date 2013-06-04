@@ -71,8 +71,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 // do nothing
             } else if (!strcmp(ext_func_name, "memcpy")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling memcpy(%%p, %%p, %%d)\", aa(r0), aa(r1), r2);");
                 emit_code("    r0 = (uint32_t)memcpy((void *)aa(r0), (void *)aa(r1), (size_t)r2);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        memcpy returned %%p\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "__cxa_finalize")) {
                 // do nothing
@@ -133,8 +134,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "memset")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling memset(%%p, %%d, %%d)\", aa(r0), r1, r2);");
                 emit_code("    r0 = (uint32_t)memset((void *)aa(r0), (int)r1, (size_t)r2);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        memset returned %%p\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_mutex_lock")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -150,8 +152,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "free")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling free(%%p)\", r0);");
                 emit_code("    free((void*)aa(r0));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        free returned void\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "read")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -358,8 +361,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "memcmp")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling memcmp(%%p, %%p, %%d)\", aa(r0), aa(r1), r2);");
                 emit_code("    reg.r0_signed = memcmp((const void *)aa(r0), (const void *)aa(r1), (size_t)r2);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        memcmp returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "sigaction")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -392,8 +396,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "strlen")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling strlen(%%p \\\"%%s\\\")\", aa(r0), aa(r0));");
                 emit_code("    r0 = (uint32_t)strlen((const char *)aa(r0));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        strlen retuned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "floorf")) {
                 emit_code("static void func_%04x() {", relp->address);
