@@ -23,6 +23,7 @@ find_and_call_function_runtime(void *addr)
     } else if (addr == JNIEnv_functions.FindClass) { // 6
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling FindClass(%p, %s)", aa(r0), aa(r1));
         r0 = (uint32_t)JNIEnv_functions.FindClass((JNIEnv*)aa(r0), (const char*)aa(r1));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        FindClass retuned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetFieldID) { // 94
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetFieldID(%p, %p, %s, %s)",
@@ -70,8 +71,9 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ExceptionCheck returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetLongField) {   // 101
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetLongField");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetLongField(%p, %p, %p)", r0, r1, r2);
         reg.x_int64_t = JNIEnv_functions.GetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetLongField retuned %lld", reg.x_int64_t);
         return 1;
     } else if (addr == JNIEnv_functions.SetLongField) {   // 110
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling SetLongField");
@@ -93,8 +95,9 @@ find_and_call_function_runtime(void *addr)
         r0 = (uint32_t)JNIEnv_functions.GetObjectClass((JNIEnv*)aa(r0), (jobject)aa(r1));
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectField) {   // 95
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectField");
-        r0 = (uint32_t)JNIEnv_functions.GetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r3));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectField(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetObjectField returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetIntArrayElements) {  // 187
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetIntArrayElements");

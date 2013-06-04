@@ -253,8 +253,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "setjmp")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling setjmp(%%p)\", r0);");
                 emit_code("    reg.r0_signed = setjmp((long int *)aa(r0));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        setjmp returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_cond_signal")) {
                 emit_code("static void func_%04x() {", relp->address);
