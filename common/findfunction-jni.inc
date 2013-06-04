@@ -82,12 +82,12 @@ find_and_call_function_runtime(void *addr)
     } else if (addr == JNIEnv_functions.GetLongField) {   // 101
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetLongField(%p, %p, %p)", r0, r1, r2);
         reg.x_int64_t = JNIEnv_functions.GetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetLongField returned %lld", reg.x_int64_t);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetLongField returned 0x%08x%08x", r1, r0);
         return 1;
     } else if (addr == JNIEnv_functions.SetLongField) {   // 110
         jlong value = load(r13) + (((uint64_t)load(r13 + 4)) << 32);
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling SetLongField(%p, %p, %p, %ld)",
-                                                                aa(r0), aa(r1), aa(r2), value);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling SetLongField(%p, %p, %p, 0x%08x%08x)",
+                                                                aa(r0), aa(r1), aa(r2), (uint32_t)(value >> 32), (uint32_t)(value & 0xffffffff));
         (void)JNIEnv_functions.SetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), value);
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        SetLongField returned void");
         return 1;
@@ -101,11 +101,12 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleasePrimitiveArrayCritical(%p, %p, %p, %d)", aa(r0), aa(r1), aa(r2), r3);
         (void)JNIEnv_functions.ReleasePrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
                                                                     (void*)aa(r2), (jint)r3);
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ReleasePrimitiveArrayCritical returned %p", r0);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ReleasePrimitiveArrayCritical returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectClass) {       // 31
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectClass");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectClass(%p, %p)", aa(r0), aa(r1));
         r0 = (uint32_t)JNIEnv_functions.GetObjectClass((JNIEnv*)aa(r0), (jobject)aa(r1));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetObjectClass returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectField) {   // 95
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectField(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
@@ -113,12 +114,14 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetObjectField returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetIntArrayElements) {  // 187
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetIntArrayElements");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetIntArrayElements(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
         r0 = (uint32_t)JNIEnv_functions.GetIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jboolean*)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetIntArrayElements returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.ReleaseIntArrayElements) {  // 195
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleaseIntArrayElements");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleaseIntArrayElements(%p, %p, %p, %d)", aa(r0), aa(r1), aa(r2), r3);
         (void)JNIEnv_functions.ReleaseIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jint*)aa(r2), (jint)r3);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ReleaseIntArrayElements retrned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetByteArrayRegion) {   // 200
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetByteArrayRegion");
