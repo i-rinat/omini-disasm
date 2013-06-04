@@ -34,5 +34,4 @@ void  find_and_call_function(uint32_t addr)
 
     __android_log_print(ANDROID_LOG_ERROR, "libfranken", "find_and_call_function: "
                                             "function %p not found", addr);
-    k = *(uint32_t *)0x03;
 }
