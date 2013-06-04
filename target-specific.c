@@ -143,7 +143,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
     uint32_t additional_functions[] = {
         0x43448, 0x401f4, 0x1fc1c, 0x29d6c, 0x31fe8,
         0x27b6c, 0x21e9c, 0x33b54, 0x278a0, 0x27b0c,
-        0x29d54
+        0x29d54, 0x5888, 0x5814, 0xc5fc
     };
 
     uint32_t k;
