@@ -191,9 +191,10 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pthread_cond_init")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling pthread_cond_init(%%p, %%p)\", aa(r0), aa(r1));");
                 emit_code("    reg.r0_signed = pthread_cond_init((pthread_cond_t *)aa(r0), "
                                                     "(const pthread_condattr_t *)aa(r1));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        pthread_cond_init returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "pipe")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -292,9 +293,10 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "syscall")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling syscall(%%d, %%p, %%p, %%p)\", r0, aa(r1), aa(r2), aa(r3));");
                 // TODO: syscall variadic function
                 emit_code("    reg.r0_signed = syscall(r0, aa(r1), aa(r2), aa(r3));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        syscall returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "ceil")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -303,8 +305,9 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "setpriority")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling %s\");", ext_func_name);
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling setpriority(%%d, %%d, %%d)\", r0, r1, r2);");
                 emit_code("    reg.r0_signed = setpriority((int)r0, (int)r1, (int)r2);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        setpriority returned %%d\", r0);");
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "qsort")) {
                 emit_code("static void func_%04x() {", relp->address);
@@ -360,7 +363,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "dlopen")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling dlopen(%%s, %%d)\", aa(r0), r1);");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling dlopen(%%p \\\"%%s\\\", %%d)\", aa(r0), aa(r0), r1);");
                 emit_code("    r0 = (uint32_t)dlopen((const char *)aa(r0), (int)r1);");
                 emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        dlopen returned %%p\", r0);");
                 emit_code("}");
@@ -389,7 +392,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
                 emit_code("}");
             } else if (!strcmp(ext_func_name, "dlsym")) {
                 emit_code("static void func_%04x() {", relp->address);
-                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling dlsym(%%p, %%s)\", aa(r0), aa(r1));");
+                emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"calling dlsym(%%p, %%p \\\"%%s\\\")\", aa(r0), aa(r1), aa(r1));");
                 emit_code("    r0 = (uint32_t)dlsym((void *)aa(r0), (const char *)aa(r1));");
                 emit_code("    __android_log_print(ANDROID_LOG_DEBUG, \"libfranken\", \"        dlsym returned %%p\", r0);");
                 emit_code("}");

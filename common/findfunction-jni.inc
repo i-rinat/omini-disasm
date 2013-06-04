@@ -45,10 +45,11 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        NewGlobalRef returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticFieldID) { // 144
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetStaticFieldID(%p, %p, %s, %s)",
-                                                            aa(r0), aa(r1), aa(r2), aa(r3));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetStaticFieldID(%p, %p, %p \"%s\", %p \"%s\")",
+                                                    aa(r0), aa(r1), aa(r2), aa(r2), aa(r3), aa(r3));
         r0 = (uint32_t)JNIEnv_functions.GetStaticFieldID((JNIEnv*)aa(r0), (jclass)aa(r1),
                                             (const char*)aa(r2), (const char*)aa(r3));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetStaticFieldID returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetMethodID) {  // 33
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetMethodID(%p, %p, %p \"%s\", %p \"%s\")",
@@ -65,8 +66,9 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetStaticMethodID returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticLongField) {   // 151
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetStaticLongField");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetStaticLongField(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
         reg.x_int64_t = JNIEnv_functions.GetStaticLongField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetStaticLongField returned %ld", reg.x_int64_t);
         return 1;
     } else if (addr == JNIEnv_functions.ExceptionClear) {   // 17
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ExceptionClear");
@@ -90,14 +92,16 @@ find_and_call_function_runtime(void *addr)
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        SetLongField returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetPrimitiveArrayCritical) {    // 222
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetPrimitiveArrayCritical");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetPrimitiveArrayCritical(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
         r0 = (uint32_t)JNIEnv_functions.GetPrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
                                                                     (jboolean*)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        GetPrimitiveArrayCritical returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.ReleasePrimitiveArrayCritical) {    // 223
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleasePrimitiveArrayCritical");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling ReleasePrimitiveArrayCritical(%p, %p, %p, %d)", aa(r0), aa(r1), aa(r2), r3);
         (void)JNIEnv_functions.ReleasePrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
                                                                     (void*)aa(r2), (jint)r3);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        ReleasePrimitiveArrayCritical returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectClass) {       // 31
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling GetObjectClass");
@@ -143,13 +147,15 @@ find_and_call_function_runtime(void *addr)
     // ===================
 
     if (addr == JavaVM_functions.GetEnv) {  //  6
-        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling JavaVM_functions.GetEnv");
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling JavaVM_functions.GetEnv(%p, %p, 0x%x)", aa(r0), aa(r1), r2);
         reg.r0_signed = JavaVM_functions.GetEnv((JavaVM*)aa(r0), (void**)aa(r1), (jint)r2);
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        JavaVM_functions.GetEnv returned %d", r0);
         return 1;
     } else if (addr == JavaVM_functions.AttachCurrentThread) {   //  4
         __android_log_print(ANDROID_LOG_DEBUG, "libfranken",
             "calling JavaVM_functions.AttachCurrentThread(%p, %p, %p)", aa(r0), aa(r1), aa(r2));
         reg.r0_signed = JavaVM_functions.AttachCurrentThread((JavaVM*)aa(r0), (JNIEnv**)aa(r1), (void*)aa(r2));
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "        JavaVM_functions.AttachCurrentThread returned %d", r0);
         return 1;
     }
 
