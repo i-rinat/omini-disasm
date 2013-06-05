@@ -144,6 +144,17 @@ find_and_call_function_runtime(void *addr)
             aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         return 1;
+    } else if (addr == JNIEnv_functions.CallStaticVoidMethod) {   // 141
+        __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "calling CallStaticVoidMethod(%p, %p, %p, ... )",
+            aa(r0), aa(r1), aa(r2));
+        // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
+        (void)JNIEnv_functions.CallStaticVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        return 1;
     }
 
 
