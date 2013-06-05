@@ -336,10 +336,6 @@ target_specific_symbols_c3630424f7c9514b203301154218db40(const char *symname, ui
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_allocateNativeArrayData")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_allocateObject")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_allocateWeakReference_1n")) {
-        emit_code("void Java_com_opera_bream_vm_BreamVM_allocateWeakReference_1n(JNIEnv * env, jobject  obj) {");
-        emit_code("__android_log_print(ANDROID_LOG_INFO, \"frankenstein\", "
-            "\"missing method Java_com_opera_bream_vm_BreamVM_allocateWeakReference_1n\");");
-        emit_code("}");
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_apeek")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_apop")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_apush")) {
