@@ -554,99 +554,52 @@ declare_data_arrays(bfd *abfd)
     printf("declaring data arrays\n");
     FILE *fp = fopen(abfd->filename, "rb");
     assert(fp);
+
     struct bfd_section *sect = abfd->sections;
-
+    uint32_t section_index = 0;
     while (sect) {
-        if (!strcmp(sect->name, ".rodata")) {
-            emit_code("#define D_RODATA_START 0x%x", sect->vma);
-            emit_code("#define D_RODATA_LENGTH 0x%x", sect->size);
-            emit_code_nonl("const uint32_t d_rodata[%d] = {", sect->size / 4);
-            uint32_t *buf = malloc(sect->size);
-            assert(buf);
-            fseek(fp, sect->filepos, SEEK_SET);
-            fread(buf, 4, sect->size / 4, fp);
-            for (unsigned int k = 0; k < sect->size / 4; k ++) {
-                if (0 == k)
-                    emit_code_nonl("0x%x", buf[k]);
-                else
-                    emit_code_nonl(", 0x%x", buf[k]);
-            }
-            emit_code("};");
-            free(buf);
-        } else if (!strcmp(sect->name, ".text")) {
-            // this should not be here
-            // TODO: invent register tracing to avoid including whole .text section
-            emit_code("#define D_TEXT_START 0x%x", sect->vma);
-            emit_code("#define D_TEXT_LENGTH 0x%x", sect->size);
-            emit_code_nonl("const uint32_t d_text[%d] = {", sect->size / 4);
-            uint32_t *buf = malloc(sect->size);
-            assert(buf);
-            fseek(fp, sect->filepos, SEEK_SET);
-            fread(buf, 4, sect->size / 4, fp);
-            for (unsigned int k = 0; k < sect->size / 4; k ++) {
-                if (0 == k)
-                    emit_code_nonl("0x%x", buf[k]);
-                else
-                    emit_code_nonl(", 0x%x", buf[k]);
-            }
-            emit_code("};");
-            free(buf);
-        } else if (!strcmp(sect->name, ".data")) {
-            emit_code("#define D_DATA_START 0x%x", sect->vma);
-            emit_code("#define D_DATA_LENGTH 0x%x", sect->size);
-            emit_code_nonl("uint32_t d_data[%d] = {", sect->size / 4);
-            uint32_t *buf = malloc(sect->size);
-            assert(buf);
-            fseek(fp, sect->filepos, SEEK_SET);
-            fread(buf, 4, sect->size / 4, fp);
-            for (unsigned int k = 0; k < sect->size / 4; k ++) {
-                if (0 == k)
-                    emit_code_nonl("0x%x", buf[k]);
-                else
-                    emit_code_nonl(", 0x%x", buf[k]);
-            }
-            emit_code("};");
-            free(buf);
-        } else if (!strcmp(sect->name, ".got")) {
-            emit_code("#define D_GOT_START 0x%x", sect->vma);
-            emit_code("#define D_GOT_LENGTH 0x%x", sect->size);
-            emit_code_nonl("uint32_t d_got[%d] = {", sect->size / 4);
-            uint32_t *buf = malloc(sect->size);
-            assert(buf);
-            fseek(fp, sect->filepos, SEEK_SET);
-            fread(buf, 4, sect->size / 4, fp);
-            for (unsigned int k = 0; k < sect->size / 4; k ++) {
-                if (0 == k)
-                    emit_code_nonl("0x%x", buf[k]);
-                else
-                    emit_code_nonl(", 0x%x", buf[k]);
-            }
-            emit_code("};");
-            free(buf);
-        } else if (!strcmp(sect->name, ".dynstr")) {
-            emit_code("#define D_DYNSTR_START 0x%x", sect->vma);
-            emit_code("#define D_DYNSTR_LENGTH 0x%x", sect->size);
-            emit_code_nonl("uint32_t d_dynstr[%d] = {", sect->size / 4);
-            uint32_t *buf = malloc(sect->size);
-            assert(buf);
-            fseek(fp, sect->filepos, SEEK_SET);
-            fread(buf, 4, sect->size / 4, fp);
-            for (unsigned int k = 0; k < sect->size / 4; k ++) {
-                if (0 == k)
-                    emit_code_nonl("0x%x", buf[k]);
-                else
-                    emit_code_nonl(", 0x%x", buf[k]);
-            }
-            emit_code("};");
-            free(buf);
-        } else if (!strcmp(sect->name, ".bss")) {
-            emit_code("#define D_BSS_START 0x%x", sect->vma);
-            emit_code("#define D_BSS_LENGTH 0x%x", sect->size);
-            emit_code("uint32_t d_bss[%d];", sect->size / 4);
-        }
+        if (sect->flags & SEC_ALLOC) {
+            emit_code("// section %s", sect->name);
+            emit_code_nonl("char d_section_%d[%d]", section_index, sect->size);
+            if (sect->flags & SEC_LOAD) {
+                emit_code_nonl(" = {");
+                fseek(fp, sect->filepos, SEEK_SET);
+                unsigned char *buf = malloc(sect->size);     assert(buf);
+                fread(buf, 1, sect->size, fp);
+                for (uint32_t k = 0; k < sect->size; k ++) {
+                    if (0 != k)
+                        emit_code_nonl(", ");
+                    emit_code_nonl("0x%02x", buf[k]);
+                }
 
+                free(buf);
+                emit_code("};");
+            } else {
+                emit_code(";");
+            }
+            section_index ++;
+        }
         sect = sect->next;
     }
+
+    sect = abfd->sections;
+    section_index = 0;
+    emit_code("struct section_list {");
+    emit_code("    char       *ptr;");
+    emit_code("    uint32_t    begin;");
+    emit_code("    uint32_t    end;");
+    emit_code("    const char *name;");
+    emit_code("} d_section_list[] = {");
+    while (sect) {
+        if (sect->flags & SEC_ALLOC) {
+            emit_code("    {(char *)(&d_section_%d[0]), 0x%x, 0x%x, \"%s\"},", section_index,
+                sect->vma, sect->vma + sect->size, sect->name);
+
+            section_index ++;
+        }
+        sect = sect->next;
+    }
+    emit_code("};");
 
     fclose(fp);
 

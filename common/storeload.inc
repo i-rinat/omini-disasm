@@ -7,21 +7,14 @@ inline
 char *
 adjust_address(uint32_t addr)
 {
-    if (D_RODATA_START <= addr && addr < D_RODATA_START + D_RODATA_LENGTH) {
-        return (char *)&d_rodata + addr - D_RODATA_START;
-    } else if (D_DATA_START <= addr && addr < D_DATA_START + D_DATA_LENGTH) {
-        return (char *)&d_data + addr - D_DATA_START;
-    } else if (D_BSS_START <= addr && addr < D_BSS_START + D_BSS_LENGTH) {
-        return (char *)&d_bss + addr - D_BSS_START;
-    } else if (D_TEXT_START <= addr && addr < D_TEXT_START + D_TEXT_LENGTH) {
-        return (char *)&d_text + addr - D_TEXT_START;
-    } else if (D_GOT_START <= addr && addr < D_GOT_START + D_GOT_LENGTH) {
-        return (char *)&d_text + addr - D_GOT_START;
-    } else if (D_DYNSTR_START <= addr && addr < D_DYNSTR_START + D_DYNSTR_LENGTH) {
-        return (char *)&d_dynstr + addr - D_DYNSTR_START;
-    } else {
-        return (char *)addr;
+    uint32_t k;
+    for (k = 0; k < sizeof(d_section_list)/sizeof(d_section_list[0]); k ++) {
+        if (d_section_list[k].begin <= addr && addr < d_section_list[k].end) {
+            return d_section_list[k].ptr + addr - d_section_list[k].begin;
+        }
     }
+
+    return (char*)addr;
 }
 
 static
