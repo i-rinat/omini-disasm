@@ -18,6 +18,21 @@ adjust_address(uint32_t addr)
 }
 
 static
+inline
+const char *
+get_section_name_by_addr(uint32_t addr)
+{
+    uint32_t k;
+    for (k = 0; k < sizeof(d_section_list)/sizeof(d_section_list[0]); k ++) {
+        if (d_section_list[k].begin <= addr && addr < d_section_list[k].end) {
+            return d_section_list[k].name;
+        }
+    }
+
+    return "unknown";
+}
+
+static
 void
 store(uint32_t addr, uint32_t value)
 {
