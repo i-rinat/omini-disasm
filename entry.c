@@ -575,7 +575,7 @@ declare_data_arrays(bfd *abfd)
                 free(buf);
                 emit_code("};");
             } else {
-                emit_code(";");
+                emit_code(" = { 0 };");
             }
             section_index ++;
         }
