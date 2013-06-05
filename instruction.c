@@ -317,13 +317,15 @@ p_add_immediate(uint32_t pc, uint32_t code)
                 !(((pc+8) ^ imm32) & 0x80000000) && ((result ^ imm32) & 0x80000000));
         }
     } else {
+        emit_code("    {");
         if (setflags) {
-            emit_code("    tmp = r%u + %uu;", Rn, imm32);
+            emit_code("    uint32_t tmp = r%u + %uu;", Rn, imm32);
             emit_code("    APSR.C = (tmp < r%u);", Rn);
             emit_code("    APSR.V = !((r%u ^ %u) & 0x80000000) && ((tmp ^ r%u) & 0x80000000);",
                 Rn, imm32, Rn);
         }
         emit_code("    r%u = r%u + %uu;", Rd, Rn, imm32);
+        emit_code("    }");
     }
 
     if (setflags) {
