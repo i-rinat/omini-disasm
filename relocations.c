@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "output.h"
 
 
@@ -401,6 +402,14 @@ process_jump_slot_relocations(arelent *relp)
     }
 }
 
+static
+void
+process_arm_relative_relocations(arelent *relp)
+{
+    const uint32_t l_addr = 0;    // base address
+    emit_code("    store((uint32_t)aa(%p), 0x%x);", relp->address, l_addr + relp->addend);
+}
+
 void
 process_relocations(bfd *abfd, asymbol **symbol_table)
 {
@@ -428,12 +437,27 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
 
         if (!strcmp(relp->howto->name, "R_ARM_JUMP_SLOT")) {
             process_jump_slot_relocations(relp);
+        } else if (!strcmp(relp->howto->name, "R_ARM_RELATIVE")) {
+            // will be processed later
         }
 
         if (!strcmp(relp->howto->name, "UNKNOWN")) {
             assert(0 && "multiarch libbfd.a required");
         }
     }
+
+
+    emit_code("__attribute__((constructor))");
+    emit_code("static void do_relocations(void) {");
+    for (int k = 0; k < relcount; k ++) {
+        arelent *relp = relpp[k];
+
+        if (!strcmp(relp->howto->name, "R_ARM_RELATIVE")) {
+            process_arm_relative_relocations(relp);
+        }
+    }
+    emit_code("}");
+
 
     free(relpp);
 }
