@@ -673,7 +673,6 @@ main(int argc, char *argv[])
     emit_code("#include <android/configuration.h>");
     //emit_code("#include <android_native_app_glue.h>");
     emit_code("#include <pthread.h>");
-    emit_code("#include \"registers.inc\"");
     emit_code("#include \"prototypes.inc\"");
     emit_code("");
 
@@ -700,6 +699,7 @@ main(int argc, char *argv[])
     read_section(abfd, ".rodata");
 
     declare_data_arrays(abfd);
+    emit_code("#include \"registers.inc\"");
     emit_code("#include \"storeload.inc\"");
     emit_code("#include \"findfunction.inc\"");
     determine_target_functions(abfd);
