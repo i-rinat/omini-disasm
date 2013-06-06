@@ -669,6 +669,7 @@ main(int argc, char *argv[])
     emit_code("#include <android/configuration.h>");
     //emit_code("#include <android_native_app_glue.h>");
     emit_code("#include <pthread.h>");
+    emit_code("#include \"tracing.inc\"");
     emit_code("");
 
     func_list_initialize();
