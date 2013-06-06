@@ -406,7 +406,7 @@ void
 process_arm_relative_relocations(arelent *relp)
 {
     const uint32_t l_addr = 0;    // base address
-    emit_code("    store(%p, 0x%x);", relp->address, l_addr + relp->addend);
+    emit_code("    store(%p, 0x%x + load(%p));", relp->address, l_addr + relp->addend, relp->address);
 }
 
 void
