@@ -2344,8 +2344,8 @@ process_instruction(uint32_t pc)
     flag_last_instruction_ended_with_return = 0;
     flag_last_instruction_ended_with_goto = 0;
 
-    //emit_code("label_%04x:", pc);
-    emit_code("label_%04x: LOG_I(\"tid=%%x trace label_%04x\", pthread_self());", pc, pc);
+    emit_code("label_%04x:", pc);
+    //emit_code("label_%04x: LOG_I(\"tid=%%x trace label_%04x\", pthread_self());", pc, pc);
 
     const uint32_t condition = (code >> 28) & 0x0f;
     switch (condition) {

@@ -36,7 +36,7 @@ static
 void
 store(uint32_t addr, uint32_t value)
 {
-    LOG_I("store %x to %p (%s)", value, addr, get_section_name_by_addr(addr));
+    //LOG_I("store %x to %p (%s)", value, addr, get_section_name_by_addr(addr));
     *((uint32_t *)adjust_address(addr)) = value;
 }
 
@@ -44,10 +44,10 @@ static
 uint32_t
 load(uint32_t addr)
 {
-    LOG_I("load from %p (%s)", addr, get_section_name_by_addr(addr));
+    //LOG_I("load from %p (%s)", addr, get_section_name_by_addr(addr));
     // return *((uint32_t *)adjust_address(addr));
     uint32_t res = *((uint32_t *)adjust_address(addr));
-    LOG_I("load -> 0x%08x", res);
+    //LOG_I("load -> 0x%08x", res);
     return res;
 }
 
