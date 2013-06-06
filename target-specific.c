@@ -137,9 +137,9 @@ generate_pthread_proxy(uint32_t addr)
 {
     emit_code("// start_routine for pthread_create");
     emit_code("static void *proxy_%04x(void *param) {", addr);
-    emit_code("    r13 = d_stack_start;");
+    emit_code("    state_t *state = initialize_state();");
     emit_code("    r0 = (uint32_t)param;");
-    emit_code("    func_%04x();", addr);
+    emit_code("    func_%04x(state);", addr);
     emit_code("    return (void *)r0;");
     emit_code("}");
 }
@@ -206,8 +206,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 
             emit_code("%s", buf);
             emit_code("    __android_log_print(ANDROID_LOG_INFO, \"libfranken\", \"called proxy_%04x\");", func_addr);
-            // emit_code("    if (!r13) r13 = d_stack_start;");
-            emit_code("    initialize_registers();");
+            emit_code("    state_t *state = initialize_state();");
             emit_code("    uint32_t saved_fp = r13;");
             emit_code("    r0 = env;");
             emit_code("    r1 = obj;");
@@ -236,7 +235,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
                     param_offset += 1;
                 }
             }
-            emit_code("    func_%04x();", func_addr);
+            emit_code("    func_%04x(state);", func_addr);
             emit_code("    if (r13 != saved_fp) {");
             emit_code("      __android_log_print(ANDROID_LOG_ERROR, \"libfranken\", "
                                         "\"failed saved_fp == fp for proxy_%04x\");", func_addr);
@@ -248,7 +247,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             } else if (!strcmp(signature_return_type(signature), "uint32_t")) {
                 emit_code("    return r0;");
             } else if (!strcmp(signature_return_type(signature), "uint64_t")) {
-                emit_code("    return reg.x_uint64_t;");
+                emit_code("    return x_uint64_t;");
             } else {
                 assert(0);
             }

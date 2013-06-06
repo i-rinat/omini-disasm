@@ -22,7 +22,7 @@ void
 begin_function(uint32_t pc)
 {
     flag_function_end_found = 0;
-    emit_code("static void func_%04x() {", pc);
+    emit_code("static void func_%04x(state_t *state) {", pc);
 }
 
 int
@@ -190,7 +190,7 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
     const int32_t offset = add ? imm12 : -imm12;
 
     if (15 == Rt) {     // ldr pc, <something>
-        emit_code("    find_and_call_function(load(r%u + %d));", Rn, offset);
+        emit_code("    find_and_call_function(state, load(r%u + %d));", Rn, offset);
         pc_stack_push(pc + 4);
         return;
     }
@@ -395,7 +395,7 @@ p_b(uint32_t pc, uint32_t code)
 
     if (0xe == (code >> 28) && address_in_section(imm32 + 8 + pc, ".plt")) {
         // this is a tail-call to .plt function
-        emit_code("    func_%04x();", imm32 + 8 + pc);
+        emit_code("    func_%04x(state);", imm32 + 8 + pc);
         func_list_add(imm32 + 8 + pc);
         emit_code("    return;");
         set_function_end_flag();
@@ -419,7 +419,7 @@ p_bl(uint32_t pc, uint32_t code)
 {
     const uint32_t imm32 = arm_sign_extend_imm24(code & 0x00ffffff) << 2;
 
-    emit_code("    func_%04x();", imm32 + 8 + pc);
+    emit_code("    func_%04x(state);", imm32 + 8 + pc);
     func_list_add(imm32 + 8 + pc);
 
     if (func_list_is_non_returning(imm32 + 8 + pc)) {
@@ -1341,7 +1341,7 @@ p_ldr_register(uint32_t pc, uint32_t code)
         if (15 == Rn)   sprintf(Rn_part, "%uu", pc + 8);
         else            sprintf(Rn_part, "r%u", Rn);
 
-        if (15 == Rt) emit_code("    find_and_call_function(%s %c %s);", Rn_part, add_op, Rm_part);
+        if (15 == Rt) emit_code("    find_and_call_function(state, %s %c %s);", Rn_part, add_op, Rm_part);
         else          emit_code("    r%u = load(%s %c %s);", Rt, Rn_part, add_op, Rm_part);
 
     } else if (index && wback) {
@@ -1476,7 +1476,7 @@ p_blx_register(uint32_t pc, uint32_t code)
 {
     const uint32_t Rm = code & 0xf;
 
-    emit_code("    find_and_call_function(r%u);", Rm);
+    emit_code("    find_and_call_function(state, r%u);", Rm);
     pc_stack_push(pc + 4);
 }
 
