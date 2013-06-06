@@ -145,6 +145,24 @@ generate_pthread_proxy(uint32_t addr)
 }
 
 static
+uint32_t
+get_max_param_offset(const char *signature)
+{
+    uint32_t param_offset = 2;
+    for (int k = 0; k < signature_get_param_count(signature); k ++) {
+        if (!strcmp(signature_get_param(signature, k), "uint64_t")) {
+            if (param_offset & 1)
+                param_offset ++;
+            param_offset += 2;
+        } else {
+            param_offset += 1;
+        }
+    }
+
+    return param_offset;
+}
+
+static
 void
 apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 {
@@ -212,6 +230,14 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             emit_code("    r0 = env;");
             emit_code("    r1 = obj;");
 
+            // If function parameters don't fit into registers, they passed in stack.
+            // We need to reserve appropriate amount.
+            const uint32_t max_param_offset = get_max_param_offset(signature);
+            const uint32_t stack_gap = 4 * (max_param_offset - 4);
+
+            if (stack_gap > 0)
+                emit_code("    r13 -= %d;", stack_gap);
+
             buf_ptr = &buf[0];
             uint32_t param_offset = 2;
             for (int k = 0; k < signature_get_param_count(signature); k ++) {
@@ -237,6 +263,10 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
                 }
             }
             emit_code("    func_%04x(state);", func_addr);
+
+            if (stack_gap > 0)
+                emit_code("    r13 += %d;", stack_gap);
+
             emit_code("    if (r13 != saved_fp) {");
             emit_code("      LOG_E(\"failed saved_fp == fp for proxy_%04x\");", func_addr);
             emit_code("    }");
