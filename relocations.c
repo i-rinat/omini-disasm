@@ -339,6 +339,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling dlsym(%%p, %%p \\\"%%s\\\")\", aa(r0), aa(r1), aa(r1));");
         emit_code("    r0 = (uint32_t)dlsym((void *)aa(r0), (const char *)aa(r1));");
+        emit_code("    add_dlsym_table_entry(r0, (const char *)aa(r1));");
         emit_code("    LOG_I(\"        dlsym returned %%p\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_self")) {
