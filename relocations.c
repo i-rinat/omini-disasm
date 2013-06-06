@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "output.h"
+#include "pc-stack.h"
 
 
 static
@@ -410,6 +411,31 @@ process_arm_relative_relocations(arelent *relp)
     emit_code("    store(%p, 0x%x + load(%p));", relp->address, l_addr + relp->addend, relp->address);
 }
 
+static
+void
+process_glob_dat_relocations(arelent *relp)
+{
+    const char *ext_func_name = (*relp->sym_ptr_ptr)->name;
+
+    if (!strcmp(ext_func_name, "memset")) {
+        emit_code("// process_glob_dat_relocations");
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    LOG_I(\"calling memset(%%p, %%d, %%d)\", aa(r0), r1, r2);");
+        emit_code("    r0 = (uint32_t)memset((void *)aa(r0), (int)r1, (size_t)r2);");
+        emit_code("    LOG_I(\"        memset returned %%p\", r0);");
+        emit_code("}");
+        func_list_add(relp->address);
+        func_list_mark_done(relp->address);
+    } else if (!strcmp(ext_func_name, "__cxa_call_unexpected")) {
+    } else if (!strcmp(ext_func_name, "__gnu_Unwind_Find_exidx")) {
+    } else if (!strcmp(ext_func_name, "")) {
+    } else if (!strcmp(ext_func_name, "")) {
+    } else {
+        printf("not handled glob dat relocation: %s\n", ext_func_name);
+        assert(0);
+    }
+}
+
 void
 process_relocations(bfd *abfd, asymbol **symbol_table)
 {
@@ -439,6 +465,11 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
             process_jump_slot_relocations(relp);
         } else if (!strcmp(relp->howto->name, "R_ARM_RELATIVE")) {
             // will be processed later
+        } else if (!strcmp(relp->howto->name, "R_ARM_GLOB_DAT")) {
+            process_glob_dat_relocations(relp);
+        } else {
+            printf("not handled relocation of type %s\n", relp->howto->name);
+            assert(0);
         }
 
         if (!strcmp(relp->howto->name, "UNKNOWN")) {
@@ -454,7 +485,10 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
 
         if (!strcmp(relp->howto->name, "R_ARM_RELATIVE")) {
             process_arm_relative_relocations(relp);
+        } else if (!strcmp(relp->howto->name, "R_ARM_GLOB_DAT")) {
+            emit_code("    store(%p, %p);", relp->address, relp->address);
         }
+
     }
     emit_code("}");
 
