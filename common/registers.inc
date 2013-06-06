@@ -68,7 +68,7 @@ static
 state_t *
 initialize_state(void)
 {
-    __android_log_print(ANDROID_LOG_INFO, "libfranken", "initialize_registers");
+    LOG_I("initialize_registers");
     state_t *state = pthread_getspecific(register_key);
     if (NULL == state) {
         state = calloc(1, sizeof(state_t));
@@ -88,6 +88,6 @@ static
 void
 constructor_registers(void)
 {
-    __android_log_print(ANDROID_LOG_INFO, "libfranken", "constructor_registers");
+    LOG_I("constructor_registers");
     pthread_key_create(&register_key, NULL);
 }

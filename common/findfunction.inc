@@ -23,7 +23,7 @@ void  find_and_call_function(state_t *state, uint32_t addr)
 
     for (k = 0; k < funclist_cnt; k ++) {
         if (addr == funclist_addr[k]) {
-            __android_log_print(ANDROID_LOG_DEBUG, "libfranken", "find_and_call_function: func_%04x", addr);
+            LOG_I("find_and_call_function: func_%04x", addr);
             ((void (*)(state_t *))(funclist_ptr[k]))(state);
             return;
         }
@@ -32,6 +32,5 @@ void  find_and_call_function(state_t *state, uint32_t addr)
     if (find_and_call_function_runtime(state, (void*)addr))
         return;
 
-    __android_log_print(ANDROID_LOG_ERROR, "libfranken", "find_and_call_function: "
-                                            "function %p not found", addr);
+    LOG_E("find_and_call_function: function %p not found", addr);
 }
