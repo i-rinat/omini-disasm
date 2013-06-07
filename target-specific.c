@@ -233,7 +233,7 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             // If function parameters don't fit into registers, they passed in stack.
             // We need to reserve appropriate amount.
             const uint32_t max_param_offset = get_max_param_offset(signature);
-            const uint32_t stack_gap = 4 * (max_param_offset - 4);
+            const int32_t stack_gap = 4 * (max_param_offset - 4);
 
             if (stack_gap > 0)
                 emit_code("    r13 -= %d;", stack_gap);
