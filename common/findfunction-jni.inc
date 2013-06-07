@@ -86,8 +86,8 @@ find_and_call_function_runtime(state_t *state, void *addr)
         return 1;
     } else if (addr == JNIEnv_functions.SetLongField) {   // 110
         jlong value = load(r13) + (((uint64_t)load(r13 + 4)) << 32);
-        LOG_I("calling SetLongField(%p, %p, %p, 0x%08x%08x)",
-                                                                aa(r0), aa(r1), aa(r2), (uint32_t)(value >> 32), (uint32_t)(value & 0xffffffff));
+        LOG_I("calling SetLongField(%p, %p, %p, 0x%08x%08x)", aa(r0), aa(r1), aa(r2),
+                            (uint32_t)(value >> 32), (uint32_t)(value & 0xffffffff));
         (void)JNIEnv_functions.SetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), value);
         LOG_I("        SetLongField returned void");
         return 1;
@@ -145,8 +145,7 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         return 1;
     } else if (addr == JNIEnv_functions.CallStaticVoidMethod) {   // 141
-        LOG_I("calling CallStaticVoidMethod(%p, %p, %p, ... )",
-            aa(r0), aa(r1), aa(r2));
+        LOG_I("calling CallStaticVoidMethod(%p, %p, %p, ... )", aa(r0), aa(r1), aa(r2));
         // TODO: what if jlong comes unaligned?
         // TODO: use runtime tables to recall method signature
         (void)JNIEnv_functions.CallStaticVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
