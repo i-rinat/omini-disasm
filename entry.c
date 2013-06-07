@@ -540,9 +540,14 @@ generate_plt_trap_function(uint32_t func_addr)
         target_addr += arm_expand_imm12(code2 & 0xfff);
         target_addr += (code3 & 0xfff);
 
-        emit_code("static inline void func_%04x(state_t *state) {", func_addr);
-        emit_code("    func_%04x(state);", target_addr);
-        emit_code("}");
+        if (target_addr != setjmp_func_address) {
+            emit_code(" __attribute__((always_inline))");
+            emit_code("static void func_%04x(state_t *state) {", func_addr);
+            emit_code("    func_%04x(state);", target_addr);
+            emit_code("}");
+        } else {
+            setjmp_plt_func_address = func_addr;
+        }
     } else {
         assert(0 && "unknown plt sequence");
     }
@@ -624,6 +629,9 @@ generate_prototypes(void)
         char buf[1024];
         emit_code("static void func_%04x(state_t *state);", func_pc);
 
+        if (func_pc == setjmp_plt_func_address) // do not generate wrapper for setjmp
+            continue;
+
         if (0 != functions_count) {
             strcat(buf_addr, ", ");
             strcat(buf_ptrs, ", ");
@@ -642,6 +650,26 @@ generate_prototypes(void)
     emit_code("const int funclist_cnt = %d;", functions_count);
     emit_code(buf_addr);
     emit_code(buf_ptrs);
+
+    if (setjmp_plt_func_address) {
+        emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
+        emit_code("    LOG_I(\"calling setjmp(%%p)\", r0); \\");
+        emit_code("    uint32_t native_addr = get_jmp_buf_address((uint32_t)aa(r0)); \\");
+        emit_code("    LOG_I(\"native_addr = %%p (setjmp))\", native_addr); \\");
+        emit_code("    LOG_I(\"        setjmp state = %%p\", state); \\");
+        emit_code("    state_t *saved_state = state; \\");
+        emit_code("    int32_t retval = setjmp((long int *)native_addr); \\");
+        emit_code("    if (retval) { \\");
+        emit_code("        LOG_I(\"        setjmp returned %%d\", r0); \\");
+        emit_code("        LOG_I(\"        setjmp state = %%p\", state); \\");
+        emit_code("        LOG_I(\"        setjmp saved_state = %%p\", saved_state); \\");
+        emit_code("        LOG_I(\"        native_addr = %%p (setjmp)\", native_addr); \\");
+        emit_code("    } \\");
+        emit_code("    r0_signed = retval; \\");
+        emit_code("    LOG_I(\"        setjmp returned %%d\", r0); \\");
+        emit_code("}");
+    }
+
     free(buf_addr);
     free(buf_ptrs);
 
@@ -670,6 +698,7 @@ main(int argc, char *argv[])
     //emit_code("#include <android_native_app_glue.h>");
     emit_code("#include <pthread.h>");
     emit_code("#include \"tracing.inc\"");
+    emit_code("#include \"jmpbuf-table.inc\"");
     emit_code("");
 
     func_list_initialize();

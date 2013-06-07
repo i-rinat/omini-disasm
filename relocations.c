@@ -7,6 +7,8 @@
 #include "output.h"
 #include "pc-stack.h"
 
+uint32_t setjmp_func_address = 0;
+uint32_t setjmp_plt_func_address = 0;
 
 static
 void
@@ -204,17 +206,17 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "longjmp")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
-        emit_code("    longjmp((long int *)aa(r0), (int)r1);");
+        emit_code("    LOG_I(\"calling longjmp(%%p, %d)\", r0, r1);");
+        emit_code("    uint32_t native_addr = get_jmp_buf_address((uint32_t)aa(r0));");
+        emit_code("    LOG_I(\"native_addr = %%p (longjmp)\", native_addr);");
+        emit_code("    longjmp((long int *)native_addr, (int)r1);");
+        emit_code("    LOG_I(\"        longjmp should not return\");");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "setjmp")) {
-        emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling setjmp(%%p)\", r0);");
-        emit_code("    uint32_t saved_r13 = r13;");
-        emit_code("    r0_signed = setjmp((long int *)aa(r0));");
-        emit_code("    if (0 != r0) r13 = saved_r13;");
-        emit_code("    LOG_I(\"        setjmp returned %%d\", r0);");
-        emit_code("}");
+        // define function as macro in order to force inlining setjmp
+        // later, in prototypes.inc
+        setjmp_func_address = relp->address;
+
     } else if (!strcmp(ext_func_name, "pthread_cond_signal")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling %s\");", ext_func_name);
