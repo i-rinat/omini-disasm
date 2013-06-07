@@ -654,16 +654,10 @@ generate_prototypes(void)
     if (setjmp_plt_func_address) {
         emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
         emit_code("    LOG_I(\"calling setjmp(%%p)\", r0); \\");
-        emit_code("    uint32_t native_addr = get_jmp_buf_address((uint32_t)aa(r0)); \\");
-        emit_code("    LOG_I(\"native_addr = %%p (setjmp))\", native_addr); \\");
-        emit_code("    LOG_I(\"        setjmp state = %%p\", state); \\");
-        emit_code("    state_t *saved_state = state; \\");
-        emit_code("    int32_t retval = setjmp((long int *)native_addr); \\");
+        emit_code("    state_t saved_state = *state; \\");
+        emit_code("    int32_t retval = setjmp((long int *)get_jmp_buf_address((uint32_t)aa(r0))); \\");
         emit_code("    if (retval) { \\");
-        emit_code("        LOG_I(\"        setjmp returned %%d\", r0); \\");
-        emit_code("        LOG_I(\"        setjmp state = %%p\", state); \\");
-        emit_code("        LOG_I(\"        setjmp saved_state = %%p\", saved_state); \\");
-        emit_code("        LOG_I(\"        native_addr = %%p (setjmp)\", native_addr); \\");
+        emit_code("        *state = saved_state; \\");
         emit_code("    } \\");
         emit_code("    r0_signed = retval; \\");
         emit_code("    LOG_I(\"        setjmp returned %%d\", r0); \\");
