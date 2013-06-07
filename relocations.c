@@ -169,7 +169,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("    r0_signed = pthread_create((pthread_t *)aa(r0), "
                             "(const pthread_attr_t *)aa(r1), &proxy_38450, (void *)aa(r3));");
         emit_code("    } else {");
-        emit_code("    LOG_I(\"start_routine not found\");");
+        emit_code("    LOG_E(\"start_routine not found\");");
         emit_code("    }");
         emit_code("    r0 = 0;"); //fake success
         emit_code("}");
@@ -236,7 +236,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "snprintf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
+        emit_code("    LOG_E(\"calling %s\");", ext_func_name);
         // TODO: snprintf variadic function
         emit_code("    ");
         emit_code("}");
@@ -260,7 +260,8 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "qsort")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
+        // TODO: qsort wants function
+        emit_code("    LOG_E(\"calling %s\");", ext_func_name);
         emit_code("    qsort((void*)aa(r0), (size_t)r1, (size_t)r2, (void*)aa(r3));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_key_delete")) {
@@ -276,7 +277,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "vsnprintf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
+        emit_code("    LOG_E(\"calling %s\");", ext_func_name);
         // TODO: variadic functions
         emit_code("    ");
         emit_code("}");
@@ -329,7 +330,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "sigaction")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling fake sigaction(%%d, %%p, %%p)\", r0, aa(r1), aa(r2));");
+        emit_code("    LOG_E(\"calling fake sigaction(%%d, %%p, %%p)\", r0, aa(r1), aa(r2));");
         //emit_code("    LOG_I(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)aa(r1))->sa_handler);");
         //emit_code("    LOG_I(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)aa(r1))->sa_sigaction);");
         //emit_code("    LOG_I(\"   sigaction->sa_mask = %%x\", ((const struct sigaction *)aa(r1))->sa_mask);");
