@@ -230,8 +230,9 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "memmove")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
-        emit_code("    r0 = (uint32_t)memmove((void*)aa(r0), (const void*)aa(r1), (size_t)aa(r2));");
+        emit_code("    LOG_I(\"calling memmove(%%p, %%p, %%d)\", aa(r0), aa(r1), r2);");
+        emit_code("    r0 = (uint32_t)memmove((void*)aa(r0), (const void*)aa(r1), (size_t)r2);");
+        emit_code("    LOG_I(\"        memmove returned %%p\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "snprintf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
