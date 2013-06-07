@@ -99,7 +99,7 @@ load_byte(uint32_t addr)
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("load_byte from %p (%s)", addr, get_section_name_by_addr(addr));
     const uint8_t res = *((uint8_t *)adjust_address(addr));
-    LOG_I("load_byte -> 0x%04x", res);
+    LOG_I("load_byte -> 0x%02x", res);
     return res;
 #else
     return *((uint8_t *)adjust_address(addr));
