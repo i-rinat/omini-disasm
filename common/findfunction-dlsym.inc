@@ -375,6 +375,10 @@ proxy_glDrawTexfOES(state_t *state)
     (void)glDrawTexfOES((GLfloat)r0, (GLfloat)r1, (GLfloat)r2, (GLfloat)r3, (GLfloat)load(r13));
 }
 
+
+
+// ================================
+
 static
 void
 add_dlsym_table_entry(uint32_t addr, const char *name)
@@ -392,6 +396,175 @@ add_dlsym_table_entry(uint32_t addr, const char *name)
         dlsym_table_ptr[dlsym_table_element_count] = &proxy_AndroidBitmap_unlockPixels;
         dlsym_table_addr[dlsym_table_element_count] = addr;
         dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glBindTexture")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glBindTexture;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glBlendFunc")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glBlendFunc;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glClear")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glClear;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glClearColorx")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glClearColorx;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glColor4f")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glColor4f;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glColor4x")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glColor4x;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glCullFace")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glCullFace;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glDeleteTextures")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glDeleteTextures;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glDisable")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glDisable;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glDisableClientState")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glDisableClientState;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glDrawArrays")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glDrawArrays;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glEnable")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glEnable;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glEnableClientState")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glEnableClientState;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glFinish")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glFinish;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glFlush")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glFlush;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glFrontFace")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glFrontFace;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glGenTextures")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glGenTextures;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glGetError")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glGetError;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glGetFloatv")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glGetFloatv;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glGetIntegerv")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glGetIntegerv;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glGetString")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glGetString;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glLoadIdentity")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glLoadIdentity;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glLoadMatrixf")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glLoadMatrixf;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glLoadMatrixx")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glLoadMatrixx;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glMatrixMode")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glMatrixMode;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glPixelStorei")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glPixelStorei;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glPointSize")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glPointSize;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glScalef")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glScalef;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glScissor")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glScissor;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glShadeModel")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glShadeModel;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexCoordPointer")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexCoordPointer;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexEnvi")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexEnvi;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexEnvx")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexEnvx;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexImage2D")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexImage2D;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexParameterf")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexParameterf;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexParameteri")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexParameteri;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexParameteriv")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexParameteriv;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTexSubImage2D")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTexSubImage2D;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glTranslatex")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glTranslatex;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glVertexPointer")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glVertexPointer;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glViewport")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glViewport;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "glDrawTexfOES")) {
+        dlsym_table_ptr[dlsym_table_element_count] = &proxy_glDrawTexfOES;
+        dlsym_table_addr[dlsym_table_element_count] = addr;
+        dlsym_table_element_count ++;
+    } else if (!strcmp(name, "")) {
     } else if (!strcmp(name, "")) {
     } else if (!strcmp(name, "")) {
     } else if (!strcmp(name, "")) {
