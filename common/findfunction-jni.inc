@@ -132,7 +132,8 @@ find_and_call_function_runtime(state_t *state, void *addr)
                                                     (jsize)r3, (const jbyte*)aa(param5));
         return 1;
     } else if (addr == JNIEnv_functions.CallVoidMethod) {   // 61
-        LOG_I("calling CallVoidMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, load(r13));
+        uint32_t param5 = load(r13);
+        LOG_I("calling CallVoidMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
         // TODO: what if jlong comes unaligned?
         // TODO: use runtime tables to recall method signature
         (void)JNIEnv_functions.CallVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
