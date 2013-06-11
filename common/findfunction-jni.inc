@@ -172,9 +172,9 @@ find_and_call_function_runtime(state_t *state, void *addr)
         LOG_I("        JavaVM_functions.AttachCurrentThread returned %d", r0);
         return 1;
     } else if (addr == JavaVM_functions.DetachCurrentThread) {  // 5
-        LOG_I("calling JavaVM_functionsDetachCurrentThread(%p)", r0);
+        LOG_I("calling JavaVM_functions.DetachCurrentThread(%p)", r0);
         r0_signed = JavaVM_functions.DetachCurrentThread((JavaVM*)aa(r0));
-        LOG_I("        JavaVM_functionsDetachCurrentThread returned %d", r0);
+        LOG_I("        JavaVM_functions.DetachCurrentThread returned %d", r0);
         return 1;
     }
 
