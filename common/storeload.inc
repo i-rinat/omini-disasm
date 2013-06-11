@@ -62,10 +62,11 @@ static
 void
 store_halfword(uint32_t addr, uint32_t value)
 {
+    value &= 0xffff;
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("store_halfword 0x%04x to %p (%s)", value, addr, get_section_name_by_addr(addr));
 #endif
-    *((uint16_t *)adjust_address(addr)) = value;
+    *((uint16_t *)adjust_address(addr)) = (uint16_t)value;
 }
 
 static
@@ -86,10 +87,11 @@ static
 void
 store_byte(uint32_t addr, uint32_t value)
 {
+    value &= 0xff;
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("store_byte 0x%02x to %p (%s)", value, addr, get_section_name_by_addr(addr));
 #endif
-    *((uint8_t *)adjust_address(addr)) = value;
+    *((uint8_t *)adjust_address(addr)) = (uint8_t)value;
 }
 
 static
