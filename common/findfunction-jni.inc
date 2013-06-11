@@ -43,6 +43,11 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.NewGlobalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
         LOG_I("        NewGlobalRef returned %p", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.DeleteGlobalRef) { // 22
+        LOG_I("calling JNIEnv_functions.DeleteGlobalRef(%p, %p)", r0, r1);
+        (void)JNIEnv_functions.DeleteGlobalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
+        LOG_I("        JNIEnv_functions.DeleteGlobalRef returned void");
+        return 1;
     } else if (addr == JNIEnv_functions.GetStaticFieldID) { // 144
         LOG_I("calling GetStaticFieldID(%p, %p, %p \"%s\", %p \"%s\")", r0, r1, r2, aa(r2), r3, aa(r3));
         r0 = (uint32_t)JNIEnv_functions.GetStaticFieldID((JNIEnv*)aa(r0), (jclass)aa(r1),
@@ -74,6 +79,11 @@ find_and_call_function_runtime(state_t *state, void *addr)
         LOG_I("calling ExceptionCheck(%p)", r0);
         r0 = (uint32_t)JNIEnv_functions.ExceptionCheck((JNIEnv*)aa(r0));
         LOG_I("        ExceptionCheck returned %d", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.GetIntField) {   // 100
+        LOG_I("calling GetIntField(%p, %p, %p)", r0, r1, r2);
+        r0_signed = JNIEnv_functions.GetIntField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        LOG_I("        GetIntField returned 0x%08x", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetLongField) {   // 101
         LOG_I("calling GetLongField(%p, %p, %p)", r0, r1, r2);
@@ -142,6 +152,18 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         return 1;
+    } else if (addr == JNIEnv_functions.CallIntMethod) {   // 49
+        uint32_t param5 = load(r13);
+        LOG_I("calling CallIntMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
+        // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
+        r0_signed = JNIEnv_functions.CallIntMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        LOG_I("        CallIntMethod returned %d", r0);
+        return 1;
     } else if (addr == JNIEnv_functions.CallStaticVoidMethod) {   // 141
         LOG_I("calling CallStaticVoidMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, load(r13));
         // TODO: what if jlong comes unaligned?
@@ -151,6 +173,17 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
             aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        return 1;
+    } else if (addr == JNIEnv_functions.CallStaticObjectMethod) {   // 114
+        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, load(r13));
+        // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
+        r0 = (uint32_t)JNIEnv_functions.CallStaticObjectMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        LOG_I("        JNIEnv_functions.CallStaticObjectMethod returned %p", r0);
         return 1;
     } else if (addr == JNIEnv_functions.NewStringUTF) { //167
         LOG_I("calling JNIEnv_functions.NewStringUTF(%p, %p \"%s\")", r0, r1, aa(r1));
@@ -162,6 +195,11 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.GetStringLength((JNIEnv*)aa(r0), (jstring)aa(r1));
         LOG_I("        JNIEnv_functions.GetStringLength returned %d", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.GetArrayLength) {  // 171
+        LOG_I("calling JNIEnv_functions.GetArrayLength(%p, %p)", r0, r1);
+        r0 = (uint32_t)JNIEnv_functions.GetArrayLength((JNIEnv*)aa(r0), (jarray)aa(r1));
+        LOG_I("        JNIEnv_functions.GetArrayLength returned %d", r0);
+        return 1;
     } else if (addr == JNIEnv_functions.GetStringCritical) {  // 224
         LOG_I("calling JNIEnv_functions.GetStringCritical(%p, %p, %p)", r0, r1, r2);
         r0 = (uint32_t)JNIEnv_functions.GetStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
@@ -172,7 +210,14 @@ find_and_call_function_runtime(state_t *state, void *addr)
         (void)JNIEnv_functions.ReleaseStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (const jchar*)aa(r2));
         LOG_I("        JNIEnv_functions.ReleaseStringCritical returned void");
         return 1;
+    } else if (addr == JNIEnv_functions.NewCharArray) {  // 177
+        LOG_I("calling JNIEnv_functions.NewCharArray(%p, %d)", r0, r1);
+        r0 = (uint32_t)JNIEnv_functions.NewCharArray((JNIEnv*)aa(r0), (jsize)r1);
+        LOG_I("        JNIEnv_functions.NewCharArray returned %p", r0);
+        return 1;
     }
+
+
 
 
     // ===================
