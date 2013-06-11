@@ -526,10 +526,13 @@ p_ldm(uint32_t pc, uint32_t code)
 
     uint32_t mask = 1;
     uint32_t offset = 0;
+
+    emit_code("    {");
+    emit_code("      const uint32_t addr = r%u;", Rn);
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
             assert(!(k == Rn && wback));
-            emit_code("    r%u = load(r%u + %d);", k, Rn, offset);
+            emit_code("      r%u = load(addr + %d);", k, offset);
             offset += 4;
         }
         mask = mask << 1;
@@ -538,13 +541,14 @@ p_ldm(uint32_t pc, uint32_t code)
     if (code & (1<<15))
         offset += 4;
     if (wback)
-        emit_code("    r%u += %d;", Rn, offset);
+        emit_code("      r%u = addr + %d;", Rn, offset);
     if (code & (1<<15)) {
         set_function_end_flag();
-        emit_code("    return;");
+        emit_code("      return;");
     } else {
         pc_stack_push(pc + 4);
     }
+    emit_code("    }");
 }
 
 void
