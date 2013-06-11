@@ -157,6 +157,21 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.NewStringUTF((JNIEnv*)aa(r0), (const char*)aa(r1));
         LOG_I("        JNIEnv_functions.NewStringUTF returned %p", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.GetStringLength) {  // 164
+        LOG_I("calling JNIEnv_functions.GetStringLength(%p, %p)", r0, r1);
+        r0 = (uint32_t)JNIEnv_functions.GetStringLength((JNIEnv*)aa(r0), (jstring)aa(r1));
+        LOG_I("        JNIEnv_functions.GetStringLength returned %d", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.GetStringCritical) {  // 224
+        LOG_I("calling JNIEnv_functions.GetStringCritical(%p, %p, %p)", r0, r1, r2);
+        r0 = (uint32_t)JNIEnv_functions.GetStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
+        LOG_I("        JNIEnv_functions.GetStringCritical returned %p", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.ReleaseStringCritical) {  // 225
+        LOG_I("calling JNIEnv_functions.ReleaseStringCritical(%p, %p, %p)", r0, r1, r2);
+        (void)JNIEnv_functions.ReleaseStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (const jchar*)aa(r2));
+        LOG_I("        JNIEnv_functions.ReleaseStringCritical returned void");
+        return 1;
     }
 
 
