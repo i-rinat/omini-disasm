@@ -152,6 +152,11 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         return 1;
+    } else if (addr == JNIEnv_functions.NewStringUTF) { //167
+        LOG_I("calling JNIEnv_functions.NewStringUTF(%p, %p \"%s\")", r0, r1, aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.NewStringUTF((JNIEnv*)aa(r0), (const char*)aa(r1));
+        LOG_I("        JNIEnv_functions.NewStringUTF returned %p", r0);
+        return 1;
     }
 
 
