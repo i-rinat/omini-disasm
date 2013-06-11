@@ -34,6 +34,7 @@ pattern_switch_case(uint32_t pc)
     if ((code & 0xf) != regX)               // rX must be the same as in cmp instruction
         return 0;
 
+    emit_code("  }");
     emit_code("    switch (r%u) {", regX);
     for (uint32_t k = 0; k < paramY + 2; k ++) {
         code = get_word_at(pc + 4 + k * 4);
@@ -52,6 +53,7 @@ pattern_switch_case(uint32_t pc)
         pc_stack_push(target_pc);
     }
     emit_code("    }");
+    emit_code("  {");
 
     return 1;
 }
