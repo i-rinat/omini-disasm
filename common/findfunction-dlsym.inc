@@ -17,7 +17,7 @@ void
 proxy_AndroidBitmap_lockPixels(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_lockPixels");
-    r0_signed = AndroidBitmap_lockPixels((JNIEnv*)r0, (jobject)r1, (void**)r2);
+    r0_signed = AndroidBitmap_lockPixels((JNIEnv*)aa(r0), (jobject)aa(r1), (void**)aa(r2));
 }
 
 static
@@ -25,7 +25,7 @@ void
 proxy_AndroidBitmap_unlockPixels(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_unlockPixels");
-    r0_signed = AndroidBitmap_unlockPixels((JNIEnv*)r0, (jobject)r1);
+    r0_signed = AndroidBitmap_unlockPixels((JNIEnv*)aa(r0), (jobject)aa(r1));
 }
 
 static
@@ -33,7 +33,7 @@ void
 proxy_AndroidBitmap_getInfo(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_getInfo");
-    r0_signed = AndroidBitmap_getInfo((JNIEnv*)r0, (jobject)r1, (AndroidBitmapInfo*)r2);
+    r0_signed = AndroidBitmap_getInfo((JNIEnv*)aa(r0), (jobject)aa(r1), (AndroidBitmapInfo*)aa(r2));
 }
 
 
@@ -98,7 +98,7 @@ void
 proxy_glDeleteTextures(state_t *state)
 {
     LOG_I("calling proxy_glDeleteTextures");
-    (void)glDeleteTextures((GLsizei)r0, (const GLuint *)r1);
+    (void)glDeleteTextures((GLsizei)r0, (const GLuint *)aa(r1));
 }
 
 static
@@ -170,7 +170,7 @@ void
 proxy_glGenTextures(state_t *state)
 {
     LOG_I("calling proxy_glGenTextures");
-    (void)glGenTextures((GLsizei)r0, (GLuint *)r1);
+    (void)glGenTextures((GLsizei)r0, (GLuint *)aa(r1));
 }
 
 static
@@ -186,7 +186,7 @@ void
 proxy_glGetFloatv(state_t *state)
 {
     LOG_I("calling proxy_glGetFloatv");
-    (void)glGetFloatv((GLenum)r0, (GLfloat *)r1);
+    (void)glGetFloatv((GLenum)r0, (GLfloat *)aa(r1));
 }
 
 static
@@ -194,7 +194,7 @@ void
 proxy_glGetIntegerv(state_t *state)
 {
     LOG_I("calling proxy_glGetIntegerv");
-    (void)glGetIntegerv((GLenum)r0, (GLint *)r1);
+    (void)glGetIntegerv((GLenum)r0, (GLint *)aa(r1));
 }
 
 static
@@ -218,7 +218,7 @@ void
 proxy_glLoadMatrixf(state_t *state)
 {
     LOG_I("calling proxy_glLoadMatrixf");
-    (void)glLoadMatrixf((const GLfloat *)r0);
+    (void)glLoadMatrixf((const GLfloat *)aa(r0));
 }
 
 static
@@ -226,7 +226,7 @@ void
 proxy_glLoadMatrixx(state_t *state)
 {
     LOG_I("calling proxy_glLoadMatrixx");
-    (void)glLoadMatrixx((const GLfixed *)r0);
+    (void)glLoadMatrixx((const GLfixed *)aa(r0));
 }
 
 static
@@ -281,8 +281,8 @@ static
 void
 proxy_glTexCoordPointer(state_t *state)
 {
-    LOG_I("calling proxy_glTexCoordPointer");
-    (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)r3);
+    LOG_I("calling proxy_glTexCoordPointer(%d, %d, %d, %p)", r0, r1, r2, r3);
+    (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
 }
 
 static
@@ -307,7 +307,7 @@ proxy_glTexImage2D(state_t *state)
 {
     LOG_I("calling proxy_glTexImage2D");
     (void)glTexImage2D((GLenum)r0, (GLint)r1, (GLint)r2, (GLsizei)r3, (GLsizei)load(r13),
-        (GLint)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)load(r13 + 16));
+        (GLint)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)aa(load(r13 + 16)));
 }
 
 static
@@ -331,7 +331,7 @@ void
 proxy_glTexParameteriv(state_t *state)
 {
     LOG_I("calling proxy_glTexParameteriv");
-    (void)glTexParameteriv((GLenum)r0, (GLenum)r1, (const GLint *)r2);
+    (void)glTexParameteriv((GLenum)r0, (GLenum)r1, (const GLint *)aa(r2));
 }
 
 static
@@ -340,7 +340,7 @@ proxy_glTexSubImage2D(state_t *state)
 {
     LOG_I("calling proxy_glTexSubImage2D");
     (void)glTexSubImage2D((GLenum)r0, (GLint)r1, (GLint)r2 , (GLint)r3, (GLsizei)load(r13),
-        (GLsizei)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)load(r13 + 16));
+        (GLsizei)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)aa(load(r13 + 16)));
 }
 
 static
@@ -356,7 +356,7 @@ void
 proxy_glVertexPointer(state_t *state)
 {
     LOG_I("calling proxy_glVertexPointer");
-    (void)glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)r3);
+    (void)glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
 }
 
 static
