@@ -90,6 +90,16 @@ find_and_call_function_runtime(state_t *state, void *addr)
         x_int64_t = JNIEnv_functions.GetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
         LOG_I("        GetLongField returned 0x%08x%08x", r1, r0);
         return 1;
+    } else if (addr == JNIEnv_functions.SetObjectField) {   // 104
+        LOG_I("calling JNIEnv_functions.SetObjectField(%p, %p, %p, %p)", r0, r1, r2, r3);
+        (void)JNIEnv_functions.SetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), (jobject)aa(r3));
+        LOG_I("        JNIEnv_functions.SetObjectField returned void");
+        return 1;
+    } else if (addr == JNIEnv_functions.SetIntField) {   // 109
+        LOG_I("calling JNIEnv_functions.SetIntField(%p, %p, %p, %p)", r0, r1, r2, r3);
+        (void)JNIEnv_functions.SetIntField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), (jint)r3);
+        LOG_I("        JNIEnv_functions.SetIntField returned void");
+        return 1;
     } else if (addr == JNIEnv_functions.SetLongField) {   // 110
         jlong value = load(r13) + (((uint64_t)load(r13 + 4)) << 32);
         LOG_I("calling SetLongField(%p, %p, %p, 0x%08x%08x)", r0, r1, r2,
@@ -164,8 +174,33 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         LOG_I("        CallIntMethod returned %d", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.CallObjectMethod) {   // 34
+        uint32_t param5 = load(r13);
+        LOG_I("calling CallObjectMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
+        // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
+        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        LOG_I("        CallObjectMethod returned %p", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.CallBooleanMethod) {   // 37
+        uint32_t param5 = load(r13);
+        LOG_I("calling CallBooleanMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
+        // TODO: what if jlong comes unaligned?
+        // TODO: use runtime tables to recall method signature
+        r0 = (uint32_t)JNIEnv_functions.CallBooleanMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
+            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
+            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
+            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
+            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        LOG_I("        CallBooleanMethod returned %d", r0);
+        return 1;
     } else if (addr == JNIEnv_functions.CallStaticVoidMethod) {   // 141
-        LOG_I("calling CallStaticVoidMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, load(r13));
+        uint32_t param5 = load(r13);
+        LOG_I("calling CallStaticVoidMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
         // TODO: what if jlong comes unaligned?
         // TODO: use runtime tables to recall method signature
         (void)JNIEnv_functions.CallStaticVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
@@ -175,7 +210,8 @@ find_and_call_function_runtime(state_t *state, void *addr)
             aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
         return 1;
     } else if (addr == JNIEnv_functions.CallStaticObjectMethod) {   // 114
-        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, load(r13));
+        uint32_t param5 = load(r13);
+        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%p, %p, ... ])", r0, r1, r2, r3, param5);
         // TODO: what if jlong comes unaligned?
         // TODO: use runtime tables to recall method signature
         r0 = (uint32_t)JNIEnv_functions.CallStaticObjectMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
@@ -210,10 +246,25 @@ find_and_call_function_runtime(state_t *state, void *addr)
         (void)JNIEnv_functions.ReleaseStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (const jchar*)aa(r2));
         LOG_I("        JNIEnv_functions.ReleaseStringCritical returned void");
         return 1;
+    } else if (addr == JNIEnv_functions.NewByteArray) {  // 176
+        LOG_I("calling JNIEnv_functions.NewByteArray(%p, %d)", r0, r1);
+        r0 = (uint32_t)JNIEnv_functions.NewByteArray((JNIEnv*)aa(r0), (jsize)r1);
+        LOG_I("        JNIEnv_functions.NewByteArray returned %p", r0);
+        return 1;
     } else if (addr == JNIEnv_functions.NewCharArray) {  // 177
         LOG_I("calling JNIEnv_functions.NewCharArray(%p, %d)", r0, r1);
         r0 = (uint32_t)JNIEnv_functions.NewCharArray((JNIEnv*)aa(r0), (jsize)r1);
         LOG_I("        JNIEnv_functions.NewCharArray returned %p", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.GetStaticObjectField) { //  145
+        LOG_I("calling JNIEnv_functions.GetStaticObjectField(%p, %p, %p)", r0, r1, r2);
+        r0 = (uint32_t)JNIEnv_functions.GetStaticObjectField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
+        LOG_I("        JNIEnv_functions.GetStaticObjectField returned %p", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.IsSameObject) { //  24
+        LOG_I("calling JNIEnv_functions.IsSameObject(%p, %p, %p)", r0, r1, r2);
+        r0 = (uint32_t)JNIEnv_functions.IsSameObject((JNIEnv*)aa(r0), (jobject)aa(r1), (jobject)aa(r2));
+        LOG_I("        JNIEnv_functions.IsSameObject returned %d", r0);
         return 1;
     }
 
