@@ -73,7 +73,7 @@ initialize_state(void)
     if (NULL == state) {
         state = calloc(1, sizeof(state_t));
 
-        const uint32_t stack_length = 2000 * 4;
+        const uint32_t stack_length = 1024*1024;// 2000 * 4;
         state->d_stack = calloc(1, stack_length);
         r13 = (uint32_t)(state->d_stack + stack_length - 4 * 32);
 
