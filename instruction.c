@@ -557,12 +557,14 @@ p_ldmib(uint32_t pc, uint32_t code)
     const uint32_t Rn = (code >> 16) & 0x0f;
     const uint32_t wback = code & (1 << 21);
 
+    emit_code("    {");
+    emit_code("      const uint32_t addr = r%u;", Rn);
     uint32_t mask = 1;
     uint32_t offset = 0;
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
             assert(!(k == Rn && wback));
-            emit_code("    r%u = load(r%u + %d);", k, Rn, offset + 4);
+            emit_code("      r%u = load(addr + %d);", k, offset + 4);
             offset += 4;
         }
         mask = mask << 1;
@@ -572,14 +574,16 @@ p_ldmib(uint32_t pc, uint32_t code)
         offset += 4;
 
     if (wback)
-        emit_code("    r%u += %d;", Rn, offset);
+        emit_code("      r%u = addr + %d;", Rn, offset);
 
     if (code & (1 << 15)) {
         set_function_end_flag();
-        emit_code("    return;");
+        emit_code("      return;");
     } else {
         pc_stack_push(pc + 4);
     }
+
+    emit_code("    }");
 }
 
 void
@@ -630,25 +634,29 @@ p_ldmdb(uint32_t pc, uint32_t code)
     }
     uint32_t storage_size = neg_offset;
 
+    emit_code("    {");
+    emit_code("      const uint32_t addr = r%u;", Rn);
     mask = 1;
     for (uint32_t k = 0; k <= 14; k ++) {
         if (code & mask) {
-            emit_code("    r%u = load(r%u - %d);", k, Rn, neg_offset);
+            emit_code("      r%u = load(addr - %d);", k, neg_offset);
             neg_offset -= 4;
         }
         mask <<= 1;
     }
 
     if (wback)
-        emit_code("    r%u -= %d;", Rn, storage_size);
+        emit_code("      r%u = addr - %d;", Rn, storage_size);
 
     if (code & (1 << 15)) {
         // restores pc. I believe this is return statement
-        emit_code("    return;");
+        emit_code("      return;");
         set_function_end_flag();
     } else {
         pc_stack_push(pc + 4);
     }
+
+    emit_code("    }");
 }
 
 void
