@@ -577,6 +577,10 @@ add_dlsym_table_entry(uint32_t addr, const char *name)
         LOG_E("add_dlsym_table_entry: failed to add %s", name);
     }
 
+    if (dlsym_table_element_count >= DLSYM_TABLE_SIZE) {
+        LOG_E("dlsym_table_element_count >= DLSYM_TABLE_SIZE");
+    }
+
     pthread_mutex_unlock(&dlsym_mutex);
 }
 
