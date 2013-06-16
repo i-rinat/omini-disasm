@@ -145,6 +145,13 @@ find_and_call_function_runtime(state_t *state, void *addr)
         (void)JNIEnv_functions.GetByteArrayRegion((JNIEnv*)aa(r0), (jbyteArray)aa(r1), (jsize)r2,
                                                     (jsize)r3, (jbyte*)aa(param5));
         return 1;
+    } else if (addr == JNIEnv_functions.GetIntArrayRegion) {   // 203
+        uint32_t param5 = load(r13);
+        LOG_I("calling JNIEnv_functions.GetIntArrayRegion(%p, %p, %d, %d, %p)", r0, r1, r2, r3, param5);
+        (void)JNIEnv_functions.GetIntArrayRegion((JNIEnv*)aa(r0), (jintArray)aa(r1), (jsize)r2,
+                                                    (jsize)r3, (jint*)aa(param5));
+        LOG_I("        JNIEnv_functions.GetIntArrayRegion returned void");
+        return 1;
     } else if (addr == JNIEnv_functions.SetByteArrayRegion) {   // 208
         uint32_t param5 = load(r13);
         LOG_I("calling SetByteArrayRegion(%p, %p, %d, %d, %p)", r0, r1, r2, r3, param5);
@@ -256,6 +263,11 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.NewCharArray((JNIEnv*)aa(r0), (jsize)r1);
         LOG_I("        JNIEnv_functions.NewCharArray returned %p", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.NewIntArray) {  // 179
+        LOG_I("calling JNIEnv_functions.NewIntArray(%p, %d)", r0, r1);
+        r0 = (uint32_t)JNIEnv_functions.NewIntArray((JNIEnv*)aa(r0), (jsize)r1);
+        LOG_I("        JNIEnv_functions.NewIntArray returned %p", r0);
+        return 1;
     } else if (addr == JNIEnv_functions.GetStaticObjectField) { //  145
         LOG_I("calling JNIEnv_functions.GetStaticObjectField(%p, %p, %p)", r0, r1, r2);
         r0 = (uint32_t)JNIEnv_functions.GetStaticObjectField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
@@ -266,8 +278,13 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.IsSameObject((JNIEnv*)aa(r0), (jobject)aa(r1), (jobject)aa(r2));
         LOG_I("        JNIEnv_functions.IsSameObject returned %d", r0);
         return 1;
+    } else if (addr == JNIEnv_functions.SetIntArrayRegion) {    //  211
+        const uint32_t param5 = load(r13);
+        LOG_I("calling JNIEnv_functions.SetIntArrayRegion(%p, %p, %d, %d, %p)", r0, r1, r2, r3, param5);
+        (void)JNIEnv_functions.SetIntArrayRegion((JNIEnv*)aa(r0), (jintArray)aa(r1), (jsize)r2, (jsize)r3, (const jint*)param5);
+        LOG_I("calling JNIEnv_functions.SetIntArrayRegion returned void");
+        return 1;
     }
-
 
 
 
