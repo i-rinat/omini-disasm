@@ -20,9 +20,9 @@ process_jump_slot_relocations(arelent *relp)
         // do nothing
     } else if (!strcmp(ext_func_name, "memcpy")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling memcpy(%%p, %%p, %%d)\", r0, r1, r2);");
+        emit_code("    LOG_I(\"calling memcpy(%%p, %%p, %%d)\", vv(r0), vv(r1), r2);");
         emit_code("    r0 = (uint32_t)memcpy((void *)aa(r0), (void *)aa(r1), (size_t)r2);");
-        emit_code("    LOG_I(\"        memcpy returned %%p\", r0);");
+        emit_code("    LOG_I(\"        memcpy returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "__cxa_finalize")) {
         // do nothing
@@ -84,27 +84,27 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "memset")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling memset(%%p, %%d, %%d)\", r0, r1, r2);");
+        emit_code("    LOG_I(\"calling memset(%%p, %%d, %%d)\", vv(r0), r1, r2);");
         emit_code("    r0 = (uint32_t)memset((void *)aa(r0), (int)r1, (size_t)r2);");
-        emit_code("    LOG_I(\"        memset returned %%p\", r0);");
+        emit_code("    LOG_I(\"        memset returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_mutex_lock")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_mutex_lock(%%p)\", r0);");
+        emit_code("    LOG_I(\"calling pthread_mutex_lock(%%p)\", vv(r0));");
         emit_code("    r0_signed = pthread_mutex_lock((pthread_mutex_t *)aa(r0));");
         emit_code("    LOG_I(\"        pthread_mutex_lock returned %%d\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_mutex_unlock")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_mutex_unlock(%%p)\", r0);");
+        emit_code("    LOG_I(\"calling pthread_mutex_unlock(%%p)\", vv(r0));");
         emit_code("    r0_signed = pthread_mutex_unlock((pthread_mutex_t *)aa(r0));");
         emit_code("    LOG_I(\"        pthread_mutex_unlock returned %%d\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "free")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling free(%%p)\", r0);");
+        emit_code("    LOG_I(\"calling free(%%p)\", vv(r0));");
         emit_code("    free((void*)aa(r0));");
-        emit_code("    LOG_I(\"        free returned void\", r0);");
+        emit_code("    LOG_I(\"        free returned void\");");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "read")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
@@ -130,18 +130,18 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling malloc(%%d)\", r0);");
         emit_code("    r0 = (uint32_t)malloc((size_t)r0);");
-        emit_code("    LOG_I(\"        malloc returned %%p\", r0);");
+        emit_code("    LOG_I(\"        malloc returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_mutex_init")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_mutex_init(%%p, %%p)\", r0, r1);");
+        emit_code("    LOG_I(\"calling pthread_mutex_init(%%p, %%p)\", vv(r0), vv(r1));");
         emit_code("    r0_signed = pthread_mutex_init((pthread_mutex_t *)aa(r0), "
                                             "(const pthread_mutexattr_t *)aa(r1));");
         emit_code("    LOG_I(\"        pthread_mutex_init returned %%d\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_cond_init")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_cond_init(%%p, %%p)\", r0, r1);");
+        emit_code("    LOG_I(\"calling pthread_cond_init(%%p, %%p)\", vv(r0), vv(r1));");
         emit_code("    r0_signed = pthread_cond_init((pthread_cond_t *)aa(r0), "
                                             "(const pthread_condattr_t *)aa(r1));");
         emit_code("    LOG_I(\"        pthread_cond_init returned %%d\", r0);");
@@ -164,7 +164,7 @@ process_jump_slot_relocations(arelent *relp)
     } else if (!strcmp(ext_func_name, "pthread_create")) {
         emit_code("static void *proxy_38450(void *param);"); // TODO: remove hardcode
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_E(\"calling pthread_create(%%p, %%p, %%p, %%p)\", r0, r1, r2, r3);");
+        emit_code("    LOG_E(\"calling pthread_create(%%p, %%p, %%p, %%p)\", vv(r0), vv(r1), vv(r2), vv(r3));");
         // TODO: remove hardcode
         emit_code("    if (r2 == 0x38450) {");
         emit_code("    r0_signed = pthread_create((pthread_t *)aa(r0), "
@@ -207,9 +207,9 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "longjmp")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling longjmp(%%p, %%d)\", r0, r1);");
+        emit_code("    LOG_I(\"calling longjmp(%%p, %%d)\", vv(r0), r1);");
         emit_code("    uint32_t native_addr = get_jmp_buf_address((uint32_t)aa(r0));");
-        emit_code("    LOG_I(\"native_addr = %%p (longjmp)\", native_addr);");
+        emit_code("    LOG_I(\"native_addr = %%p (longjmp)\", vv(native_addr));");
         emit_code("    longjmp((long int *)native_addr, (int)r1);");
         emit_code("    LOG_I(\"        longjmp should not return\");");
         emit_code("}");
@@ -227,13 +227,13 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling pthread_getspecific(%%d)\", r0);");
         emit_code("    r0 = (uint32_t)pthread_getspecific((pthread_key_t)r0);");
-        emit_code("    LOG_I(\"        pthread_getspecific returned %%p\", r0);");
+        emit_code("    LOG_I(\"        pthread_getspecific returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "memmove")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling memmove(%%p, %%p, %%d)\", r0, r1, r2);");
+        emit_code("    LOG_I(\"calling memmove(%%p, %%p, %%d)\", vv(r0), vv(r1), r2);");
         emit_code("    r0 = (uint32_t)memmove((void*)aa(r0), (const void*)aa(r1), (size_t)r2);");
-        emit_code("    LOG_I(\"        memmove returned %%p\", r0);");
+        emit_code("    LOG_I(\"        memmove returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "snprintf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
@@ -243,7 +243,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "syscall")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling syscall(%%d, %%p, %%p, %%p)\", r0, r1, r2, r3);");
+        emit_code("    LOG_I(\"calling syscall(%%d, %%p, %%p, %%p)\", r0, vv(r1), vv(r2), vv(r3));");
         // TODO: syscall variadic function
         emit_code("    r0_signed = syscall(r0, aa(r1), aa(r2), aa(r3));");
         emit_code("    LOG_I(\"        syscall returned %%d\", r0);");
@@ -291,32 +291,32 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling calloc(%%d, %%d)\", r0, r1);");
         emit_code("    r0 = (uint32_t)calloc((size_t)r0, (size_t)r1);");
-        emit_code("    LOG_I(\"        calloc returned %%p\", r0);");
+        emit_code("    LOG_I(\"        calloc returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_key_create")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_key_create(%%p, %%p)\", aa(r0), r1);");
+        emit_code("    LOG_I(\"calling pthread_key_create(%%p, %%p)\", vv(r0), vv(r1));");
         // TODO: what to do if (r1 != 0) ? Need some proxy.
         emit_code("    r0_signed = pthread_key_create((pthread_key_t*)aa(r0), (void *)aa(r1));");
         emit_code("    LOG_I(\"        pthread_key_create returned %%d\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "strstr")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling strstr(%%p \\\"%%s\\\", %%p, \\\"%%s\\\")\", r0, aa(r0), r1, aa(r1));");
+        emit_code("    LOG_I(\"calling strstr(%%p \\\"%%s\\\", %%p, \\\"%%s\\\")\", vv(r0), aa(r0), vv(r1), aa(r1));");
         emit_code("    r0 = (uint32_t)strstr((const char *)aa(r0), (const char *)aa(r1));");
-        emit_code("    LOG_I(\"        strstr returned %%p \\\"%%s\\\"\", r0, aa(r0));");
+        emit_code("    LOG_I(\"        strstr returned %%p \\\"%%s\\\"\", vv(r0), aa(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "strncmp")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling strncmp(%%p \\\"%%s\\\", %%p \\\"%%s\\\", %d)\", r0, aa(r0), r1, aa(r1), r2);");
+        emit_code("    LOG_I(\"calling strncmp(%%p \\\"%%s\\\", %%p \\\"%%s\\\", %%d)\", vv(r0), aa(r0), vv(r1), aa(r1), r2);");
         emit_code("    r0_signed = strncmp((const char *)aa(r0), (const char *)aa(r1), (size_t)r2);");
-        emit_code("    LOG_I(\"        strncmp returned %d\", r0_signed);");
+        emit_code("    LOG_I(\"        strncmp returned %%d\", r0_signed);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "dlopen")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling dlopen(%%p \\\"%%s\\\", %%d)\", r0, aa(r0), r1);");
+        emit_code("    LOG_I(\"calling dlopen(%%p \\\"%%s\\\", %%d)\", vv(r0), aa(r0), r1);");
         emit_code("    r0 = (uint32_t)dlopen((const char *)aa(r0), (int)r1);");
-        emit_code("    LOG_I(\"        dlopen returned %%p\", r0);");
+        emit_code("    LOG_I(\"        dlopen returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "realloc")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
@@ -325,17 +325,17 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "memcmp")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling memcmp(%%p, %%p, %%d)\", r0, r1, r2);");
+        emit_code("    LOG_I(\"calling memcmp(%%p, %%p, %%d)\", vv(r0), vv(r1), r2);");
         emit_code("    r0_signed = memcmp((const void *)aa(r0), (const void *)aa(r1), (size_t)r2);");
         emit_code("    LOG_I(\"        memcmp returned %%d\", r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "sigaction")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_E(\"calling fake sigaction(%%d, %%p, %%p)\", r0, r1, r2);");
+        emit_code("    LOG_E(\"calling fake sigaction(%%d, %%p, %%p)\", r0, vv(r1), vv(r2));");
         emit_code("    LOG_E(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)aa(r1))->sa_handler);");
         emit_code("    LOG_E(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)aa(r1))->sa_sigaction);");
-        emit_code("    LOG_E(\"   sigaction->sa_mask = %%x\", ((const struct sigaction *)aa(r1))->sa_mask);");
-        emit_code("    LOG_E(\"   sigaction->sa_flags = %%x\", ((const struct sigaction *)aa(r1))->sa_flags);");
+        emit_code("    LOG_E(\"   sigaction->sa_mask = %%lx\", ((const struct sigaction *)aa(r1))->sa_mask);");
+        emit_code("    LOG_E(\"   sigaction->sa_flags = %%lx\", ((const struct sigaction *)aa(r1))->sa_flags);");
         emit_code("    LOG_E(\"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)aa(r1))->sa_restorer);");
         //emit_code("    r0_signed = sigaction((int)r0, (const struct sigaction *)aa(r1), "
         //                    "(struct sigaction *)aa(r2));");
@@ -343,10 +343,10 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "dlsym")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling dlsym(%%p, %%p \\\"%%s\\\")\", r0, r1, aa(r1));");
+        emit_code("    LOG_I(\"calling dlsym(%%p, %%p \\\"%%s\\\")\", vv(r0), vv(r1), aa(r1));");
         emit_code("    r0 = (uint32_t)dlsym((void *)aa(r0), (const char *)aa(r1));");
         emit_code("    add_dlsym_table_entry(r0, (const char *)aa(r1));");
-        emit_code("    LOG_I(\"        dlsym returned %%p\", r0);");
+        emit_code("    LOG_I(\"        dlsym returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_self")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
@@ -361,7 +361,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "strlen")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling strlen(%%p \\\"%%s\\\")\", aa(r0), aa(r0));");
+        emit_code("    LOG_I(\"calling strlen(%%p \\\"%%s\\\")\", vv(r0), aa(r0));");
         emit_code("    r0 = (uint32_t)strlen((const char *)aa(r0));");
         emit_code("    LOG_I(\"        strlen retuned %%d\", r0);");
         emit_code("}");
@@ -382,7 +382,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "pthread_setspecific")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling pthread_setspecific(%%d, %%p)\", r0, r1);");
+        emit_code("    LOG_I(\"calling pthread_setspecific(%%d, %%p)\", r0, vv(r1));");
         emit_code("    r0_signed = pthread_setspecific((pthread_key_t)r0, (const void *)aa(r1));");
         emit_code("    LOG_I(\"        pthread_setspecific returned %%d\", r0);");
         emit_code("}");
@@ -425,9 +425,9 @@ process_glob_dat_relocations(arelent *relp)
     if (!strcmp(ext_func_name, "memset")) {
         emit_code("// process_glob_dat_relocations");
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling memset(%%p, %%d, %%d)\", r0, r1, r2);");
+        emit_code("    LOG_I(\"calling memset(%%p, %%d, %%d)\", vv(r0), r1, r2);");
         emit_code("    r0 = (uint32_t)memset((void *)aa(r0), (int)r1, (size_t)r2);");
-        emit_code("    LOG_I(\"        memset returned %%p\", r0);");
+        emit_code("    LOG_I(\"        memset returned %%p\", vv(r0));");
         emit_code("}");
         func_list_add(relp->address);
         func_list_mark_done(relp->address);

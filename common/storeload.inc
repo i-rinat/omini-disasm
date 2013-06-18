@@ -40,7 +40,7 @@ void
 store(uint32_t addr, uint32_t value)
 {
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store 0x%08x to %p (%s)", value, addr, get_section_name_by_addr(addr));
+    LOG_I("store 0x%08x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
     *((uint32_t *)adjust_address(addr)) = value;
 }
@@ -50,7 +50,7 @@ uint32_t
 load(uint32_t addr)
 {
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load from %p (%s)", addr, get_section_name_by_addr(addr));
+    LOG_I("load from %p (%s)", vv(addr), get_section_name_by_addr(addr));
     const uint32_t res = *((uint32_t *)adjust_address(addr));
     LOG_I("load -> 0x%08x", res);
     return res;
@@ -65,7 +65,7 @@ store_halfword(uint32_t addr, uint32_t value)
 {
     value &= 0xffff;
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store_halfword 0x%04x to %p (%s)", value, addr, get_section_name_by_addr(addr));
+    LOG_I("store_halfword 0x%04x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
     *((uint16_t *)adjust_address(addr)) = (uint16_t)value;
 }
@@ -75,7 +75,7 @@ uint32_t
 load_halfword(uint32_t addr)
 {
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_halfword from %p (%s)", addr, get_section_name_by_addr(addr));
+    LOG_I("load_halfword from %p (%s)", vv(addr), get_section_name_by_addr(addr));
     const uint16_t res = *((uint16_t *)adjust_address(addr));
     LOG_I("load_halfword -> 0x%04x", res);
     return res;
@@ -90,7 +90,7 @@ store_byte(uint32_t addr, uint32_t value)
 {
     value &= 0xff;
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store_byte 0x%02x to %p (%s)", value, addr, get_section_name_by_addr(addr));
+    LOG_I("store_byte 0x%02x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
     *((uint8_t *)adjust_address(addr)) = (uint8_t)value;
 }
@@ -100,7 +100,7 @@ uint32_t
 load_byte(uint32_t addr)
 {
 #ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_byte from %p (%s)", addr, get_section_name_by_addr(addr));
+    LOG_I("load_byte from %p (%s)", vv(addr), get_section_name_by_addr(addr));
     const uint8_t res = *((uint8_t *)adjust_address(addr));
     LOG_I("load_byte -> 0x%02x", res);
     return res;

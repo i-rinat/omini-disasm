@@ -69,7 +69,7 @@ find_and_call_function_runtime(state_t *state, void *addr)
     } else if (addr == JNIEnv_functions.GetStaticLongField) {   // 151
         LOG_I("calling GetStaticLongField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
         x_int64_t = JNIEnv_functions.GetStaticLongField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
-        LOG_I("        GetStaticLongField returned %ld", x_int64_t);
+        LOG_I("        GetStaticLongField returned %lld", x_int64_t);
         return 1;
     } else if (addr == JNIEnv_functions.ExceptionClear) {   // 17
         LOG_I("calling ExceptionClear");
@@ -253,7 +253,7 @@ find_and_call_function_runtime(state_t *state, void *addr)
     } else if (addr == JNIEnv_functions.GetStringCritical) {  // 224
         LOG_I("calling JNIEnv_functions.GetStringCritical(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
         r0 = (uint32_t)JNIEnv_functions.GetStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
-        LOG_I("        JNIEnv_functions.GetStringCritical returned %p", r0);
+        LOG_I("        JNIEnv_functions.GetStringCritical returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ReleaseStringCritical) {  // 225
         LOG_I("calling JNIEnv_functions.ReleaseStringCritical(%p, %p, %p)", vv(r0), vv(r1), vv(r2));

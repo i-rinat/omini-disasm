@@ -653,7 +653,7 @@ generate_prototypes(void)
 
     if (setjmp_plt_func_address) {
         emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
-        emit_code("    LOG_I(\"calling setjmp(%%p)\", r0); \\");
+        emit_code("    LOG_I(\"calling setjmp(%%p)\", vv(r0)); \\");
         emit_code("    state_t saved_state = *state; \\");
         emit_code("    int32_t retval = setjmp((long int *)get_jmp_buf_address((uint32_t)aa(r0))); \\");
         emit_code("    if (retval) { \\");
@@ -677,6 +677,7 @@ main(int argc, char *argv[])
 
     set_output_file("code.c");
 
+    emit_code("#define _GNU_SOURCE");
     emit_code("#include <stdint.h>");
     emit_code("#include <stdlib.h>");
     emit_code("#include <string.h>");
@@ -691,6 +692,11 @@ main(int argc, char *argv[])
     emit_code("#include <android/configuration.h>");
     //emit_code("#include <android_native_app_glue.h>");
     emit_code("#include <pthread.h>");
+    emit_code("#include <unistd.h>");
+    emit_code("#include <sys/syscall.h>");
+    emit_code("#include <sys/time.h>");
+    emit_code("#include <sys/resource.h>");
+    emit_code("#include <dlfcn.h>");
     emit_code("#include \"tracing.inc\"");
     emit_code("#include \"jmpbuf-table.inc\"");
     emit_code("");

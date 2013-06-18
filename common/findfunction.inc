@@ -36,5 +36,5 @@ void  find_and_call_function(state_t *state, uint32_t addr)
     if (find_and_call_dlsym(state, addr))
         return;
 
-    LOG_E("find_and_call_function: function %p not found", addr);
+    LOG_E("find_and_call_function: function %p not found", vv(addr));
 }

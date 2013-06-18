@@ -1,5 +1,6 @@
 // findfunction-dlsym.inc
 
+#define GL_GLEXT_PROTOTYPES
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 
@@ -281,7 +282,7 @@ static
 void
 proxy_glTexCoordPointer(state_t *state)
 {
-    LOG_I("calling proxy_glTexCoordPointer(%d, %d, %d, %p)", r0, r1, r2, r3);
+    LOG_I("calling proxy_glTexCoordPointer(%d, %d, %d, %p)", r0, r1, r2, vv(r3));
     (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
 }
 
