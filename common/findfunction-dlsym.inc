@@ -16,7 +16,7 @@ static
 void
 proxy_AndroidBitmap_lockPixels(state_t *state)
 {
-    LOG_I("calling proxy_AndroidBitmap_lockPixels");
+    LOG_I("calling proxy_AndroidBitmap_lockPixels(%p, %p, %p)", (void*)r0, (void*)r1, (void*)r2);
     r0_signed = AndroidBitmap_lockPixels((JNIEnv*)aa(r0), (jobject)aa(r1), (void**)aa(r2));
 }
 
@@ -24,7 +24,7 @@ static
 void
 proxy_AndroidBitmap_unlockPixels(state_t *state)
 {
-    LOG_I("calling proxy_AndroidBitmap_unlockPixels");
+    LOG_I("calling proxy_AndroidBitmap_unlockPixels(%p, %p)", (void*)r0, (void*)r1);
     r0_signed = AndroidBitmap_unlockPixels((JNIEnv*)aa(r0), (jobject)aa(r1));
 }
 
@@ -32,7 +32,7 @@ static
 void
 proxy_AndroidBitmap_getInfo(state_t *state)
 {
-    LOG_I("calling proxy_AndroidBitmap_getInfo");
+    LOG_I("calling proxy_AndroidBitmap_getInfo(%p, %p, %p)", (void*)r0, (void*)r1, (void*)r2);
     r0_signed = AndroidBitmap_getInfo((JNIEnv*)aa(r0), (jobject)aa(r1), (AndroidBitmapInfo*)aa(r2));
 }
 
@@ -41,7 +41,7 @@ static
 void
 proxy_glBindTexture(state_t *state)
 {
-    LOG_I("calling proxy_glBindTexture");
+    LOG_I("calling proxy_glBindTexture(0x%x, %u)", r0, r1);
     (void)glBindTexture((GLenum)r0, (GLuint)r1);
 }
 
