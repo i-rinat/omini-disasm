@@ -84,20 +84,51 @@ get_signature_for_method(jmethodID methodID)
 
 static
 void
-doCallStaticVoidMethod(JNIEnv* jnienv, jobject obj, jmethodID methodID, state_t *state)
+doCallStaticVoidMethod(state_t *state)
 {
-    uint32_t k;
-    const char *signature = NULL;
-
-    for (k = 0; k < jni_method_table_element_count; k ++) {
-        if (methodID == jni_method_table[k].methodID) {
-            signature = jni_method_table[k].signature;
-            break;
-        }
-    }
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
         LOG_E("doCallStaticVoidMethod: no method %p in jni_method_table", vv(methodID));
+        return;
+    }
+
+    if (!strcmp(signature, "")) {   // no arguments
+        LOG_I("calling JNIEnv_functions.CallStaticVoidMethod(%p, %p, %p, [])", vv(jnienv), vv(obj),
+            vv(methodID));
+        (void)JNIEnv_functions.CallStaticVoidMethod(jnienv, obj, methodID);
+        LOG_I("        JNIEnv_functions.CallStaticVoidMethod returned void");
+    } else if (!strcmp(signature, "I")) {
+        uint32_t param1 = r3;
+        LOG_I("calling JNIEnv_functions.CallStaticVoidMethod(%p, %p, %p, [%d])", vv(jnienv), vv(obj),
+            vv(methodID), param1);
+        (void)JNIEnv_functions.CallStaticVoidMethod(jnienv, obj, methodID, param1);
+        LOG_I("        JNIEnv_functions.CallStaticVoidMethod returned void");
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallStaticVoidMethod: unknown signature %s", signature);
+        return;
+    }
+}
+
+static
+void
+doCallStaticObjectMethod(state_t *state)
+{
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
+
+    if (NULL == signature) {
+        LOG_E("doCallStaticObjectMethod: no method %p in jni_method_table", vv(methodID));
         return;
     }
 
@@ -110,8 +141,101 @@ doCallStaticVoidMethod(JNIEnv* jnienv, jobject obj, jmethodID methodID, state_t 
         double   param6 = load_double(r13 + 16);
         void    *param7 = (void*)load(r13 + 24);
         uint32_t param8 = load(r13 + 28);
-        JNIEnv_functions.CallStaticVoidMethod(jnienv, obj, methodID, param1, param2, param3,
-                param4, param5, param6, param7, param8);
+        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%p, %d, %d, %d, %d, %f, %p, %d])",
+                vv(jnienv), vv(obj), vv(methodID), param1, param2, param3, param4, param5,
+                param6, param7, param8);
+        r0 = (uint32_t)JNIEnv_functions.CallStaticObjectMethod(jnienv, obj, methodID, param1,
+                param2, param3, param4, param5, param6, param7, param8);
+        LOG_I("        JNIEnv_functions.CallStaticObjectMethod returned %p", vv(r0));
+    } else if (!strcmp(signature, "I")) {
+        uint32_t    param1 = r3;
+        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%d])",
+                vv(jnienv), vv(obj), vv(methodID), param1);
+        r0 = (uint32_t)JNIEnv_functions.CallStaticObjectMethod(jnienv, obj, methodID, param1);
+        LOG_I("        JNIEnv_functions.CallStaticObjectMethod returned %p", vv(r0));
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallStaticObjectMethod: unknown signature %s", signature);
+        return;
+    }
+}
+
+static
+void
+doCallVoidMethod(state_t *state)
+{
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
+
+    if (NULL == signature) {
+        LOG_E("doCallVoidMethod: no method %p in jni_method_table", vv(methodID));
+        return;
+    }
+
+    if (!strcmp(signature, "")) {   // no arguments
+        LOG_I("calling JNIEnv_functions.CallVoidMethod(%p, %p, %p, [])", vv(jnienv), vv(obj), vv(methodID));
+        (void)JNIEnv_functions.CallVoidMethod(jnienv, obj, methodID);
+        LOG_I("        JNIEnv_functions.CallVoidMethod returned void");
+    } else if (!strcmp(signature, "I")) {
+        uint32_t param1 = r3;
+        LOG_I("calling JNIEnv_functions.CallVoidMethod(%p, %p, %p, [%d])", vv(jnienv), vv(obj),
+                    vv(methodID), param1);
+        (void)JNIEnv_functions.CallVoidMethod(jnienv, obj, methodID, param1);
+        LOG_I("        JNIEnv_functions.CallVoidMethod returned void");
+    } else if (!strcmp(signature, "P")) {
+        void *param1 = (void*)r3;
+        LOG_I("calling JNIEnv_functions.CallVoidMethod(%p, %p, %p, [%p])", vv(jnienv), vv(obj),
+                    vv(methodID), param1);
+        (void)JNIEnv_functions.CallVoidMethod(jnienv, obj, methodID, param1);
+        LOG_I("        JNIEnv_functions.CallVoidMethod returned void");
+    } else if (!strcmp(signature, "II")) {
+        uint32_t param1 = r3;
+        uint32_t param2 = load(r13);
+        LOG_I("calling JNIEnv_functions.CallVoidMethod(%p, %p, %p, [%d, %d])", vv(jnienv), vv(obj),
+                    vv(methodID), param1, param2);
+        (void)JNIEnv_functions.CallVoidMethod(jnienv, obj, methodID, param1, param2);
+        LOG_I("        JNIEnv_functions.CallVoidMethod returned void");
+    } else if (!strcmp(signature, "IIII")) {
+        uint32_t param1 = r3;
+        uint32_t param2 = load(r13);
+        uint32_t param3 = load(r13 + 4);
+        uint32_t param4 = load(r13 + 8);
+        LOG_I("calling JNIEnv_functions.CallVoidMethod(%p, %p, %p, [%d, %d, %d, %d])", vv(jnienv), vv(obj),
+                    vv(methodID), param1, param2, param3, param4);
+        (void)JNIEnv_functions.CallVoidMethod(jnienv, obj, methodID, param1, param2, param3, param4);
+        LOG_I("        JNIEnv_functions.CallVoidMethod returned void");
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallVoidMethod: unknown signature %s", signature);
+        return;
+    }
+}
+
+static
+void
+doCallIntMethod(state_t *state)
+{
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
+
+    if (NULL == signature) {
+        LOG_E("doCallIntMethod: no method %p in jni_method_table", vv(methodID));
+        return;
+    }
+
+    if (!strcmp(signature, "")) {
+        LOG_I("calling JNIEnv_functions.CallIntMethod(%p, %p, %p, [])", vv(jnienv), vv(obj), vv(methodID));
+        r0_signed =    JNIEnv_functions.CallIntMethod(jnienv, obj, methodID);
+        LOG_I("        JNIEnv_functions.CallIntMethod returned %d", r0);
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
@@ -119,10 +243,74 @@ doCallStaticVoidMethod(JNIEnv* jnienv, jobject obj, jmethodID methodID, state_t 
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
     } else {
-        LOG_E("doCallStaticVoidMethod: unknown signature %s", signature);
+        LOG_E("doCallIntMethod: unknown signature %s", signature);
+        return;
+    }
+}
+
+static
+void
+doCallObjectMethod(state_t *state)
+{
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
+
+    if (NULL == signature) {
+        LOG_E("doCallObjectMethod: no method %p in jni_method_table", vv(methodID));
         return;
     }
 
+    if (!strcmp(signature, "")) {
+        LOG_I("calling JNIEnv_functions.CallObjectMethod(%p, %p, %p, [])", vv(jnienv), vv(obj), vv(methodID));
+        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID);
+        LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
+    } else if (!strcmp(signature, "I")) {
+        uint32_t param1 = r3;
+        LOG_I("calling JNIEnv_functions.CallObjectMethod(%p, %p, %p, [%d])", vv(jnienv), vv(obj),
+            vv(methodID), param1);
+        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID, param1);
+        LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallObjectMethod: unknown signature %s", signature);
+        return;
+    }
+}
+
+static
+void
+doCallBooleanMethod(state_t *state)
+{
+    JNIEnv *jnienv = (JNIEnv*)aa(r0);
+    jobject obj = (jobject)aa(r1);
+    jmethodID   methodID = (jmethodID)aa(r2);
+    const char *signature = get_signature_for_method(methodID);
+
+    if (NULL == signature) {
+        LOG_E("doCallBooleanMethod: no method %p in jni_method_table", vv(methodID));
+        return;
+    }
+
+    if (!strcmp(signature, "")) {
+        LOG_I("calling JNIEnv_functions.CallBooleanMethod(%p, %p, %p, [])", vv(jnienv), vv(obj), vv(methodID));
+        r0 = (uint32_t)JNIEnv_functions.CallBooleanMethod(jnienv, obj, methodID);
+        LOG_I("        JNIEnv_functions.CallBooleanMethod returned %d", r0);
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallBooleanMethod: unknown signature %s", signature);
+        return;
+    }
 }
 
 static
@@ -290,75 +478,22 @@ find_and_call_function_runtime(state_t *state, void *addr)
                                                     (jsize)r3, (const jbyte*)aa(param5));
         return 1;
     } else if (addr == JNIEnv_functions.CallVoidMethod) {   // 61
-        uint32_t param5 = load(r13);
-        LOG_I("calling CallVoidMethod(%p, %p, %p, [%p, %p, ... ])", vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        (void)JNIEnv_functions.CallVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        doCallVoidMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.CallIntMethod) {   // 49
-        uint32_t param5 = load(r13);
-        LOG_I("calling CallIntMethod(%p, %p, %p, [%p, %p, ... ])", vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        r0_signed = JNIEnv_functions.CallIntMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
-        LOG_I("        CallIntMethod returned %d", r0);
+        doCallIntMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.CallObjectMethod) {   // 34
-        uint32_t param5 = load(r13);
-        LOG_I("calling CallObjectMethod(%p, %p, %p, [%p, %p, ... ])", vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
-        LOG_I("        CallObjectMethod returned %p", vv(r0));
+        doCallObjectMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.CallBooleanMethod) {   // 37
-        uint32_t param5 = load(r13);
-        LOG_I("calling CallBooleanMethod(%p, %p, %p, [%p, %p, ... ])", vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        r0 = (uint32_t)JNIEnv_functions.CallBooleanMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
-        LOG_I("        CallBooleanMethod returned %d", r0);
+        doCallBooleanMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.CallStaticVoidMethod) {   // 141
-        uint32_t param5 = load(r13);
-        LOG_I("calling CallStaticVoidMethod(%p, %p, %p, [%p, %p, ... ])", vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        (void)JNIEnv_functions.CallStaticVoidMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
+        doCallStaticVoidMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.CallStaticObjectMethod) {   // 114
-        uint32_t param5 = load(r13);
-        LOG_I("calling JNIEnv_functions.CallStaticObjectMethod(%p, %p, %p, [%p, %p, ... ])",
-                                                    vv(r0), vv(r1), vv(r2), vv(r3), vv(param5));
-        // TODO: what if jlong comes unaligned?
-        // TODO: use runtime tables to recall method signature
-        r0 = (uint32_t)JNIEnv_functions.CallStaticObjectMethod((JNIEnv*)aa(r0), (jobject)aa(r1), (jmethodID)aa(r2),
-            aa(r3), aa(load(r13)), aa(load(r13 + 4)), aa(load(r13 + 4*2)), aa(load(r13 + 4*3)),
-            aa(load(r13 + 4*4)), aa(load(r13 + 4*5)), aa(load(r13 + 4*6)), aa(load(r13 + 4*7)),
-            aa(load(r13 + 4*8)), aa(load(r13 + 4*9)), aa(load(r13 + 4*10)), aa(load(r13 + 4*11)),
-            aa(load(r13 + 4*12)), aa(load(r13 + 4*13)), aa(load(r13 + 4*14)), aa(load(r13 + 4*15)));
-        LOG_I("        JNIEnv_functions.CallStaticObjectMethod returned %p", vv(r0));
+        doCallStaticObjectMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.NewStringUTF) { //167
         LOG_I("calling JNIEnv_functions.NewStringUTF(%p, %p \"%s\")", vv(r0), vv(r1), aa(r1));
