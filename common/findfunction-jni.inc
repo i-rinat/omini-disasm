@@ -3,6 +3,117 @@
 static struct JNINativeInterface JNIEnv_functions;
 static struct JNIInvokeInterface JavaVM_functions;
 
+#define jni_method_table_max_elements   200
+uint32_t jni_method_table_element_count = 0;
+struct {
+    jmethodID   methodID;
+    const char *signature;
+} jni_method_table[jni_method_table_max_elements];
+
+static
+void
+memorize_method_signature(jmethodID methodID, const char *provided_signature)
+{
+    if (jni_method_table_element_count >= jni_method_table_max_elements) {
+        LOG_E("memorize_method_signature: too many methods");
+        return;
+    }
+
+    char *signature = strdup(provided_signature);
+
+    // simplify signature. Convert L's to P (pointer), Z to I, F and D to D, J to J
+    // It seems (android) JNI requires floats to be expanded to doubles
+
+    const char *src_ptr = provided_signature + 1; // skip '('
+    char *dst_ptr = signature;
+
+
+    while (1) {
+        switch (*src_ptr) {
+        case 'J':
+            *dst_ptr++ = 'J';
+            src_ptr ++;
+            break;
+        case 'F':
+            // fall through
+        case 'D':
+            *dst_ptr++ = 'D';
+            src_ptr ++;
+            break;
+        case 'L':
+            *dst_ptr++ = 'P';
+            while (*src_ptr != ';') src_ptr ++;
+            src_ptr ++;
+            break;
+        case '[':
+            *dst_ptr++ = 'P';
+            src_ptr ++;
+            if ('L' == *src_ptr)
+                while (*src_ptr != ';') src_ptr ++;
+            src_ptr ++;
+            break;
+        case ')':
+            *dst_ptr = 0;
+            goto done;
+            break;
+        default:
+            *dst_ptr++ = 'I';
+            src_ptr ++;
+            break;
+        }
+    }
+done:
+
+    LOG_E("registered methodID %p with signature %s simplified to %s", vv(methodID), provided_signature, signature);
+
+    jni_method_table[jni_method_table_element_count].signature = signature;
+    jni_method_table[jni_method_table_element_count].methodID = methodID;
+    jni_method_table_element_count ++;
+}
+
+
+static
+void
+doCallStaticVoidMethod(JNIEnv* jnienv, jobject obj, jmethodID methodID, state_t *state)
+{
+    uint32_t k;
+    const char *signature = NULL;
+
+    for (k = 0; k < jni_method_table_element_count; k ++) {
+        if (methodID == jni_method_table[k].methodID) {
+            signature = jni_method_table[k].signature;
+            break;
+        }
+    }
+
+    if (NULL == signature) {
+        LOG_E("doCallStaticVoidMethod: no method %p in jni_method_table", vv(methodID));
+        return;
+    }
+
+    if (!strcmp(signature, "PIIIIDPI")) {
+        void    *param1 = (void*)r3;
+        uint32_t param2 = load(r13);
+        uint32_t param3 = load(r13 + 4);
+        uint32_t param4 = load(r13 + 8);
+        uint32_t param5 = load(r13 + 12);
+        double   param6 = load_double(r13 + 16);
+        void    *param7 = (void*)load(r13 + 24);
+        uint32_t param8 = load(r13 + 28);
+        JNIEnv_functions.CallStaticVoidMethod(jnienv, obj, methodID, param1, param2, param3,
+                param4, param5, param6, param7, param8);
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "unknown")) {
+    } else {
+        LOG_E("doCallStaticVoidMethod: unknown signature %s", signature);
+        return;
+    }
+
+}
 
 static
 int
@@ -56,15 +167,19 @@ find_and_call_function_runtime(state_t *state, void *addr)
         return 1;
     } else if (addr == JNIEnv_functions.GetMethodID) {  // 33
         LOG_I("calling GetMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
+        const char *signature = aa(r3);
         r0 = (uint32_t)JNIEnv_functions.GetMethodID((JNIEnv*)aa(r0), (jclass)aa(r1),
                                                     (const char*)aa(r2), (const char*)aa(r3));
         LOG_I("        GetMethodID returned %p", vv(r0));
+        memorize_method_signature((jmethodID)r0, signature);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticMethodID) {    // 113
         LOG_I("calling GetStaticMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
+        const char *signature = aa(r3);
         r0 = (uint32_t)JNIEnv_functions.GetStaticMethodID((JNIEnv*)aa(r0), (jclass)aa(r1),
                                                     (const char*)aa(r2), (const char*)aa(r3));
         LOG_I("        GetStaticMethodID returned %p", vv(r0));
+        memorize_method_signature((jmethodID)r0, signature);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticLongField) {   // 151
         LOG_I("calling GetStaticLongField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
