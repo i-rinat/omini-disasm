@@ -71,6 +71,16 @@ done:
     jni_method_table_element_count ++;
 }
 
+static
+const char *
+get_signature_for_method(jmethodID methodID)
+{
+    uint32_t k;
+    for (k = 0; k < jni_method_table_element_count; k ++)
+        if (methodID == jni_method_table[k].methodID)
+            return jni_method_table[k].signature;
+    return NULL;
+}
 
 static
 void
