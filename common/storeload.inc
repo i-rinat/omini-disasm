@@ -108,3 +108,17 @@ load_byte(uint32_t addr)
     return *((uint8_t *)adjust_address(addr));
 #endif
 }
+
+static
+double
+load_double(uint32_t addr)
+{
+#ifdef ENABLE_STORELOAD_TRACING
+    LOG_I("load_double from %p (%s)", vv(addr), get_section_name_by_addr(addr));
+    const double res = *((double *)adjust_address(addr));
+    LOG_I("load_double -> %f", res);
+    return res;
+#else
+    return *((double *)adjust_address(addr));
+#endif
+}
