@@ -64,7 +64,7 @@ memorize_method_signature(jmethodID methodID, const char *provided_signature)
     }
 done:
 
-    LOG_E("registered methodID %p with signature %s simplified to %s", vv(methodID), provided_signature, signature);
+    LOG_I("registered methodID %p with signature %s simplified to %s", vv(methodID), provided_signature, signature);
 
     jni_method_table[jni_method_table_element_count].signature = signature;
     jni_method_table[jni_method_table_element_count].methodID = methodID;
