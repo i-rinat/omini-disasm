@@ -1353,7 +1353,7 @@ p_ldr_register(uint32_t pc, uint32_t code)
         if (15 == Rn)   sprintf(Rn_part, "%uu", pc + 8);
         else            sprintf(Rn_part, "r%u", Rn);
 
-        if (15 == Rt) emit_code("    find_and_call_function(state, %s %c %s);", Rn_part, add_op, Rm_part);
+        if (15 == Rt) emit_code("    find_and_call_function(state, load(%s %c %s));", Rn_part, add_op, Rm_part);
         else          emit_code("    r%u = load(%s %c %s);", Rt, Rn_part, add_op, Rm_part);
 
     } else if (index && wback) {
