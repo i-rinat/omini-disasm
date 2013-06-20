@@ -257,13 +257,13 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
 
     switch (arm_decode_imm_type(type, imm5)) {
     case SRType_LSL:
-        emit_code("      uint32_t qy = (r%u << %u);", Rm, shift);
+        emit_code("      const uint32_t qy = (r%u << %u);", Rm, shift);
         break;
     case SRType_LSR:
-        emit_code("      uint32_t qy = (r%u >> %u);", Rm, shift);
+        emit_code("      const uint32_t qy = (r%u >> %u);", Rm, shift);
         break;
     case SRType_ASR:
-        emit_code("      uint32_t qy = ((int32_t)r%u >> %u);", Rm, shift);
+        emit_code("      const uint32_t qy = ((int32_t)r%u >> %u);", Rm, shift);
         break;
     default:
         assert(0 && "shift type not implemented");
