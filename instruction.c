@@ -2181,8 +2181,8 @@ p_bic_register(uint32_t pc, uint32_t code)
     }
 
     if (setflags) {
-        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rm);
-        emit_code("    APSR.Z = (0 == r%u);", Rm);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
+        emit_code("    APSR.Z = (0 == r%u);", Rd);
         // V unchanged
     }
 
