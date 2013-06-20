@@ -439,7 +439,7 @@ p_mov_register(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rm) {
-        emit_code("    r%u = %u;", Rd, pc + 8);
+        emit_code("    r%u = %uu;", Rd, pc + 8);
     } else {
         emit_code("    r%u = r%u;", Rd, Rm);
     }
