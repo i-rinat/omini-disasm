@@ -1201,7 +1201,6 @@ p_ror_immediate(uint32_t pc, uint32_t code)
 void
 p_bx(uint32_t pc, uint32_t code)
 {
-    (void)pc;
     const uint32_t Rm = code & 0x0f;
 
     assert(Rm == 14);   // only `bx lr' supported now
@@ -2077,12 +2076,6 @@ p_strd_register(uint32_t pc, uint32_t code)
     const uint32_t Rt1 = (code >> 12) & 0xf;
     const uint32_t Rt2 = Rt1 + 1;
     const uint32_t Rm = code & 0xf;
-
-    if (Rt1 == 15) {
-        emit_code("    // WTF?");
-        return;
-        // TODO: remove this workaround
-    }
 
     assert(Rt1 != 15);
     assert(Rt2 != 15);
