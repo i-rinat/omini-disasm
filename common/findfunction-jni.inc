@@ -280,7 +280,14 @@ doCallObjectMethod(state_t *state)
             vv(methodID), param1);
         r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID, param1);
         LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
-    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "IPI")) {
+        uint32_t    param1 = r3;
+        void       *param2 = (void*)load(r13);
+        uint32_t    param3 = load(r13 + 4);
+        LOG_I("calling JNIEnv_functions.CallObjectMethod(%p, %p, %p, [%d, %p, %d])", vv(jnienv), vv(obj),
+            vv(methodID), param1, param2, param3);
+        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID, param1, param2, param3);
+        LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
