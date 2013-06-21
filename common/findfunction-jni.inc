@@ -236,7 +236,15 @@ doCallIntMethod(state_t *state)
         LOG_I("calling JNIEnv_functions.CallIntMethod(%p, %p, %p, [])", vv(jnienv), vv(obj), vv(methodID));
         r0_signed =    JNIEnv_functions.CallIntMethod(jnienv, obj, methodID);
         LOG_I("        JNIEnv_functions.CallIntMethod returned %d", r0);
-    } else if (!strcmp(signature, "unknown")) {
+    } else if (!strcmp(signature, "PIID")) {
+        void       *param1 = (void*)r3;
+        uint32_t    param2 = load(r13);
+        uint32_t    param3 = load(r13 + 4);
+        double      param4 = load_double(r13 + 8);
+        LOG_I("calling JNIEnv_functions.CallIntMethod(%p, %p, %p, [%p, %d, %d, %f])", vv(jnienv),
+            vv(obj), vv(methodID), param1, param2, param3, param4);
+        r0_signed =    JNIEnv_functions.CallIntMethod(jnienv, obj, methodID, param1, param2, param3, param4);
+        LOG_I("        JNIEnv_functions.CallIntMethod returned %d", r0);
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
