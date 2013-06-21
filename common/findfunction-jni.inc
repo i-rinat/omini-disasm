@@ -582,6 +582,27 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.NewDirectByteBuffer((JNIEnv*)aa(r0), (void*)aa(r1), (jlong)jlongvalue);
         LOG_I("        JNIEnv_functions.NewDirectByteBuffer returned %p", vv(r0));
         return 1;
+    } else if (addr == JNIEnv_functions.GetStringUTFLength) {   //  168
+        LOG_I("calling JNIEnv_functions.GetStringUTFLength(%p, %p)", vv(r0), vv(r1));
+        r0_signed =    JNIEnv_functions.GetStringUTFLength((JNIEnv*)aa(r0), (jstring)aa(r1));
+        LOG_I("        JNIEnv_functions.GetStringUTFLength returned %d)", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.GetStringUTFChars) {   //  169
+        LOG_I("calling JNIEnv_functions.GetStringUTFChars(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetStringUTFChars((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
+        LOG_I("        JNIEnv_functions.GetStringUTFChars returned %p)", vv(r0));
+        return 1;
+    } else if (addr == JNIEnv_functions.ReleaseStringUTFChars) {   //  170
+        LOG_I("calling JNIEnv_functions.ReleaseStringUTFChars(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
+        (void)JNIEnv_functions.ReleaseStringUTFChars((JNIEnv*)aa(r0), (jstring)aa(r1), (const char*)aa(r2));
+        LOG_I("        JNIEnv_functions.ReleaseStringUTFChars returned void)");
+        return 1;
+    } else if (addr == JNIEnv_functions.GetStringUTFRegion) {   // 221
+        uint32_t param5 = load(r13);
+        LOG_I("calling JNIEnv_functions.GetStringUTFRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
+        (void)JNIEnv_functions.GetStringUTFRegion((JNIEnv*)aa(r0), (jstring)aa(r1), (jsize)r2, (jsize)r3, (char*)aa(param5));
+        LOG_I("        JNIEnv_functions.GetStringUTFRegion returned void");
+        return 1;
     }
 
 
