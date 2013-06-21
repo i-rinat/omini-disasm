@@ -356,8 +356,9 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "ceilf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
+        emit_code("    LOG_I(\"calling ceilf(%%f)\", x_float);");
         emit_code("    x_float = ceilf(x_float);");
+        emit_code("    LOG_I(\"        ceilf returned %%f\", x_float);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "strlen")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
@@ -367,8 +368,9 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "floorf")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_I(\"calling %s\");", ext_func_name);
+        emit_code("    LOG_I(\"calling floorf(%%f)\", x_float);");
         emit_code("    x_float = floorf(x_float);");
+        emit_code("    LOG_I(\"        floorf returned %%f\", x_float);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "sched_yield")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
