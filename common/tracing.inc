@@ -18,24 +18,27 @@ void
 constructor_log(void)
 {
     log_fp = fopen(TRACING_FILE_NAME, "w");
+    if (!log_fp) {
+        __android_log_print(ANDROID_LOG_ERROR, "libfranken", "can't open logfile %s, errno = %d",
+                                                                TRACING_FILE_NAME, errno);
+    }
 }
 
 #define LOG_I(...) \
 { \
     pthread_mutex_lock(&log_mutex); \
     sprintf(trace_msg, __VA_ARGS__); \
-    fprintf(log_fp, "[%7d]  [info] %s\n",  trace_msg_id++, trace_msg); \
-    fflush(log_fp); \
+    if (log_fp) fprintf(log_fp, "[%7d]  [info] %s\n",  trace_msg_id++, trace_msg); \
+    if (log_fp) fflush(log_fp); \
     pthread_mutex_unlock(&log_mutex); \
 }
 
 #define LOG_E(...) \
 { \
     pthread_mutex_lock(&log_mutex); \
-    usleep(1); \
     sprintf(trace_msg, __VA_ARGS__); \
-    fprintf(log_fp, "[%7d] [error] %s\n",  trace_msg_id++, trace_msg); \
-    fflush(log_fp); \
+    if (log_fp) fprintf(log_fp, "[%7d] [error] %s\n",  trace_msg_id++, trace_msg); \
+    if (log_fp) fflush(log_fp); \
     pthread_mutex_unlock(&log_mutex); \
 }
 
