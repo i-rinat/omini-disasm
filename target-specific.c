@@ -391,7 +391,6 @@ static
 int
 target_specific_symbols_c3630424f7c9514b203301154218db40(const char *symname, uint32_t func_addr)
 {
-    (void)func_addr;
     if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_accessStringData")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_agetStatic")) {
     } else if (!strcmp(symname, "Java_com_opera_bream_vm_BreamVM_allocatedIntSize")) {
@@ -544,6 +543,7 @@ target_specific_symbols_c3630424f7c9514b203301154218db40(const char *symname, ui
         return 0;
     }
 
+    func_list_add(func_addr);
     return 1;
 }
 

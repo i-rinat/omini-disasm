@@ -463,7 +463,7 @@ p_mov_immediate(uint32_t pc, uint32_t code)
     assert(Rd != 15);
     emit_code("    r%u = %uu;", Rd, imm32);
     if (setflags) {
-        emit_code("    APSR.N = (r%u & 0x80000000);", Rd);
+        emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
         emit_code("    APSR.Z = (0 == r%u);", Rd);
         if (0 != (code & 0xf00))
             emit_code("    APSR.C = %u;", !!(imm32 & 0x80000000));

@@ -198,7 +198,7 @@ determine_target_functions(bfd *abfd)
                 // alias for __cmpdf2
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatdidf") || !strcmp(symname, "__aeabi_l2d")) {
-                emit_code("static void func_%04x(state_t *state) { x_double = x_uint64_t; }", func_addr);
+                emit_code("static void func_%04x(state_t *state) { x_double = x_int64_t; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_unwind_cpp_pr0")) {
                 // do nothing
@@ -282,7 +282,7 @@ determine_target_functions(bfd *abfd)
                 emit_code("static void func_%04x(state_t *state){ x_double = x_uint64_t; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__floatundidf")) {
-                emit_code("static void func_%04x(state_t *state){ x_double = r0; }", func_addr);
+                emit_code("static void func_%04x(state_t *state){ x_double = x_uint64_t; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__nedf2")) {
                 emit_code("static void func_%04x(state_t *state){ r0 = (x_double != y_double); }", func_addr);
@@ -350,7 +350,7 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivsi3")) {
                 // TODO: signed or unsigned?
-                emit_code("static void func_%04x(state_t *state){ r0 /= r1; }", func_addr);
+                emit_code("static void func_%04x(state_t *state){ r0_signed /= r1_signed; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_i2f")) {
                 emit_code("static void func_%04x(state_t *state){ x_float = r0_signed; }", func_addr);
@@ -365,7 +365,7 @@ determine_target_functions(bfd *abfd)
                 emit_code("static void func_%04x(state_t *state){ r0 = (x_float != y_float); }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixunsdfsi")) {
-                emit_code("static void func_%04x(state_t *state){ r0_signed = x_double; }", func_addr);
+                emit_code("static void func_%04x(state_t *state){ r0 = x_double; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivdi3")) {
                 // do nothing
