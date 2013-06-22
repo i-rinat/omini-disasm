@@ -565,11 +565,45 @@ target_specific_symbols_1716e1d0d45f2912d761f2f46587ea7d(const char *symname, ui
         emit_code("    func_%04x(state);", func_addr);
         emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeResize")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoRenderer_nativeResize "
+                                        "(JNIEnv*  env, jobject  thiz, jint w, jint h ) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    r1 = (uint32_t)thiz;");
+        emit_code("    r2 = (uint32_t)w;");
+        emit_code("    r3 = (uint32_t)h;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeDone")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoRenderer_nativeDone(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTogglePauseResume")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTogglePauseResume(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeRender")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoRenderer_nativeRender(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
     } else if (!strcmp(symname, "")) {
     } else if (!strcmp(symname, "")) {
     } else if (!strcmp(symname, "")) {
