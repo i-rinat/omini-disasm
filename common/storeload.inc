@@ -3,7 +3,7 @@
 #define aa(addr)    adjust_address(addr)
 #define vv(value)   ((void*)value)
 
-#define ENABLE_STORELOAD_TRACING
+//#define ENABLE_STORELOAD_TRACING
 
 static
 inline

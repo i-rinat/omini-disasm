@@ -33,6 +33,9 @@ constructor_log(void)
     pthread_mutex_unlock(&log_mutex); \
 }
 
+//#undef LOG_I
+//#define LOG_I(...)
+
 #define LOG_E(...) \
 { \
     pthread_mutex_lock(&log_mutex); \

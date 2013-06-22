@@ -2350,7 +2350,11 @@ process_instruction(uint32_t pc)
     flag_last_instruction_ended_with_goto = 0;
 
     emit_code("label_%04x:", pc);
-    //emit_code("label_%04x: LOG_I(\"tid=%%x trace label_%04x\", pthread_self());", pc, pc);
+    //emit_code("label_%04x: LOG_I(\"tid=%%lx trace label_%04x\", pthread_self());", pc, pc);
+//    emit_code("    LOG_I(\"state: r0 = %%08x,  r1 = %%08x,  r2 = %%08x,  r3 = %%08x,  r4 = %%08x,  r5 = %%08x\\n"
+//                          "                 r6 = %%08x,  r7 = %%08x,  r8 = %%08x,  r9 = %%08x, r10 = %%08x, r11 = %%08x\\n"
+//                          "                r12 = %%08x, r13 = %%08x, r14 = %%08x, Z=%%d, C=%%d, N=%%d, V=%%d\", "
+//        "r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, APSR.Z, APSR.C, APSR.N, APSR.V);");
 
     const uint32_t condition = (code >> 28) & 0x0f;
     switch (condition) {
