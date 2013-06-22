@@ -452,11 +452,9 @@ determine_target_functions(bfd *abfd)
                 emit_code("static void func_%04x(state_t *state){ r0 /= r1; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "_pause")) {
-                // do nothing
-                func_list_add_to_ignore_list(func_addr);
+                // just an exported function
             } else if (!strcmp(symname, "_resume")) {
-                // do nothing
-                func_list_add_to_ignore_list(func_addr);
+                // just an exported function
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
