@@ -355,7 +355,9 @@ determine_target_functions(bfd *abfd)
                 emit_code("}");
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__udivsi3")) {
-                // TODO: signed or unsigned?
+                emit_code("static void func_%04x(state_t *state){ r0 /= r1; }", func_addr);
+                func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "__divsi3")) {
                 emit_code("static void func_%04x(state_t *state){ r0_signed /= r1_signed; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_i2f")) {
