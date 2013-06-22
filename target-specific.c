@@ -549,7 +549,7 @@ target_specific_symbols_c3630424f7c9514b203301154218db40(const char *symname, ui
 
 static
 int
-target_specific_symbols_fc418a16afcafc1005bb49fa515471a7(const char *symname, uint32_t func_addr)
+target_specific_symbols_1716e1d0d45f2912d761f2f46587ea7d(const char *symname, uint32_t func_addr)
 {
     // libsanangeles.so
     if (!strcmp(symname, "importGLInit")) {
@@ -588,9 +588,9 @@ target_specific_symbols(const char *symname, uint32_t func_addr)
 {
     if (!strcmp(so_md5_hash, "c3630424f7c9514b203301154218db40")) {
         return target_specific_symbols_c3630424f7c9514b203301154218db40(symname, func_addr);
-    } else if (!strcmp(so_md5_hash, "fc418a16afcafc1005bb49fa515471a7")) {
+    } else if (!strcmp(so_md5_hash, "1716e1d0d45f2912d761f2f46587ea7d")) {
         // libsanangeles.so
-        return target_specific_symbols_fc418a16afcafc1005bb49fa515471a7(symname, func_addr);
+        return target_specific_symbols_1716e1d0d45f2912d761f2f46587ea7d(symname, func_addr);
     }
 
     return 0;
