@@ -400,6 +400,115 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    glNormalPointer((GLenum)r0, (GLsizei)r1, (const GLvoid *)aa(r2));");
         emit_code("}");
+    } else if (!strcmp(ext_func_name, "glEnableClientState")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glEnableClientState(GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glDisableClientState")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glDisableClientState((GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glDrawArrays")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glDrawArrays((GLenum)r0, (GLint)r1, (GLsizei)r2);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "pow")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    x_double = pow(x_double, y_double);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glDisable")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glDisable((GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glEnable")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glEnable((GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glBlendFunc")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glBlendFunc((GLenum)r0, (GLenum)r1);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glColor4x")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glColor4x((GLfixed)r0, (GLfixed)r1, (GLfixed)r2, (GLfixed)r3);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glMatrixMode")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glMatrixMode((GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glLoadIdentity")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glLoadIdentity();");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glShadeModel")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glShadeModel((GLenum)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "tan")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    x_double = tan(x_double);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glFrustumx")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glFrustumx((GLfixed)r0, (GLfixed)r1, (GLfixed)r2, (GLfixed)r3, "
+                    "(GLfixed)load(r13), (GLfixed)load(r13 + 4));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glViewport")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glViewport((GLint)r0, (GLint)r1, (GLsizei)r2, (GLsizei)r3);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glClearColorx")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glClearColorx((GLfixed)r0, (GLfixed)r1, (GLfixed)r2, (GLfixed)r3);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glClear")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glClear((GLbitfield)r0);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glLightxv")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glLightxv((GLenum)r0, (GLenum)r1, (const GLfixed *)aa(r2));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glMaterialxv")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glMaterialxv((GLenum)r0, (GLenum)r1, (const GLfixed *)aa(r2));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glMaterialx")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glMaterialx((GLenum)r0, (GLenum)r1, (GLfixed)r2);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glScalex")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glScalex((GLfixed)r0, (GLfixed)r1, (GLfixed)r2);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glPushMatrix")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glPushMatrix();");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glTranslatex")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glTranslatex((GLfixed)r0, (GLfixed)r1, (GLfixed)r2);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glRotatex")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glRotatex((GLfixed)r0, (GLfixed)r1, (GLfixed)r2, (GLfixed)r3);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glPopMatrix")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glPopMatrix();");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "sqrt")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    x_double = sqrt(x_double);");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glMultMatrixx")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glMultMatrixx((const GLfixed *)aa(r0));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    ");
+        emit_code("}");
     } else if (!strcmp(ext_func_name, "")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    ");
