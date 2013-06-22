@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
-pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
-uint32_t        trace_msg_id = 0;
-char            trace_msg[1024];
+static pthread_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER;
+static uint32_t        trace_msg_id = 0;
+static char            trace_msg[1024];
 
 #define TRACING_WRITE_TO_FILE
 
@@ -10,7 +10,8 @@ char            trace_msg[1024];
 
 
 #ifdef TRACING_WRITE_TO_FILE
-FILE *log_fp;
+static FILE *log_fp;
+
 __attribute__((constructor))
 static
 void

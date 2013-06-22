@@ -2,9 +2,9 @@
 
 #define JMP_BUF_TABLE_SIZE   300
 
-uint32_t jmp_buf_in[JMP_BUF_TABLE_SIZE];
-uint32_t jmp_buf_out[JMP_BUF_TABLE_SIZE];
-uint32_t jmp_buf_entry_count = 0;
+static uint32_t jmp_buf_in[JMP_BUF_TABLE_SIZE];
+static uint32_t jmp_buf_out[JMP_BUF_TABLE_SIZE];
+static uint32_t jmp_buf_entry_count = 0;
 
 static
 uint32_t

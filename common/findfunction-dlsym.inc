@@ -5,12 +5,12 @@
 #include <GLES/glext.h>
 
 #define DLSYM_TABLE_SIZE  200
-pthread_mutex_t dlsym_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t dlsym_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void* dlsym_table_ptr[DLSYM_TABLE_SIZE];
-uint32_t dlsym_table_addr[DLSYM_TABLE_SIZE];
+static void* dlsym_table_ptr[DLSYM_TABLE_SIZE];
+static uint32_t dlsym_table_addr[DLSYM_TABLE_SIZE];
 
-uint32_t dlsym_table_element_count = 0;
+static uint32_t dlsym_table_element_count = 0;
 
 
 static

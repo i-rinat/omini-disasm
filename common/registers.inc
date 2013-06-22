@@ -78,7 +78,7 @@ typedef struct {
 #define y_double    state->reg.y_double
 
 
-pthread_key_t register_key;
+static pthread_key_t register_key;
 
 static
 state_t *

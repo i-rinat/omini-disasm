@@ -583,7 +583,7 @@ declare_data_arrays(bfd *abfd)
     while (sect) {
         if (sect->flags & SEC_ALLOC) {
             emit_code("// section %s", sect->name);
-            emit_code_nonl("char d_section_%d[%d]", section_index, sect->size);
+            emit_code_nonl("static char d_section_%d[%d]", section_index, sect->size);
             if (sect->flags & SEC_LOAD) {
                 emit_code_nonl(" = {");
                 fseek(fp, sect->filepos, SEEK_SET);
@@ -607,7 +607,7 @@ declare_data_arrays(bfd *abfd)
 
     sect = abfd->sections;
     section_index = 0;
-    emit_code("struct section_list {");
+    emit_code("static struct section_list {");
     emit_code("    char       *ptr;");
     emit_code("    uint32_t    begin;");
     emit_code("    uint32_t    end;");
@@ -637,8 +637,8 @@ generate_prototypes(void)
     assert(buf_addr);
     assert(buf_ptrs);
 
-    strcpy(buf_addr, "int funclist_addr[] = { ");
-    strcpy(buf_ptrs, "void *funclist_ptr[] = { ");
+    strcpy(buf_addr, "static int funclist_addr[] = { ");
+    strcpy(buf_ptrs, "static void *funclist_ptr[] = { ");
 
     uint32_t func_pc;
     uint32_t functions_count = 0;
@@ -664,7 +664,7 @@ generate_prototypes(void)
     strcat(buf_addr, "};");
     strcat(buf_ptrs, "};");
 
-    emit_code("const int funclist_cnt = %d;", functions_count);
+    emit_code("static const int funclist_cnt = %d;", functions_count);
     emit_code(buf_addr);
     emit_code(buf_ptrs);
 

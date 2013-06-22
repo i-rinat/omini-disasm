@@ -4,8 +4,8 @@ static struct JNINativeInterface JNIEnv_functions;
 static struct JNIInvokeInterface JavaVM_functions;
 
 #define jni_method_table_max_elements   200
-uint32_t jni_method_table_element_count = 0;
-struct {
+static uint32_t jni_method_table_element_count = 0;
+static struct {
     jmethodID   methodID;
     const char *signature;
 } jni_method_table[jni_method_table_max_elements];
