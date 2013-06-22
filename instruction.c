@@ -263,7 +263,7 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
         emit_code("      const uint32_t qy = (r%u >> %u);", Rm, shift);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qy = ((int32_t)r%u >> %u);", Rm, shift);
+        emit_code("      const uint32_t qy = (r%u_signed >> %u);", Rm, shift);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -713,7 +713,7 @@ p_cmp_register(uint32_t pc, uint32_t code)
         emit_code("      const uint32_t qy = r%u >> %u;", Rm, shift_n);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qy = (int32_t)r%u >> %u;", Rm, shift_n);
+        emit_code("      const uint32_t qy = r%u_signed >> %u;", Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented");
@@ -750,7 +750,7 @@ p_cmn_register(uint32_t pc, uint32_t code)
         emit_code("      const uint32_t qy = r%u >> %u;", Rm, shift_n);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qy = (int32_t)r%u >> %u;", Rm, shift_n);
+        emit_code("      const uint32_t qy = r%u_signed >> %u;", Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -791,8 +791,8 @@ p_tst_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (shift_n > 0)
-            emit_code("      APSR.C = !!(0x1 & ((int32_t)r%u >> %u));", Rm, shift_n - 1);
-        emit_code("      const uint32_t qy = (int32_t)r%u >> %u;", Rm, shift_n);
+            emit_code("      APSR.C = !!(0x1 & (r%u_signed >> %u));", Rm, shift_n - 1);
+        emit_code("      const uint32_t qy = r%u_signed >> %u;", Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented");
@@ -876,8 +876,8 @@ p_asr_immediate(uint32_t pc, uint32_t code)
         emit_code("    r%u = %uu;", Rd, (uint32_t)((int32_t)(pc+8) >> shift_n));
     } else {
         if (setflags)
-            emit_code("    APSR.C = (uint32_t)((int32_t)r%u >> %d) & 1;", Rm, shift_n - 1);
-        emit_code("    r%u = (uint32_t)((int32_t)r%u >> %d);", Rd, Rm, shift_n);
+            emit_code("    APSR.C = (r%u_signed >> %u) & 1;", Rm, shift_n - 1);
+        emit_code("    r%u = r%u_signed >> %u;", Rd, Rm, shift_n);
     }
 
     if (setflags) {
@@ -949,8 +949,8 @@ p_orr_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags && (shift_n > 0))
-            emit_code("    APSR.C = !!(((int32_t)r%u >> %d) & 1);", Rm, shift_n - 1);
-        emit_code("    r%u = r%u | ((int32_t)r%u >> %d);", Rd, Rn, Rm, shift_n);
+            emit_code("    APSR.C = !!((r%u_signed >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u | (r%u_signed >> %d);", Rd, Rn, Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented shift type");
@@ -997,8 +997,8 @@ p_and_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags && (shift_n > 0))
-            emit_code("    APSR.C = !!(((int32_t)r%u >> %d) & 1);", Rm, shift_n - 1);
-        emit_code("    r%u = r%u & ((int32_t)r%u >> %d);", Rd, Rn, Rm, shift_n);
+            emit_code("    APSR.C = !!((r%u_signed >> %d) & 1);", Rm, shift_n - 1);
+        emit_code("    r%u = r%u & (r%u_signed >> %d);", Rd, Rn, Rm, shift_n);
         break;
     default:
         assert(0 && "not implemented shift type");
@@ -1064,7 +1064,7 @@ p_rsb_rsc_register(uint32_t pc, uint32_t code, uint32_t do_carry)
         emit_code("      const uint32_t qx = r%u >> %u;", Rm, shift_n);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qx = (int32_t)r%u >> %u;", Rm, shift_n);
+        emit_code("      const uint32_t qx = r%u_signed >> %u;", Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1100,7 +1100,7 @@ p_mul(uint32_t pc, uint32_t code)
     assert(Rm != 15);
     assert(Rn != 15);
 
-    emit_code("    r%u = r%u * r%u;", Rd, Rn, Rm);
+    emit_code("    r%u_signed = r%u_signed * r%u_signed;", Rd, Rn, Rm);
     if (setflags) {
         emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
         emit_code("    APSR.Z = (0 == r%u);", Rd);
@@ -1341,7 +1341,7 @@ p_ldr_register(uint32_t pc, uint32_t code)
         sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
         break;
     case SRType_ASR:
-        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        sprintf(Rm_part, "(r%u_signed >> %u)", Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1501,7 +1501,7 @@ p_umull(uint32_t pc, uint32_t code)
     const uint32_t Rn = code & 0xf;
 
     emit_code("    {");
-    emit_code("      uint64_t tmp = (uint64_t)r%u * r%u;", Rn, Rm);
+    emit_code("      uint64_t tmp = (uint64_t)r%u * (uint64_t)r%u;", Rn, Rm);
     emit_code("      r%u = tmp & 0xffffffff;", RdLo);
     emit_code("      r%u = tmp >> 32;", RdHi);
     if (setflags) {
@@ -1524,8 +1524,8 @@ p_smull(uint32_t pc, uint32_t code)
     const uint32_t Rn = code & 0xf;
 
     emit_code("    {");
-    emit_code("      int64_t tmp = (int64_t)(int32_t)r%u * (int32_t)r%u;", Rn, Rm);
-    emit_code("      r%u = tmp & 0xffffffff;", RdLo);
+    emit_code("      int64_t tmp = (int64_t)r%u_signed * (int64_t)r%u_signed;", Rn, Rm);
+    emit_code("      r%u = (uint64_t)tmp & 0xffffffff;", RdLo);
     emit_code("      r%u = (uint64_t)tmp >> 32;", RdHi);
     if (setflags) {
         emit_code("      APSR.N = !!(r%u & 0x80000000);", RdHi);
@@ -1547,7 +1547,7 @@ p_mla(uint32_t pc, uint32_t code)
     const uint32_t Rm = (code >> 8) & 0xf;
     const uint32_t Rn = code & 0xf;
 
-    emit_code("    r%u = r%u * r%u + r%u;", Rd, Rn, Rm, Ra);
+    emit_code("    r%u_signed = r%u_signed * r%u_signed + r%u_signed;", Rd, Rn, Rm, Ra);
     if (setflags) {
         emit_code("    APSR.N = !!(r%u & 0x80000000);", Rd);
         emit_code("    APSR.Z = (0 == r%u);", Rd);
@@ -1584,7 +1584,7 @@ p_ldrb_register(uint32_t pc, uint32_t code)
         sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
         break;
     case SRType_ASR:
-        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        sprintf(Rm_part, "(r%u_signed >> %u)", Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1638,7 +1638,7 @@ p_strb_register(uint32_t pc, uint32_t code)
         sprintf(Rm_part, "(r%u >> %u)", Rm, shift_n);
         break;
     case SRType_ASR:
-        sprintf(Rm_part, "((int32_t)r%u >> %u)", Rm, shift_n);
+        sprintf(Rm_part, "(r%u_signed >> %u)", Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1864,8 +1864,8 @@ p_asr_register(uint32_t pc, uint32_t code)
     emit_code("    {");
     emit_code("      const uint32_t shift_n = r%u & 0xff;", Rm);
     if (setflags)
-        emit_code("      if (shift_n > 0) APSR.C = !!(((int32_t)r%u >> (shift_n - 1)) & 0x1);", Rn);
-    emit_code("      r%u = (int32_t)r%u >> shift_n;", Rd, Rn);
+        emit_code("      if (shift_n > 0) APSR.C = !!((r%u_signed >> (shift_n - 1)) & 0x1);", Rn);
+    emit_code("      r%u = r%u_signed >> shift_n;", Rd, Rn);
     if (setflags) {
         emit_code("      APSR.N = !!(r%u & 0x80000000);", Rd);
         emit_code("      APSR.Z = (0 == r%u);", Rd);
@@ -1901,8 +1901,8 @@ p_orr_register_shifted_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags)
-            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
-        emit_code("      r%u = r%u | ((int32_t)r%u >> shift_n);", Rd, Rn, Rm);
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u_signed >> (shift_n - 1)));", Rm);
+        emit_code("      r%u = r%u | (r%u_signed >> shift_n);", Rd, Rn, Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -1943,8 +1943,8 @@ p_eor_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags && shift_n > 0)
-            emit_code("    APSR.C = !!(0x1 & ((int32_t)r%u >> %u));", Rm, shift_n - 1);
-        emit_code("    r%u = r%u ^ ((int32_t)r%u >> %u);", Rd, Rn, Rm, shift_n);
+            emit_code("    APSR.C = !!(0x1 & (r%u_signed >> %u));", Rm, shift_n - 1);
+        emit_code("    r%u = r%u ^ (r%u_signed >> %u);", Rd, Rn, Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2128,8 +2128,8 @@ p_bic_register_shifted_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags)
-            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
-        emit_code("      r%u = r%u & ~((int32_t)r%u >> shift_n);", Rd, Rn, Rm);
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u_signed >> (shift_n - 1)));", Rm);
+        emit_code("      r%u = r%u & ~(r%u_signed >> shift_n);", Rd, Rn, Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2172,9 +2172,9 @@ p_bic_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags && shift_n > 0) {
-            emit_code("    APSR.C = !!(0x1 & ((int32_t)r%u >> %u));", Rm, shift_n - 1);
+            emit_code("    APSR.C = !!(0x1 & (r%u_signed >> %u));", Rm, shift_n - 1);
         }
-        emit_code("    r%u = r%u & ~((int32_t)r%u >> %u);", Rd, Rn, Rm, shift_n);
+        emit_code("    r%u = r%u & ~(r%u_signed >> %u);", Rd, Rn, Rm, shift_n);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2216,7 +2216,7 @@ p_add_register_shifted_register(uint32_t pc, uint32_t code)
         emit_code("      const uint32_t qy = r%u >> shift_n;", Rm);
         break;
     case SRType_ASR:
-        emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
+        emit_code("      const uint32_t qy = r%u_signed >> shift_n;", Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2267,8 +2267,8 @@ p_eor_register_shifted_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags)
-            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
-        emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u_signed >> (shift_n - 1)));", Rm);
+        emit_code("      const uint32_t qy = r%u_signed >> shift_n;", Rm);
         break;
     default:
         assert(0 && "shift type not implemented");
@@ -2318,8 +2318,8 @@ p_and_register_shifted_register(uint32_t pc, uint32_t code)
         break;
     case SRType_ASR:
         if (setflags)
-            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & ((int32_t)r%u >> (shift_n - 1)));", Rm);
-        emit_code("      const uint32_t qy = (int32_t)r%u >> shift_n;", Rm);
+            emit_code("      if (shift_n > 0) APSR.C = !!(0x1 & (r%u_signed >> (shift_n - 1)));", Rm);
+        emit_code("      const uint32_t qy = r%u_signed >> shift_n;", Rm);
         break;
     case SRType_ROR:
         if (setflags)

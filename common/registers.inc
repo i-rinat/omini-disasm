@@ -4,7 +4,9 @@ typedef struct {
             uint32_t r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14;
         };
         struct {
-            int32_t r0_signed, r1_signed;
+            int32_t r0_signed, r1_signed, r2_signed, r3_signed, r4_signed, r5_signed, r6_signed, \
+                    r7_signed, r8_signed, r9_signed, r10_signed, r11_signed, r12_signed, \
+                    r13_signed, r14_signed;
         };
         struct {
             double x_double, y_double;
@@ -47,9 +49,23 @@ typedef struct {
 #define r13     state->reg.r13
 #define r14     state->reg.r14
 #define APSR    state->APSR
+#define r0_signed      state->reg.r0_signed
+#define r1_signed      state->reg.r1_signed
+#define r2_signed      state->reg.r2_signed
+#define r3_signed      state->reg.r3_signed
+#define r4_signed      state->reg.r4_signed
+#define r5_signed      state->reg.r5_signed
+#define r6_signed      state->reg.r6_signed
+#define r7_signed      state->reg.r7_signed
+#define r8_signed      state->reg.r8_signed
+#define r9_signed      state->reg.r9_signed
+#define r10_signed     state->reg.r10_signed
+#define r11_signed     state->reg.r11_signed
+#define r12_signed     state->reg.r12_signed
+#define r13_signed     state->reg.r13_signed
+#define r14_signed     state->reg.r14_signed
 
-#define r0_signed   state->reg.r0_signed
-#define r1_signed   state->reg.r1_signed
+
 #define x_double    state->reg.x_double
 #define y_double    state->reg.y_double
 #define x_int64_t   state->reg.x_int64_t
