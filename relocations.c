@@ -402,7 +402,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "glEnableClientState")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    glEnableClientState(GLenum)r0);");
+        emit_code("    glEnableClientState((GLenum)r0);");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "glDisableClientState")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
