@@ -212,6 +212,9 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__gnu_unwind_frame")) {
                 // do nothing
                 func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "__cmpsf2")) {
+                // do nothing
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__gtdf2")) {
                 // frontend for __cmpdf2
                 func_list_add_to_ignore_list(func_addr);
@@ -293,6 +296,9 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_d2iz")) {
                 emit_code("static void func_%04x(state_t *state){ r0_signed = x_double; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "__aeabi_f2iz")) {
+                emit_code("static void func_%04x(state_t *state){ r0_signed = x_float; }", func_addr);
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_f2d")) {
                 emit_code("static void func_%04x(state_t *state){ x_double = x_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
@@ -305,7 +311,7 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__divdi3")) {
                 emit_code("static void func_%04x(state_t *state){ x_int64_t /= y_int64_t; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
-            } else if (!strcmp(symname, "__divsf3")) {
+            } else if (!strcmp(symname, "__divsf3") || !strcmp(symname, "__aeabi_fdiv")) {
                 emit_code("static void func_%04x(state_t *state){ x_float /= y_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__fixsfsi")) {
@@ -317,10 +323,10 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_frsub")) {
                 emit_code("static void func_%04x(state_t *state){ x_float = y_float - x_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
-            } else if (!strcmp(symname, "__subsf3")) {
+            } else if (!strcmp(symname, "__subsf3") || !strcmp(symname, "__aeabi_fsub")) {
                 emit_code("static void func_%04x(state_t *state){ x_float -= y_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
-            } else if (!strcmp(symname, "__mulsf3")) {
+            } else if (!strcmp(symname, "__mulsf3") || !strcmp(symname, "__aeabi_fmul")) {
                 emit_code("static void func_%04x(state_t *state){ x_float *= y_float; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_fcmpeq")) {
@@ -354,6 +360,9 @@ determine_target_functions(bfd *abfd)
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__aeabi_i2f")) {
                 emit_code("static void func_%04x(state_t *state){ x_float = r0_signed; }", func_addr);
+                func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "__ltsf2")) {
+                emit_code("static void func_%04x(state_t *state){ r0 = (x_float < y_float); }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "__lesf2")) {
                 emit_code("static void func_%04x(state_t *state){ r0 = (x_float <= y_float); }", func_addr);
@@ -440,6 +449,12 @@ determine_target_functions(bfd *abfd)
             } else if (!strcmp(symname, "__aeabi_uidiv")) {
                 emit_code("static void func_%04x(state_t *state){ r0 /= r1; }", func_addr);
                 func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "_pause")) {
+                // do nothing
+                func_list_add_to_ignore_list(func_addr);
+            } else if (!strcmp(symname, "_resume")) {
+                // do nothing
+                func_list_add_to_ignore_list(func_addr);
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
             } else if (!strcmp(symname, "")) {
@@ -498,6 +513,8 @@ determine_target_functions(bfd *abfd)
                 // do nothing
             } else if (!strcmp(symname, "__data_start")) {
                 // TODO: what to do?
+            } else if (!strcmp(symname, "gAppAlive")) {
+                // do nothing
             } else {
                 printf("unknown symbol %s\n", symname);
                 assert(0 && "not implemented");

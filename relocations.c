@@ -388,6 +388,26 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("    r0_signed = pthread_setspecific((pthread_key_t)r0, (const void *)aa(r1));");
         emit_code("    LOG_I(\"        pthread_setspecific returned %%d\", r0);");
         emit_code("}");
+    } else if (!strcmp(ext_func_name, "glVertexPointer")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glColorPointer")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glColorPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "glNormalPointer")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    glNormalPointer((GLenum)r0, (GLsizei)r1, (const GLvoid *)aa(r2));");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    ");
+        emit_code("}");
+    } else if (!strcmp(ext_func_name, "")) {
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    ");
+        emit_code("}");
     } else if (!strcmp(ext_func_name, "")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    ");

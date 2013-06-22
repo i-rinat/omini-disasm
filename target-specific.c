@@ -547,12 +547,50 @@ target_specific_symbols_c3630424f7c9514b203301154218db40(const char *symname, ui
     return 1;
 }
 
+static
+int
+target_specific_symbols_fc418a16afcafc1005bb49fa515471a7(const char *symname, uint32_t func_addr)
+{
+    // libsanangeles.so
+    if (!strcmp(symname, "importGLInit")) {
+    } else if (!strcmp(symname, "importGLDeinit")) {
+    } else if (!strcmp(symname, "appInit")) {
+    } else if (!strcmp(symname, "appDeinit")) {
+    } else if (!strcmp(symname, "appRender")) {
+    } else if (!strcmp(symname, "gAppAlive")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeInit")) {
+        emit_code("JNIEXPORT void JNICALL Java_com_example_SanAngeles_DemoRenderer_nativeInit(JNIEnv * env) {");
+        emit_code("    state_t *state = initialize_state();");
+        emit_code("    r0 = (uint32_t)env;");
+        emit_code("    func_%04x(state);", func_addr);
+        emit_code("}");
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeResize")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeDone")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativeTogglePauseResume")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativePause")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoGLSurfaceView_nativeResume")) {
+    } else if (!strcmp(symname, "Java_com_example_SanAngeles_DemoRenderer_nativeRender")) {
+    } else if (!strcmp(symname, "")) {
+    } else if (!strcmp(symname, "")) {
+    } else if (!strcmp(symname, "")) {
+    } else if (!strcmp(symname, "")) {
+    } else if (!strcmp(symname, "")) {
+    } else {
+        return 0;
+    }
+
+    func_list_add(func_addr);
+    return 1;
+}
 
 int
 target_specific_symbols(const char *symname, uint32_t func_addr)
 {
     if (!strcmp(so_md5_hash, "c3630424f7c9514b203301154218db40")) {
         return target_specific_symbols_c3630424f7c9514b203301154218db40(symname, func_addr);
+    } else if (!strcmp(so_md5_hash, "fc418a16afcafc1005bb49fa515471a7")) {
+        // libsanangeles.so
+        return target_specific_symbols_fc418a16afcafc1005bb49fa515471a7(symname, func_addr);
     }
 
     return 0;
