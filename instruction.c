@@ -503,6 +503,7 @@ p_ldrd_immediate(uint32_t pc, uint32_t code)
         }
     }
     if (index && !wback) {
+        // TODO: what if Rt1 == Rn ?
         emit_code("    r%u = load(r%u + %d);", Rt1, Rn, offset);
         emit_code("    r%u = load(r%u + %d);", Rt2, Rn, offset + 4);
     } else if (index && wback) {
@@ -1460,7 +1461,7 @@ p_ldrsb_immediate(uint32_t pc, uint32_t code)
     const uint32_t imm4H = (code >> 8) & 0xf;
     const uint32_t imm4L = code & 0xf;
     const uint32_t imm32 = (imm4H << 4) | imm4L;
-    const uint32_t offset = add ? imm32 : -imm32;
+    const int32_t offset = add ? imm32 : -imm32;
 
     assert(Rt != 15);
 
