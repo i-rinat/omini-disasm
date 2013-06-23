@@ -2071,7 +2071,7 @@ p_strd_register(uint32_t pc, uint32_t code)
 {
     const uint32_t index = code & (1 << 24);
     const uint32_t add = code & (1 << 23);
-    const uint32_t wback = !index || (1 << 21);
+    const uint32_t wback = !index || (code & (1 << 21));
     const char addop = add ? '+' : '-';
     const uint32_t Rn = (code >> 16) & 0xf;
     const uint32_t Rt1 = (code >> 12) & 0xf;
