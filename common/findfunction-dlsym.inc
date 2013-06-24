@@ -3,6 +3,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GLES/gl.h>
 #include <GLES/glext.h>
+#include "gl-enums.inc"
 
 #define DLSYM_TABLE_SIZE  200
 static pthread_mutex_t dlsym_mutex = PTHREAD_MUTEX_INITIALIZER;
