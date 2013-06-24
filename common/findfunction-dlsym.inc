@@ -43,7 +43,7 @@ static
 void
 proxy_glBindTexture(state_t *state)
 {
-    LOG_I("calling proxy_glBindTexture(0x%x, %u)", r0, r1);
+    LOG_I("calling proxy_glBindTexture(%p %s, %u)", vv(r0), glenum2str(r0), r1);
     (void)glBindTexture((GLenum)r0, (GLuint)r1);
 }
 
@@ -51,7 +51,7 @@ static
 void
 proxy_glBlendFunc(state_t *state)
 {
-    LOG_I("calling proxy_glBlendFunc");
+    LOG_I("calling proxy_glBlendFunc(%p %s, %p %s)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1));
     (void)glBlendFunc((GLenum)r0, (GLenum)r1);
 }
 
@@ -59,7 +59,7 @@ static
 void
 proxy_glClear(state_t *state)
 {
-    LOG_I("calling proxy_glClear");
+    LOG_I("calling proxy_glClear(%p)", vv(r0));
     (void)glClear((GLbitfield)r0);
 }
 
@@ -67,7 +67,7 @@ static
 void
 proxy_glClearColorx(state_t *state)
 {
-    LOG_I("calling proxy_glClearColorx");
+    LOG_I("calling proxy_glClearColorx(%p, %p, %p, %p)", vv(r0), vv(r1), vv(r2), vv(r3));
     (void)glClearColorx((GLclampx)r0, (GLclampx)r1, (GLclampx)r2, (GLclampx)r3);
 }
 
@@ -75,15 +75,15 @@ static
 void
 proxy_glColor4f(state_t *state)
 {
-    LOG_I("calling proxy_glColor4f");
-    (void)glColor4f((GLfloat)r0, (GLfloat)r1, (GLfloat)r2, (GLfloat)r3);
+    LOG_I("calling proxy_glColor4f(%f, %f, %f, %f)", *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3);
+    (void)glColor4f(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3);
 }
 
 static
 void
 proxy_glColor4x(state_t *state)
 {
-    LOG_I("calling proxy_glColor4x");
+    LOG_I("calling proxy_glColor4x(%p, %p, %p, %p)", vv(r0), vv(r1), vv(r2), vv(r3));
     (void)glColor4x((GLfixed)r0, (GLfixed)r1, (GLfixed)r2, (GLfixed)r3);
 }
 
@@ -91,7 +91,7 @@ static
 void
 proxy_glCullFace(state_t *state)
 {
-    LOG_I("calling proxy_glCullFace");
+    LOG_I("calling proxy_glCullFace(%p %s)", vv(r0), glenum2str(r0));
     (void)glCullFace((GLenum)r0);
 }
 
@@ -99,7 +99,7 @@ static
 void
 proxy_glDeleteTextures(state_t *state)
 {
-    LOG_I("calling proxy_glDeleteTextures");
+    LOG_I("calling proxy_glDeleteTextures(%d, %p)", r0, vv(r1));
     (void)glDeleteTextures((GLsizei)r0, (const GLuint *)aa(r1));
 }
 
@@ -107,7 +107,7 @@ static
 void
 proxy_glDisable(state_t *state)
 {
-    LOG_I("calling proxy_glDisable");
+    LOG_I("calling proxy_glDisable(%p %s)", vv(r0), glenum2str(r0));
     (void)glDisable((GLenum)r0);
 }
 
@@ -115,7 +115,7 @@ static
 void
 proxy_glDisableClientState(state_t *state)
 {
-    LOG_I("calling proxy_glDisableClientState");
+    LOG_I("calling proxy_glDisableClientState(%p %s)", vv(r0), glenum2str(r0));
     (void)glDisableClientState((GLenum)r0);
 }
 
@@ -123,7 +123,7 @@ static
 void
 proxy_glDrawArrays(state_t *state)
 {
-    LOG_I("calling proxy_glDrawArrays");
+    LOG_I("calling proxy_glDrawArrays(%p %s, %d, %u)", vv(r0), glenum2str(r0), r1, r2);
     (void)glDrawArrays((GLenum)r0, (GLint)r1, (GLsizei)r2);
 }
 
@@ -131,7 +131,7 @@ static
 void
 proxy_glEnable(state_t *state)
 {
-    LOG_I("calling proxy_glEnable");
+    LOG_I("calling proxy_glEnable(%p %s)", vv(r0), glenum2str(r0));
     (void)glEnable((GLenum)r0);
 }
 
@@ -139,7 +139,7 @@ static
 void
 proxy_glEnableClientState(state_t *state)
 {
-    LOG_I("calling proxy_glEnableClientState");
+    LOG_I("calling proxy_glEnableClientState(%p %s)", vv(r0), glenum2str(r0));
     (void)glEnableClientState((GLenum)r0);
 }
 
@@ -147,7 +147,7 @@ static
 void
 proxy_glFinish(state_t *state)
 {
-    LOG_I("calling proxy_glFinish");
+    LOG_I("calling proxy_glFinish()");
     (void)glFinish();
 }
 
@@ -155,7 +155,7 @@ static
 void
 proxy_glFlush(state_t *state)
 {
-    LOG_I("calling proxy_glFlush");
+    LOG_I("calling proxy_glFlush()");
     (void)glFlush();
 }
 
@@ -163,7 +163,7 @@ static
 void
 proxy_glFrontFace(state_t *state)
 {
-    LOG_I("calling proxy_glFrontFace");
+    LOG_I("calling proxy_glFrontFace(%p %s)", vv(r0), glenum2str(r0));
     (void)glFrontFace((GLenum)r0);
 }
 
@@ -171,7 +171,7 @@ static
 void
 proxy_glGenTextures(state_t *state)
 {
-    LOG_I("calling proxy_glGenTextures");
+    LOG_I("calling proxy_glGenTextures(%u, %p)", r0, vv(r1));
     (void)glGenTextures((GLsizei)r0, (GLuint *)aa(r1));
 }
 
@@ -179,15 +179,20 @@ static
 void
 proxy_glGetError(state_t *state)
 {
-    LOG_I("calling proxy_glGetError");
+    LOG_I("calling proxy_glGetError()");
     r0 = (uint32_t)glGetError();
+    if (r0) {
+        LOG_I("        proxy_glGetError returned %p %s", vv(r0), glenum2str(r0));
+    } else {
+        LOG_I("        proxy_glGetError returned %p", vv(r0));
+    }
 }
 
 static
 void
 proxy_glGetFloatv(state_t *state)
 {
-    LOG_I("calling proxy_glGetFloatv");
+    LOG_I("calling proxy_glGetFloatv(%p %s, %p)", vv(r0), glenum2str(r0), vv(r1));
     (void)glGetFloatv((GLenum)r0, (GLfloat *)aa(r1));
 }
 
@@ -195,7 +200,7 @@ static
 void
 proxy_glGetIntegerv(state_t *state)
 {
-    LOG_I("calling proxy_glGetIntegerv");
+    LOG_I("calling proxy_glGetIntegerv(%p %s, %p)", vv(r0), glenum2str(r0), vv(r1));
     (void)glGetIntegerv((GLenum)r0, (GLint *)aa(r1));
 }
 
@@ -203,15 +208,16 @@ static
 void
 proxy_glGetString(state_t *state)
 {
-    LOG_I("calling proxy_glGetString");
+    LOG_I("calling proxy_glGetString(%p %s)", vv(r0), glenum2str(r0));
     r0 = (uint32_t)glGetString((GLenum)r0);
+    LOG_I("        proxy_glGetString returned %p \"%s\"", vv(r0), (const char *)r0);
 }
 
 static
 void
 proxy_glLoadIdentity(state_t *state)
 {
-    LOG_I("calling proxy_glLoadIdentity");
+    LOG_I("calling proxy_glLoadIdentity()");
     (void)glLoadIdentity();
 }
 
@@ -219,7 +225,7 @@ static
 void
 proxy_glLoadMatrixf(state_t *state)
 {
-    LOG_I("calling proxy_glLoadMatrixf");
+    LOG_I("calling proxy_glLoadMatrixf(%p)", vv(r0));
     (void)glLoadMatrixf((const GLfloat *)aa(r0));
 }
 
@@ -227,7 +233,7 @@ static
 void
 proxy_glLoadMatrixx(state_t *state)
 {
-    LOG_I("calling proxy_glLoadMatrixx");
+    LOG_I("calling proxy_glLoadMatrixx(%p)", vv(r0));
     (void)glLoadMatrixx((const GLfixed *)aa(r0));
 }
 
@@ -235,7 +241,7 @@ static
 void
 proxy_glMatrixMode(state_t *state)
 {
-    LOG_I("calling proxy_glMatrixMode");
+    LOG_I("calling proxy_glMatrixMode(%p %s)", vv(r0), glenum2str(r0));
     (void)glMatrixMode((GLenum)r0);
 }
 
@@ -243,7 +249,7 @@ static
 void
 proxy_glPixelStorei(state_t *state)
 {
-    LOG_I("calling proxy_glPixelStorei");
+    LOG_I("calling proxy_glPixelStorei(%p %s, %d)", vv(r0), glenum2str(r0), r1);
     (void)glPixelStorei((GLenum)r0, (GLint)r1);
 }
 
@@ -251,23 +257,23 @@ static
 void
 proxy_glPointSize(state_t *state)
 {
-    LOG_I("calling proxy_glPointSize");
-    (void)glPointSize((GLfloat)r0);
+    LOG_I("calling proxy_glPointSize(%f)", *(GLfloat*)&r0);
+    (void)glPointSize(*(GLfloat*)&r0);
 }
 
 static
 void
 proxy_glScalef(state_t *state)
 {
-    LOG_I("calling proxy_glScalef");
-    (void)glScalef((GLfloat)r0, (GLfloat)r1, (GLfloat)r2);
+    LOG_I("calling proxy_glScalef(%f, %f, %f)", *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2);
+    (void)glScalef(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2);
 }
 
 static
 void
 proxy_glScissor(state_t *state)
 {
-    LOG_I("calling proxy_glScissor");
+    LOG_I("calling proxy_glScissor(%d, %d, %u, %u)", r0, r1, r2, r3);
     (void)glScissor((GLint)r0, (GLint)r1, (GLsizei)r2, (GLsizei)r3);
 }
 
@@ -275,7 +281,7 @@ static
 void
 proxy_glShadeModel(state_t *state)
 {
-    LOG_I("calling proxy_glShadeModel");
+    LOG_I("calling proxy_glShadeModel(%p %s)", vv(r0), glenum2str(r0));
     (void)glShadeModel((GLenum)r0);
 }
 
@@ -283,7 +289,7 @@ static
 void
 proxy_glTexCoordPointer(state_t *state)
 {
-    LOG_I("calling proxy_glTexCoordPointer(%d, %d, %d, %p)", r0, r1, r2, vv(r3));
+    LOG_I("calling proxy_glTexCoordPointer(%d, %p %s, %u, %p)", r0, vv(r1), glenum2str(r1), r2, vv(r3));
     (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
 }
 
@@ -291,7 +297,7 @@ static
 void
 proxy_glTexEnvi(state_t *state)
 {
-    LOG_I("calling proxy_glTexEnvi");
+    LOG_I("calling proxy_glTexEnvi(%p %s, %p %s, %d)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), r2);
     (void)glTexEnvi((GLenum)r0, (GLenum)r1, (GLint)r2);
 }
 
@@ -299,7 +305,7 @@ static
 void
 proxy_glTexEnvx(state_t *state)
 {
-    LOG_I("calling proxy_glTexEnvx");
+    LOG_I("calling proxy_glTexEnvx(%p %s, %p %s, %p)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), vv(r2));
     (void)glTexEnvx((GLenum)r0, (GLenum)r1, (GLfixed)r2);
 }
 
@@ -307,24 +313,32 @@ static
 void
 proxy_glTexImage2D(state_t *state)
 {
-    LOG_I("calling proxy_glTexImage2D");
-    (void)glTexImage2D((GLenum)r0, (GLint)r1, (GLint)r2, (GLsizei)r3, (GLsizei)load(r13),
-        (GLint)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)aa(load(r13 + 16)));
+    uint32_t param5 = load(r13);
+    uint32_t param6 = load(r13 + 4);
+    uint32_t param7 = load(r13 + 8);
+    uint32_t param8 = load(r13 + 12);
+    uint32_t param9 = load(r13 + 16);
+    LOG_I("calling proxy_glTexImage2D(%p %s, %d, %p %s, %u, %u, %d, %p %s, %p %s, %p",
+        vv(r0), glenum2str(r0), r1, vv(r2), glenum2str(r2), r3, param5, param6, vv(param7),
+        glenum2str(param7), vv(param8), glenum2str(param8), vv(param9));
+    (void)glTexImage2D((GLenum)r0, (GLint)r1, (GLint)r2, (GLsizei)r3, (GLsizei)param5,
+        (GLint)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)aa(param9));
 }
 
 static
 void
 proxy_glTexParameterf(state_t *state)
 {
-    LOG_I("calling proxy_glTexParameterf");
-    (void)glTexParameterf((GLenum)r0, (GLenum)r1, (GLfloat)r2);
+    LOG_I("calling proxy_glTexParameterf(%p %s, %p %s, %f)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), *(GLfloat*)&r2);
+    (void)glTexParameterf((GLenum)r0, (GLenum)r1, *(GLfloat*)&r2);
 }
 
 static
 void
 proxy_glTexParameteri(state_t *state)
 {
-    LOG_I("calling proxy_glTexParameteri");
+    LOG_I("calling proxy_glTexParameteri(%p %s, %p %s, %p %s)", vv(r0), glenum2str(r0), vv(r1),
+                                                        glenum2str(r1), vv(r2), glenum2str(r2));
     (void)glTexParameteri((GLenum)r0, (GLenum)r1, (GLint)r2);
 }
 
@@ -332,7 +346,7 @@ static
 void
 proxy_glTexParameteriv(state_t *state)
 {
-    LOG_I("calling proxy_glTexParameteriv");
+    LOG_I("calling proxy_glTexParameteriv(%p %s, %p %s, %p)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), vv(r2));
     (void)glTexParameteriv((GLenum)r0, (GLenum)r1, (const GLint *)aa(r2));
 }
 
@@ -340,16 +354,23 @@ static
 void
 proxy_glTexSubImage2D(state_t *state)
 {
-    LOG_I("calling proxy_glTexSubImage2D");
-    (void)glTexSubImage2D((GLenum)r0, (GLint)r1, (GLint)r2 , (GLint)r3, (GLsizei)load(r13),
-        (GLsizei)load(r13 + 4), (GLenum)load(r13 + 8), (GLenum)load(r13 + 12), (const GLvoid *)aa(load(r13 + 16)));
+    uint32_t param5 = load(r13);
+    uint32_t param6 = load(r13 + 4);
+    uint32_t param7 = load(r13 + 8);
+    uint32_t param8 = load(r13 + 12);
+    uint32_t param9 = load(r13 + 16);
+    LOG_I("calling proxy_glTexSubImage2D(%p %s, %d, %d, %d, %u, %u, %p %s, %p %s, %p)",
+        vv(r0), glenum2str(r0), r1, r2, r3, param5, param6, vv(param7), glenum2str(param7),
+        vv(param8), glenum2str(param8), vv(param9));
+    (void)glTexSubImage2D((GLenum)r0, (GLint)r1, (GLint)r2 , (GLint)r3, (GLsizei)param5,
+        (GLsizei)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)aa(param9));
 }
 
 static
 void
 proxy_glTranslatex(state_t *state)
 {
-    LOG_I("calling proxy_glTranslatex");
+    LOG_I("calling proxy_glTranslatex(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
     (void)glTranslatex((GLfixed)r0, (GLfixed)r1, (GLfixed)r2);
 }
 
@@ -357,7 +378,7 @@ static
 void
 proxy_glVertexPointer(state_t *state)
 {
-    LOG_I("calling proxy_glVertexPointer");
+    LOG_I("calling proxy_glVertexPointer(%d, %p %s, %u, %p)", r0, vv(r1), glenum2str(r1), r2, vv(r3));
     (void)glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
 }
 
@@ -365,7 +386,7 @@ static
 void
 proxy_glViewport(state_t *state)
 {
-    LOG_I("calling proxy_glViewport");
+    LOG_I("calling proxy_glViewport(%d, %d, %u, %u)", r0, r1, r2, r3);
     (void)glViewport((GLint)r0, (GLint)r1, (GLsizei)r2, (GLsizei)r3);
 }
 
@@ -373,8 +394,10 @@ static
 void
 proxy_glDrawTexfOES(state_t *state)
 {
-    LOG_I("calling proxy_glDrawTexfOES");
-    (void)glDrawTexfOES((GLfloat)r0, (GLfloat)r1, (GLfloat)r2, (GLfloat)r3, (GLfloat)load(r13));
+    uint32_t param5 = load(r13);
+    LOG_I("calling proxy_glDrawTexfOES(%f, %f, %f, %f, %f)",
+                *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3, *(GLfloat*)&param5);
+    (void)glDrawTexfOES(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3, *(GLfloat*)&param5);
 }
 
 
