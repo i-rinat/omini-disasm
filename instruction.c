@@ -164,13 +164,15 @@ p_str_immediate(uint32_t pc, uint32_t code)
     assert(Rn != 15);   // do not want stores into .text
     assert(Rt != 15);
 
+    const char *store_func_suffix = (Rn == 13) ? "_direct" : "";
+
     if (index && !wback) {
-        emit_code("   store(r%u + %d, r%u);", Rn, offset, Rt);
+        emit_code("   store%s(r%u + %d, r%u);", store_func_suffix, Rn, offset, Rt);
     } else if (index && wback) {
         emit_code("   r%u += %d;", Rn, offset);
-        emit_code("   store(r%u, r%u);", Rn, Rt);
+        emit_code("   store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
     } else if (!index) {
-        emit_code("   store(r%u, r%u);", Rn, Rt);
+        emit_code("   store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
         emit_code("   r%u += %d;", Rn, offset);
     }
 
@@ -201,13 +203,14 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
         }
         emit_code("   r%u = %uu;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
     } else {
+        const char *load_func_suffix = (Rn == 13) ? "_direct" : "";
         if (index && !wback) {
-            emit_code("   r%u = load(r%u + %d);", Rt, Rn, offset);
+            emit_code("   r%u = load%s(r%u + %d);", Rt, load_func_suffix, Rn, offset);
         } else if (index && wback) {
             emit_code("   r%u += %d;", Rn, offset);
-            emit_code("   r%u = load(r%u);", Rt, Rn);
+            emit_code("   r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
         } else if (!index) {
-            emit_code("   r%u = load(r%u);", Rt, Rn);
+            emit_code("   r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
             emit_code("   r%u += %d;", Rn, offset);
         }
     }
@@ -1275,13 +1278,15 @@ p_str_register(uint32_t pc, uint32_t code)
     assert(Rt != 15);
     assert(Rm != 15);
 
+    const char *store_func_suffix = (Rn == 13) ? "_direct" : "";
+
     if (index && !wback) {
         switch (shift_t) {
         case SRType_LSL:
-            emit_code("    store(r%u %c (r%u << %u), r%u);", Rn, add_op, Rm, shift_n, Rt);
+            emit_code("    store%s(r%u %c (r%u << %u), r%u);", store_func_suffix, Rn, add_op, Rm, shift_n, Rt);
             break;
         case SRType_LSR:
-            emit_code("    store(r%u %c (r%u >> %u), r%u);", Rn, add_op, Rm, shift_n, Rt);
+            emit_code("    store%s(r%u %c (r%u >> %u), r%u);", store_func_suffix, Rn, add_op, Rm, shift_n, Rt);
             break;
         default:
             assert(0 && "not implemented shift operation");
@@ -1298,9 +1303,9 @@ p_str_register(uint32_t pc, uint32_t code)
             assert(0 && "not implemented shift operation");
         }
 
-        emit_code("    store(r%u, r%u);", Rn, Rt);
+        emit_code("    store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
     } else if (!index) {
-        emit_code("    store(r%u, r%u);", Rn, Rt);
+        emit_code("    store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
         switch (shift_t) {
         case SRType_LSL:
             emit_code("    r%u %c= (r%u << %u);", Rn, add_op, Rm, shift_n);
@@ -1348,23 +1353,25 @@ p_ldr_register(uint32_t pc, uint32_t code)
         assert(0 && "shift type not implemented");
     }
 
+    const char *load_func_suffix = (Rn == 13) ? "_direct" : "";
+
     if (index && !wback) {
         char Rn_part[200];
         if (15 == Rn)   sprintf(Rn_part, "%uu", pc + 8);
         else            sprintf(Rn_part, "r%u", Rn);
 
         if (15 == Rt) emit_code("    find_and_call_function(state, load(%s %c %s));", Rn_part, add_op, Rm_part);
-        else          emit_code("    r%u = load(%s %c %s);", Rt, Rn_part, add_op, Rm_part);
+        else          emit_code("    r%u = load%s(%s %c %s);", Rt, load_func_suffix, Rn_part, add_op, Rm_part);
 
     } else if (index && wback) {
         assert(Rn != 15 && "wback to pc");
         assert(Rt != 15);
         emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
-        emit_code("    r%u = load(r%u);", Rt, Rn);
+        emit_code("    r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
     } else if (!index) {
         assert(Rn != 15 && "wback to pc");
         assert(Rt != 15);
-        emit_code("    r%u = load(r%u);", Rt, Rn);
+        emit_code("    r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
         emit_code("    r%u %c= %s;", Rn, add_op, Rm_part);
     }
 
