@@ -59,6 +59,32 @@ load(uint32_t addr)
 #endif
 }
 
+__attribute__((always_inline))
+static
+void
+store_direct(uint32_t addr, uint32_t value)
+{
+#ifdef ENABLE_STORELOAD_TRACING
+    LOG_I("store 0x%08x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
+#endif
+    *((uint32_t *)addr) = value;
+}
+
+__attribute__((always_inline))
+static
+uint32_t
+load_direct(uint32_t addr)
+{
+#ifdef ENABLE_STORELOAD_TRACING
+    LOG_I("load_direct from %p (%s)", vv(addr), get_section_name_by_addr(addr));
+    const uint32_t res = *((uint32_t *)addr);
+    LOG_I("load -> 0x%08x", res);
+    return res;
+#else
+    return *((uint32_t *)addr);
+#endif
+}
+
 static
 void
 store_halfword(uint32_t addr, uint32_t value)
