@@ -167,13 +167,13 @@ p_str_immediate(uint32_t pc, uint32_t code)
     const char *store_func_suffix = (Rn == 13) ? "_direct" : "";
 
     if (index && !wback) {
-        emit_code("   store%s(r%u + %d, r%u);", store_func_suffix, Rn, offset, Rt);
+        emit_code("    store%s(r%u + %d, r%u);", store_func_suffix, Rn, offset, Rt);
     } else if (index && wback) {
-        emit_code("   r%u += %d;", Rn, offset);
-        emit_code("   store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
+        emit_code("    r%u += %d;", Rn, offset);
+        emit_code("    store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
     } else if (!index) {
-        emit_code("   store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
-        emit_code("   r%u += %d;", Rn, offset);
+        emit_code("    store%s(r%u, r%u);", store_func_suffix, Rn, Rt);
+        emit_code("    r%u += %d;", Rn, offset);
     }
 
     pc_stack_push(pc + 4);
@@ -201,17 +201,17 @@ p_ldr_immediate(uint32_t pc, uint32_t code)
         if (wback) {
             assert(0 && "writeback in ldr with Rn = pc");
         }
-        emit_code("   r%u = %uu;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
+        emit_code("    r%u = %uu;", Rt, get_word_at(pc + 8 + (index ? offset : 0)));
     } else {
         const char *load_func_suffix = (Rn == 13) ? "_direct" : "";
         if (index && !wback) {
-            emit_code("   r%u = load%s(r%u + %d);", Rt, load_func_suffix, Rn, offset);
+            emit_code("    r%u = load%s(r%u + %d);", Rt, load_func_suffix, Rn, offset);
         } else if (index && wback) {
-            emit_code("   r%u += %d;", Rn, offset);
-            emit_code("   r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
+            emit_code("    r%u += %d;", Rn, offset);
+            emit_code("    r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
         } else if (!index) {
-            emit_code("   r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
-            emit_code("   r%u += %d;", Rn, offset);
+            emit_code("    r%u = load%s(r%u);", Rt, load_func_suffix, Rn);
+            emit_code("    r%u += %d;", Rn, offset);
         }
     }
 
