@@ -574,55 +574,46 @@ static
 void
 declare_data_arrays(bfd *abfd)
 {
-    printf("declaring data arrays\n");
+    printf("declaring unified data array\n");
     FILE *fp = fopen(abfd->filename, "rb");
     assert(fp);
 
     struct bfd_section *sect = abfd->sections;
-    uint32_t section_index = 0;
+    uint32_t data_end = 0;
+
+    // determine data_image size
     while (sect) {
         if (sect->flags & SEC_ALLOC) {
-            emit_code("// section %s", sect->name);
-            emit_code_nonl("static char d_section_%d[%d]", section_index, sect->size);
-            if (sect->flags & SEC_LOAD) {
-                emit_code_nonl(" = {");
-                fseek(fp, sect->filepos, SEEK_SET);
-                unsigned char *buf = malloc(sect->size);     assert(buf);
-                fread(buf, 1, sect->size, fp);
-                for (uint32_t k = 0; k < sect->size; k ++) {
-                    if (0 != k)
-                        emit_code_nonl(", ");
-                    emit_code_nonl("0x%02x", buf[k]);
-                }
-
-                free(buf);
-                emit_code("};");
-            } else {
-                emit_code(" = { 0 };");
-            }
-            section_index ++;
+            uint32_t section_end = sect->vma + sect->size;
+            if (data_end < section_end)
+                data_end = section_end;
         }
         sect = sect->next;
     }
 
-    sect = abfd->sections;
-    section_index = 0;
-    emit_code("static struct section_list {");
-    emit_code("    char       *ptr;");
-    emit_code("    uint32_t    begin;");
-    emit_code("    uint32_t    end;");
-    emit_code("    const char *name;");
-    emit_code("} d_section_list[] = {");
-    while (sect) {
-        if (sect->flags & SEC_ALLOC) {
-            emit_code("    {(char *)(&d_section_%d[0]), 0x%x, 0x%x, \"%s\"},", section_index,
-                sect->vma, sect->vma + sect->size, sect->name);
+    unsigned char *data_image = calloc(data_end, sizeof(unsigned char));
+    assert(data_image);
 
-            section_index ++;
+    // fill data_image
+    sect = abfd->sections;
+    while (sect) {
+        if ((sect->flags & SEC_ALLOC) && (sect->flags & SEC_LOAD)) {
+            fseek(fp, sect->filepos, SEEK_SET);
+            fread(data_image + sect->vma, sizeof(unsigned char), sect->size, fp);
         }
         sect = sect->next;
+    }
+
+    emit_code_nonl("static unsigned char d_image[0x%x] = {", data_end);
+    for (uint32_t k = 0; k < data_end; k ++) {
+        if (0 != k)
+            emit_code_nonl(", ");
+        emit_code_nonl("0x%02x", data_image[k]);
     }
     emit_code("};");
+    emit_code("static const uint32_t image_offset = (uint32_t)&d_image;");
+
+    free(data_image);
 
     fclose(fp);
 }

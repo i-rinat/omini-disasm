@@ -166,7 +166,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_E(\"calling pthread_create(%%p, %%p, %%p, %%p)\", vv(r0), vv(r1), vv(r2), vv(r3));");
         // TODO: remove hardcode
-        emit_code("    if (r2 == 0x38450) {");
+        emit_code("    if (r2 == image_offset + 0x38450) {");
         emit_code("    r0_signed = pthread_create((pthread_t *)aa(r0), "
                             "(const pthread_attr_t *)aa(r1), &proxy_38450, (void *)aa(r3));");
         emit_code("    } else {");
@@ -543,8 +543,8 @@ static
 void
 process_arm_relative_relocations(arelent *relp)
 {
-    const uint32_t l_addr = 0;    // base address
-    emit_code("    store(%p, 0x%x + load(%p));", relp->address, l_addr + relp->addend, relp->address);
+    emit_code("    store(image_offset + %p, image_offset + %uu + load(image_offset + %p));",
+        relp->address, relp->addend, relp->address);
 }
 
 static
@@ -622,7 +622,7 @@ process_relocations(bfd *abfd, asymbol **symbol_table)
         if (!strcmp(relp->howto->name, "R_ARM_RELATIVE")) {
             process_arm_relative_relocations(relp);
         } else if (!strcmp(relp->howto->name, "R_ARM_GLOB_DAT")) {
-            emit_code("    store(%p, %p);", relp->address, relp->address);
+            emit_code("    store(image_offset + %p, image_offset + %p);", relp->address, relp->address);
         }
 
     }

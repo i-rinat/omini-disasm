@@ -119,7 +119,7 @@ p_sub_immediate(uint32_t pc, uint32_t code)
 
     emit_code("    {");
     if (15 == Rn)
-        emit_code("      const uint32_t qx = %uu;", pc + 8);
+        emit_code("      const uint32_t qx = image_offset + %uu;", pc + 8);
     else
         emit_code("      const uint32_t qx = r%u;", Rn);
 
@@ -251,7 +251,7 @@ p_addsubcarry_register(uint32_t pc, uint32_t code, uint32_t do_add, uint32_t do_
     else if (!do_carry && !do_add)  emit_code("      const uint32_t old_C = 1;");
 
     if (15 == Rn) {
-        emit_code("      const uint32_t qx = %uu;", pc + 8);
+        emit_code("      const uint32_t qx = image_offset + %uu;", pc + 8);
         if (setflags)
             assert(0 && "setflags not implemented for Rn == 15 case");
     } else {
@@ -312,8 +312,9 @@ p_add_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%u = %uu;", Rd, pc + 8 + imm32);
+        emit_code("    r%u = image_offset + %uu;", Rd, pc + 8 + imm32);
         if (setflags) {
+            // TODO: image_offset not added to pc here
             const uint32_t result = pc + 8 + imm32;
             emit_code("    APSR.C = %u;", (result < imm32));
             emit_code("    APSR.V = %u;",
@@ -442,7 +443,7 @@ p_mov_register(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rm) {
-        emit_code("    r%u = %uu;", Rd, pc + 8);
+        emit_code("    r%u = image_offset + %uu;", Rd, pc + 8);
     } else {
         emit_code("    r%u = r%u;", Rd, Rm);
     }
@@ -615,7 +616,7 @@ p_stmdb(uint32_t pc, uint32_t code)
     }
 
     if (code & (1 << 15))
-        emit_code("    store(r%u - %d, %uu);", Rn, neg_offset, pc + 8);
+        emit_code("    store(r%u - %d, image_offset + %uu);", Rn, neg_offset, pc + 8);
 
     if (wback)
         emit_code("    r%u -= %d;", Rn, storage_size);
@@ -847,7 +848,7 @@ p_and_immediate(uint32_t pc, uint32_t code)
 
     assert(Rd != 15);
     if (15 == Rn) {
-        emit_code("    r%u = %uu;", Rd, (pc + 8) & imm32);
+        emit_code("    r%u = (image_offset + %uu) & %uu;", Rd, (pc + 8), imm32);
     } else {
         emit_code("    r%u = r%u & %uu;", Rd, Rn, imm32);
     }
@@ -875,6 +876,7 @@ p_asr_immediate(uint32_t pc, uint32_t code)
     assert(shift_n > 0);
 
     if (15 == Rm) {
+        // TODO: what to do with image_offset?
         if (setflags)
             emit_code("    APSR.C = %u;", (uint32_t)((int32_t)(pc+8) >> (shift_n - 1)) & 1);
         emit_code("    r%u = %uu;", Rd, (uint32_t)((int32_t)(pc+8) >> shift_n));
@@ -1357,7 +1359,7 @@ p_ldr_register(uint32_t pc, uint32_t code)
 
     if (index && !wback) {
         char Rn_part[200];
-        if (15 == Rn)   sprintf(Rn_part, "%uu", pc + 8);
+        if (15 == Rn)   sprintf(Rn_part, "(image_offset + %uu)", pc + 8);
         else            sprintf(Rn_part, "r%u", Rn);
 
         if (15 == Rt) emit_code("    find_and_call_function(state, load(%s %c %s));", Rn_part, add_op, Rm_part);
@@ -1600,7 +1602,7 @@ p_ldrb_register(uint32_t pc, uint32_t code)
 
     char Rn_part[200];
     if (15 == Rn)
-        sprintf(Rn_part, "%uu", pc + 8);
+        sprintf(Rn_part, "(image_offset + %uu)", pc + 8);
     else
         sprintf(Rn_part, "r%u", Rn);
 
@@ -1654,7 +1656,7 @@ p_strb_register(uint32_t pc, uint32_t code)
 
     char Rn_part[200];
     if (15 == Rn)
-        sprintf(Rn_part, "%uu", pc + 8);
+        sprintf(Rn_part, "(image_offset + %uu)", pc + 8);
     else
         sprintf(Rn_part, "r%u", Rn);
 
@@ -1692,7 +1694,7 @@ p_stm_stmib(uint32_t pc, uint32_t code)
     }
 
     if (code & (1 << 15)) {
-        emit_code("    store(r%u + %uu, %uu);", Rn, offset, pc + 8);
+        emit_code("    store(r%u + %uu, image_offset + %uu);", Rn, offset, pc + 8);
         offset += 4;
     }
 
@@ -1985,7 +1987,7 @@ p_ldrh_ldrsh_register(uint32_t pc, uint32_t code, uint32_t signed_flag)
     if (15 == Rn) {
         if (wback)
             assert(0 && "writeback in ldrh with Rn == pc");
-        emit_code("   r%u = load_halfword(%uu %c r%u);", Rt, pc + 8, addop, Rm);
+        emit_code("   r%u = load_halfword(image_offset + %uu %c r%u);", Rt, pc + 8, addop, Rm);
     } else {
         if (index && !wback) {
             emit_code("   r%u = load_halfword(r%u %c r%u);", Rt, Rn, addop, Rm);
@@ -2022,7 +2024,7 @@ p_strh_register(uint32_t pc, uint32_t code)
     if (15 == Rn) {
         if (wback)
             assert(0 && "writeback in ldrh with Rn == pc");
-        emit_code("   store_halfword(%uu %c r%u, r%u);", pc + 8, addop, Rm, Rt);
+        emit_code("   store_halfword(image_offset + %uu %c r%u, r%u);", pc + 8, addop, Rm, Rt);
     } else {
         if (index && !wback) {
             emit_code("   store_halfword(r%u %c r%u, r%u);", Rn, addop, Rm, Rt);
@@ -2055,7 +2057,7 @@ p_ldrsb_register(uint32_t pc, uint32_t code)
 
     if (index && !wback) {
         if (15 == Rn)
-            emit_code("    r%u = load_byte(%uu %c r%u);", Rt, pc + 8, addop, Rm);
+            emit_code("    r%u = load_byte(image_offset + %uu %c r%u);", Rt, pc + 8, addop, Rm);
         else
             emit_code("    r%u = load_byte(r%u %c r%u);", Rt, Rn, addop, Rm);
     } else if (index && wback) {

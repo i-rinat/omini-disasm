@@ -1,10 +1,12 @@
 // storeload.inc
 
-#define aa(addr)    adjust_address(addr)
+//#define aa(addr)    adjust_address(addr)
+#define aa(addr)    ((char*)addr)
 #define vv(value)   ((void*)value)
 
 //#define ENABLE_STORELOAD_TRACING
 
+/*
 static
 inline
 char *
@@ -19,7 +21,9 @@ adjust_address(uint32_t addr)
 
     return (char*)addr;
 }
+*/
 
+/*
 static
 inline
 const char *
@@ -34,7 +38,9 @@ get_section_name_by_addr(uint32_t addr)
 
     return "unknown";
 }
+*/
 
+__attribute__((always_inline))
 static
 void
 store(uint32_t addr, uint32_t value)
@@ -42,9 +48,10 @@ store(uint32_t addr, uint32_t value)
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("store 0x%08x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
-    *((uint32_t *)adjust_address(addr)) = value;
+    *((uint32_t *)aa(addr)) = value;
 }
 
+__attribute__((always_inline))
 static
 uint32_t
 load(uint32_t addr)
@@ -55,7 +62,7 @@ load(uint32_t addr)
     LOG_I("load -> 0x%08x", res);
     return res;
 #else
-    return *((uint32_t *)adjust_address(addr));
+    return *((uint32_t *)aa(addr));
 #endif
 }
 
@@ -85,6 +92,7 @@ load_direct(uint32_t addr)
 #endif
 }
 
+__attribute__((always_inline))
 static
 void
 store_halfword(uint32_t addr, uint32_t value)
@@ -93,9 +101,10 @@ store_halfword(uint32_t addr, uint32_t value)
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("store_halfword 0x%04x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
-    *((uint16_t *)adjust_address(addr)) = (uint16_t)value;
+    *((uint16_t *)aa(addr)) = (uint16_t)value;
 }
 
+__attribute__((always_inline))
 static
 uint32_t
 load_halfword(uint32_t addr)
@@ -106,10 +115,11 @@ load_halfword(uint32_t addr)
     LOG_I("load_halfword -> 0x%04x", res);
     return res;
 #else
-    return *((uint16_t *)adjust_address(addr));
+    return *((uint16_t *)aa(addr));
 #endif
 }
 
+__attribute__((always_inline))
 static
 void
 store_byte(uint32_t addr, uint32_t value)
@@ -118,9 +128,10 @@ store_byte(uint32_t addr, uint32_t value)
 #ifdef ENABLE_STORELOAD_TRACING
     LOG_I("store_byte 0x%02x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
 #endif
-    *((uint8_t *)adjust_address(addr)) = (uint8_t)value;
+    *((uint8_t *)aa(addr)) = (uint8_t)value;
 }
 
+__attribute__((always_inline))
 static
 uint32_t
 load_byte(uint32_t addr)
@@ -131,10 +142,11 @@ load_byte(uint32_t addr)
     LOG_I("load_byte -> 0x%02x", res);
     return res;
 #else
-    return *((uint8_t *)adjust_address(addr));
+    return *((uint8_t *)aa(addr));
 #endif
 }
 
+__attribute__((always_inline))
 static
 double
 load_double(uint32_t addr)
@@ -145,6 +157,6 @@ load_double(uint32_t addr)
     LOG_I("load_double -> %f", res);
     return res;
 #else
-    return *((double *)adjust_address(addr));
+    return *((double *)aa(addr));
 #endif
 }

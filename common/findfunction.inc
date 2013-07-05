@@ -23,11 +23,17 @@ void  find_and_call_function(state_t *state, uint32_t addr)
     int k;
 
     for (k = 0; k < funclist_cnt; k ++) {
-        if (addr == funclist_addr[k]) {
+        if (addr == funclist_addr[k] + image_offset) {
             LOG_I("find_and_call_function: func_%04x", addr);
             ((void (*)(state_t *))(funclist_ptr[k]))(state);
             return;
         }
+    }
+
+    if (addr == 0xffff0fc0) {
+        LOG_I("find_and_call_function: func_%04x", 0xffff0fc0);
+        func_ffff0fc0(state);
+        return;
     }
 
     if (find_and_call_function_runtime(state, (void*)addr))
@@ -36,5 +42,5 @@ void  find_and_call_function(state_t *state, uint32_t addr)
     if (find_and_call_dlsym(state, addr))
         return;
 
-    LOG_E("find_and_call_function: function %p not found", vv(addr));
+    LOG_E("find_and_call_function: function %p (%p) not found", vv(addr), vv(addr - image_offset));
 }
