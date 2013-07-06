@@ -345,12 +345,13 @@ p_adc_immediate(uint32_t pc, uint32_t code)
     const uint32_t Rd = (code >> 12) & 0xf;
     const uint32_t imm32 = arm_expand_imm12(code & 0xfff);
 
-    emit_code("    {");
-    emit_code("      const uint32_t old_C = APSR.C;");
-    emit_code("      const uint32_t qx = r%u;", Rn);
-    emit_code("      const uint32_t qy = %uu;", imm32);
-    emit_code("      const uint32_t result = qx + qy + old_C;");
     if (setflags) {
+        emit_code("    {");
+        emit_code("      const uint32_t old_C = APSR.C;");
+        emit_code("      const uint32_t qx = r%u;", Rn);
+        emit_code("      const uint32_t qy = %uu;", imm32);
+        emit_code("      const uint32_t result = qx + qy + old_C;");
+
         emit_code("      APSR.N = !!(result & 0x80000000);");
         emit_code("      APSR.Z = (0 == result);");
         emit_code("      APSR.C = (result < qx);");
@@ -359,9 +360,12 @@ p_adc_immediate(uint32_t pc, uint32_t code)
         emit_code("        if (0x7fffffff == qy) APSR.V = !(qx & 0x80000000);");
         emit_code("        APSR.C = APSR.C || (qy == 0xffffffff);");
         emit_code("      }");
+        emit_code("      r%u = result;", Rd);
+        emit_code("    }");
+    } else {
+        emit_code("    r%u = r%u + %uu + APSR.C;", Rd, Rn, imm32);
     }
-    emit_code("      r%u = result;", Rd);
-    emit_code("    }");
+
     pc_stack_push(pc + 4);
 }
 
