@@ -320,18 +320,22 @@ p_add_immediate(uint32_t pc, uint32_t code)
             emit_code("    APSR.Z = (0 == r%u);", Rd);
         }
     } else {
-        emit_code("    {");
-        emit_code("      const uint32_t qx = r%u;", Rn);
-        emit_code("      const uint32_t qy = %uu;", imm32);
-        emit_code("      const uint32_t result = qx + qy;");
         if (setflags) {
+            emit_code("    {");
+            emit_code("      const uint32_t qx = r%u;", Rn);
+            emit_code("      const uint32_t qy = %uu;", imm32);
+            emit_code("      const uint32_t result = qx + qy;");
+
             emit_code("      APSR.C = (result < qx);");
             emit_code("      APSR.V = !((qx ^ qy) & 0x80000000) && ((result ^ qx) & 0x80000000);");
             emit_code("      APSR.N = !!(result & 0x80000000);");
             emit_code("      APSR.Z = (0 == result);");
+
+            emit_code("      r%u = result;", Rd);
+            emit_code("    }");
+        } else {
+            emit_code("    r%u = r%u + %uu;", Rd, Rn, imm32);
         }
-        emit_code("      r%u = result;", Rd);
-        emit_code("    }");
     }
 
     pc_stack_push(pc + 4);
