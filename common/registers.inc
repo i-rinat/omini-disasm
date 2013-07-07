@@ -74,6 +74,8 @@ union local_reg_t {
 #define y_uint64_t  state->reg.y_uint64_t
 #define x_float     state->reg.x_float
 #define y_float     state->reg.y_float
+#define z_float     state->reg.z_float
+#define w_float     state->reg.w_float
 #define x_double    state->reg.x_double
 #define y_double    state->reg.y_double
 

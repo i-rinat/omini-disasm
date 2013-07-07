@@ -75,8 +75,8 @@ static
 void
 proxy_glColor4f(state_t *state)
 {
-    LOG_I("calling proxy_glColor4f(%f, %f, %f, %f)", *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3);
-    (void)glColor4f(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3);
+    LOG_I("calling proxy_glColor4f(%f, %f, %f, %f)", x_float, y_float, z_float, w_float);
+    (void)glColor4f(x_float, y_float, z_float, w_float);
 }
 
 static
@@ -257,16 +257,16 @@ static
 void
 proxy_glPointSize(state_t *state)
 {
-    LOG_I("calling proxy_glPointSize(%f)", *(GLfloat*)&r0);
-    (void)glPointSize(*(GLfloat*)&r0);
+    LOG_I("calling proxy_glPointSize(%f)", x_float);
+    (void)glPointSize(x_float);
 }
 
 static
 void
 proxy_glScalef(state_t *state)
 {
-    LOG_I("calling proxy_glScalef(%f, %f, %f)", *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2);
-    (void)glScalef(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2);
+    LOG_I("calling proxy_glScalef(%f, %f, %f)", x_float, y_float, z_float);
+    (void)glScalef(x_float, y_float, z_float);
 }
 
 static
@@ -329,8 +329,8 @@ static
 void
 proxy_glTexParameterf(state_t *state)
 {
-    LOG_I("calling proxy_glTexParameterf(%p %s, %p %s, %f)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), *(GLfloat*)&r2);
-    (void)glTexParameterf((GLenum)r0, (GLenum)r1, *(GLfloat*)&r2);
+    LOG_I("calling proxy_glTexParameterf(%p %s, %p %s, %f)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), z_float);
+    (void)glTexParameterf((GLenum)r0, (GLenum)r1, z_float);
 }
 
 static
@@ -394,10 +394,14 @@ static
 void
 proxy_glDrawTexfOES(state_t *state)
 {
-    uint32_t param5 = load(r13);
+    union {
+        uint32_t param5;
+        float    param5_float;
+    } params;
+    params.param5 = load(r13);
     LOG_I("calling proxy_glDrawTexfOES(%f, %f, %f, %f, %f)",
-                *(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3, *(GLfloat*)&param5);
-    (void)glDrawTexfOES(*(GLfloat*)&r0, *(GLfloat*)&r1, *(GLfloat*)&r2, *(GLfloat*)&r3, *(GLfloat*)&param5);
+                        x_float, y_float, z_float, w_float, params.param5_float);
+    (void)glDrawTexfOES(x_float, y_float, z_float, w_float, params.param5_float);
 }
 
 
