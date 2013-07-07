@@ -1,54 +1,18 @@
 // storeload.inc
 
-//#define aa(addr)    adjust_address(addr)
 #define aa(addr)    ((char*)addr)
 #define vv(value)   ((void*)value)
 
+
 //#define ENABLE_STORELOAD_TRACING
 
-/*
-static
-inline
-char *
-adjust_address(uint32_t addr)
-{
-    uint32_t k;
-    for (k = 0; k < sizeof(d_section_list)/sizeof(d_section_list[0]); k ++) {
-        if (d_section_list[k].begin <= addr && addr < d_section_list[k].end) {
-            return d_section_list[k].ptr + addr - d_section_list[k].begin;
-        }
-    }
-
-    return (char*)addr;
-}
-*/
-
-/*
-static
-inline
-const char *
-get_section_name_by_addr(uint32_t addr)
-{
-    uint32_t k;
-    for (k = 0; k < sizeof(d_section_list)/sizeof(d_section_list[0]); k ++) {
-        if (d_section_list[k].begin <= addr && addr < d_section_list[k].end) {
-            return d_section_list[k].name;
-        }
-    }
-
-    return "unknown";
-}
-*/
 
 __attribute__((always_inline))
 static
 void
 store(uint32_t addr, uint32_t value)
 {
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store 0x%08x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
-#endif
-    *((uint32_t *)aa(addr)) = value;
+    *((uint32_t *)addr) = value;
 }
 
 __attribute__((always_inline))
@@ -56,40 +20,7 @@ static
 uint32_t
 load(uint32_t addr)
 {
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load from %p (%s)", vv(addr), get_section_name_by_addr(addr));
-    const uint32_t res = *((uint32_t *)adjust_address(addr));
-    LOG_I("load -> 0x%08x", res);
-    return res;
-#else
-    return *((uint32_t *)aa(addr));
-#endif
-}
-
-__attribute__((always_inline))
-static
-void
-store_direct(uint32_t addr, uint32_t value)
-{
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store 0x%08x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
-#endif
-    *((uint32_t *)addr) = value;
-}
-
-__attribute__((always_inline))
-static
-uint32_t
-load_direct(uint32_t addr)
-{
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_direct from %p (%s)", vv(addr), get_section_name_by_addr(addr));
-    const uint32_t res = *((uint32_t *)addr);
-    LOG_I("load -> 0x%08x", res);
-    return res;
-#else
     return *((uint32_t *)addr);
-#endif
 }
 
 __attribute__((always_inline))
@@ -98,10 +29,7 @@ void
 store_halfword(uint32_t addr, uint32_t value)
 {
     value &= 0xffff;
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store_halfword 0x%04x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
-#endif
-    *((uint16_t *)aa(addr)) = (uint16_t)value;
+    *((uint16_t *)addr) = (uint16_t)value;
 }
 
 __attribute__((always_inline))
@@ -109,14 +37,7 @@ static
 uint32_t
 load_halfword(uint32_t addr)
 {
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_halfword from %p (%s)", vv(addr), get_section_name_by_addr(addr));
-    const uint16_t res = *((uint16_t *)adjust_address(addr));
-    LOG_I("load_halfword -> 0x%04x", res);
-    return res;
-#else
     return *((uint16_t *)aa(addr));
-#endif
 }
 
 __attribute__((always_inline))
@@ -125,10 +46,7 @@ void
 store_byte(uint32_t addr, uint32_t value)
 {
     value &= 0xff;
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("store_byte 0x%02x to %p (%s)", value, vv(addr), get_section_name_by_addr(addr));
-#endif
-    *((uint8_t *)aa(addr)) = (uint8_t)value;
+    *((uint8_t *)addr) = (uint8_t)value;
 }
 
 __attribute__((always_inline))
@@ -136,14 +54,7 @@ static
 uint32_t
 load_byte(uint32_t addr)
 {
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_byte from %p (%s)", vv(addr), get_section_name_by_addr(addr));
-    const uint8_t res = *((uint8_t *)adjust_address(addr));
-    LOG_I("load_byte -> 0x%02x", res);
-    return res;
-#else
     return *((uint8_t *)aa(addr));
-#endif
 }
 
 __attribute__((always_inline))
@@ -151,12 +62,5 @@ static
 double
 load_double(uint32_t addr)
 {
-#ifdef ENABLE_STORELOAD_TRACING
-    LOG_I("load_double from %p (%s)", vv(addr), get_section_name_by_addr(addr));
-    const double res = *((double *)adjust_address(addr));
-    LOG_I("load_double -> %f", res);
-    return res;
-#else
     return *((double *)aa(addr));
-#endif
 }
