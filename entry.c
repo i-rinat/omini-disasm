@@ -786,6 +786,8 @@ main(int argc, char *argv[])
     func_list_free();
 
     calculate_code_coverage(abfd);
+
+    bfd_close(abfd);
     printf("done\n");
     return 0;
 }
