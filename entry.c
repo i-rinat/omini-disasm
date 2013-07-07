@@ -622,14 +622,14 @@ void
 generate_prototypes(void)
 {
     set_output_file("prototypes.inc");
-    char *buf_addr = malloc(256*1024); // TODO: is that enough?
-    char *buf_ptrs = malloc(256*1024); // TODO: is that enough?
+    char *buf_switchcase = malloc(1024*1024); // TODO: is that enough?
+    assert(buf_switchcase);
 
-    assert(buf_addr);
-    assert(buf_ptrs);
-
-    strcpy(buf_addr, "static int funclist_addr[] = { ");
-    strcpy(buf_ptrs, "static void *funclist_ptr[] = { ");
+    strcpy(buf_switchcase, "__attribute__((always_inline))\n");
+    strcat(buf_switchcase, "static\n");
+    strcat(buf_switchcase, "int\n");
+    strcat(buf_switchcase, "find_and_call_function_static_switchcase(state_t *state, uint32_t addr) {\n");
+    strcat(buf_switchcase, "switch (addr - image_offset) {\n");
 
     uint32_t func_pc;
     uint32_t functions_count = 0;
@@ -640,24 +640,16 @@ generate_prototypes(void)
         if (func_pc == setjmp_plt_func_address) // do not generate wrapper for setjmp
             continue;
 
-        if (0 != functions_count) {
-            strcat(buf_addr, ", ");
-            strcat(buf_ptrs, ", ");
-        }
+        sprintf(buf, "case 0x%04x: func_%04x(state); return 1; break;\n", func_pc, func_pc);
+        strcat(buf_switchcase, buf);
 
-        sprintf(buf, "0x%04x", func_pc);
-        strcat(buf_addr, buf);
-        sprintf(buf, "&func_%04x", func_pc);
-        strcat(buf_ptrs, buf);
         functions_count ++;
     }
 
-    strcat(buf_addr, "};");
-    strcat(buf_ptrs, "};");
-
-    emit_code("static const int funclist_cnt = %d;", functions_count);
-    emit_code(buf_addr);
-    emit_code(buf_ptrs);
+    strcat(buf_switchcase, "}\n");
+    strcat(buf_switchcase, "return 0;\n");
+    strcat(buf_switchcase, "}");
+    emit_code(buf_switchcase);
 
     if (setjmp_plt_func_address) {
         emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
@@ -672,9 +664,7 @@ generate_prototypes(void)
         emit_code("}");
     }
 
-    free(buf_addr);
-    free(buf_ptrs);
-
+    free(buf_switchcase);
     close_output_file();
 }
 

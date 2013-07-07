@@ -1,10 +1,5 @@
 // findfunction.inc
 
-// following defined at prototypes.inc:
-// int funclist_cnt;
-// int funclist_addr[]
-// void *funclist_ptr[]
-
 #include "findfunction-jni.inc"
 #include "findfunction-dlsym.inc"
 
@@ -20,14 +15,9 @@ func_ffff0fc0(state_t *state)
 static
 void  find_and_call_function(state_t *state, uint32_t addr)
 {
-    int k;
-
-    for (k = 0; k < funclist_cnt; k ++) {
-        if (addr == funclist_addr[k] + image_offset) {
-            LOG_I("find_and_call_function: func_%04x", addr);
-            ((void (*)(state_t *))(funclist_ptr[k]))(state);
-            return;
-        }
+    if (find_and_call_function_static_switchcase(state, addr)) {
+        LOG_I("find_and_call_function: func_%04x", addr);
+        return;
     }
 
     if (addr == 0xffff0fc0) {
