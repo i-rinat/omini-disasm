@@ -613,7 +613,7 @@ static
 int
 find_and_call_dlsym(state_t *state, uint32_t addr)
 {
-    int k;
+    unsigned int k;
     for (k = 0; k < dlsym_table_element_count; k ++) {
         if (addr == dlsym_table_addr[k]) {
             LOG_I("find_and_call_function: func_%04x", addr);
