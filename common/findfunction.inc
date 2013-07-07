@@ -8,7 +8,7 @@ void
 func_ffff0fc0(state_t *state)
 {
     // prototype: int __kernel_cmpxchg(int oldval, int newval, int *ptr)
-    __sync_val_compare_and_swap_4((int *)aa(r2), (int)r0, (int)r1);
+    __sync_val_compare_and_swap_4((int *)r2, (int)r0, (int)r1);
     r0 = 0;
 }
 

@@ -19,7 +19,7 @@ void
 proxy_AndroidBitmap_lockPixels(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_lockPixels(%p, %p, %p)", (void*)r0, (void*)r1, (void*)r2);
-    r0_signed = AndroidBitmap_lockPixels((JNIEnv*)aa(r0), (jobject)aa(r1), (void**)aa(r2));
+    r0_signed = AndroidBitmap_lockPixels((JNIEnv*)r0, (jobject)r1, (void**)r2);
 }
 
 static
@@ -27,7 +27,7 @@ void
 proxy_AndroidBitmap_unlockPixels(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_unlockPixels(%p, %p)", (void*)r0, (void*)r1);
-    r0_signed = AndroidBitmap_unlockPixels((JNIEnv*)aa(r0), (jobject)aa(r1));
+    r0_signed = AndroidBitmap_unlockPixels((JNIEnv*)r0, (jobject)r1);
 }
 
 static
@@ -35,7 +35,7 @@ void
 proxy_AndroidBitmap_getInfo(state_t *state)
 {
     LOG_I("calling proxy_AndroidBitmap_getInfo(%p, %p, %p)", (void*)r0, (void*)r1, (void*)r2);
-    r0_signed = AndroidBitmap_getInfo((JNIEnv*)aa(r0), (jobject)aa(r1), (AndroidBitmapInfo*)aa(r2));
+    r0_signed = AndroidBitmap_getInfo((JNIEnv*)r0, (jobject)r1, (AndroidBitmapInfo*)r2);
 }
 
 
@@ -100,7 +100,7 @@ void
 proxy_glDeleteTextures(state_t *state)
 {
     LOG_I("calling proxy_glDeleteTextures(%d, %p)", r0, vv(r1));
-    (void)glDeleteTextures((GLsizei)r0, (const GLuint *)aa(r1));
+    (void)glDeleteTextures((GLsizei)r0, (const GLuint *)r1);
 }
 
 static
@@ -172,7 +172,7 @@ void
 proxy_glGenTextures(state_t *state)
 {
     LOG_I("calling proxy_glGenTextures(%u, %p)", r0, vv(r1));
-    (void)glGenTextures((GLsizei)r0, (GLuint *)aa(r1));
+    (void)glGenTextures((GLsizei)r0, (GLuint *)r1);
 }
 
 static
@@ -193,7 +193,7 @@ void
 proxy_glGetFloatv(state_t *state)
 {
     LOG_I("calling proxy_glGetFloatv(%p %s, %p)", vv(r0), glenum2str(r0), vv(r1));
-    (void)glGetFloatv((GLenum)r0, (GLfloat *)aa(r1));
+    (void)glGetFloatv((GLenum)r0, (GLfloat *)r1);
 }
 
 static
@@ -201,7 +201,7 @@ void
 proxy_glGetIntegerv(state_t *state)
 {
     LOG_I("calling proxy_glGetIntegerv(%p %s, %p)", vv(r0), glenum2str(r0), vv(r1));
-    (void)glGetIntegerv((GLenum)r0, (GLint *)aa(r1));
+    (void)glGetIntegerv((GLenum)r0, (GLint *)r1);
 }
 
 static
@@ -226,7 +226,7 @@ void
 proxy_glLoadMatrixf(state_t *state)
 {
     LOG_I("calling proxy_glLoadMatrixf(%p)", vv(r0));
-    (void)glLoadMatrixf((const GLfloat *)aa(r0));
+    (void)glLoadMatrixf((const GLfloat *)r0);
 }
 
 static
@@ -234,7 +234,7 @@ void
 proxy_glLoadMatrixx(state_t *state)
 {
     LOG_I("calling proxy_glLoadMatrixx(%p)", vv(r0));
-    (void)glLoadMatrixx((const GLfixed *)aa(r0));
+    (void)glLoadMatrixx((const GLfixed *)r0);
 }
 
 static
@@ -290,7 +290,7 @@ void
 proxy_glTexCoordPointer(state_t *state)
 {
     LOG_I("calling proxy_glTexCoordPointer(%d, %p %s, %u, %p)", r0, vv(r1), glenum2str(r1), r2, vv(r3));
-    (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
+    (void)glTexCoordPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)r3);
 }
 
 static
@@ -322,7 +322,7 @@ proxy_glTexImage2D(state_t *state)
         vv(r0), glenum2str(r0), r1, vv(r2), glenum2str(r2), r3, param5, param6, vv(param7),
         glenum2str(param7), vv(param8), glenum2str(param8), vv(param9));
     (void)glTexImage2D((GLenum)r0, (GLint)r1, (GLint)r2, (GLsizei)r3, (GLsizei)param5,
-        (GLint)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)aa(param9));
+        (GLint)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)param9);
 }
 
 static
@@ -347,7 +347,7 @@ void
 proxy_glTexParameteriv(state_t *state)
 {
     LOG_I("calling proxy_glTexParameteriv(%p %s, %p %s, %p)", vv(r0), glenum2str(r0), vv(r1), glenum2str(r1), vv(r2));
-    (void)glTexParameteriv((GLenum)r0, (GLenum)r1, (const GLint *)aa(r2));
+    (void)glTexParameteriv((GLenum)r0, (GLenum)r1, (const GLint *)r2);
 }
 
 static
@@ -363,7 +363,7 @@ proxy_glTexSubImage2D(state_t *state)
         vv(r0), glenum2str(r0), r1, r2, r3, param5, param6, vv(param7), glenum2str(param7),
         vv(param8), glenum2str(param8), vv(param9));
     (void)glTexSubImage2D((GLenum)r0, (GLint)r1, (GLint)r2 , (GLint)r3, (GLsizei)param5,
-        (GLsizei)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)aa(param9));
+        (GLsizei)param6, (GLenum)param7, (GLenum)param8, (const GLvoid *)param9);
 }
 
 static
@@ -379,7 +379,7 @@ void
 proxy_glVertexPointer(state_t *state)
 {
     LOG_I("calling proxy_glVertexPointer(%d, %p %s, %u, %p)", r0, vv(r1), glenum2str(r1), r2, vv(r3));
-    (void)glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)aa(r3));
+    (void)glVertexPointer((GLint)r0, (GLenum)r1, (GLsizei)r2, (const GLvoid *)r3);
 }
 
 static

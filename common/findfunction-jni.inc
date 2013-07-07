@@ -86,9 +86,9 @@ static
 void
 doCallStaticVoidMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -122,9 +122,9 @@ static
 void
 doCallStaticObjectMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -168,9 +168,9 @@ static
 void
 doCallVoidMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -222,9 +222,9 @@ static
 void
 doCallIntMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -260,9 +260,9 @@ static
 void
 doCallObjectMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -302,9 +302,9 @@ static
 void
 doCallBooleanMethod(state_t *state)
 {
-    JNIEnv *jnienv = (JNIEnv*)aa(r0);
-    jobject obj = (jobject)aa(r1);
-    jmethodID   methodID = (jmethodID)aa(r2);
+    JNIEnv *jnienv = (JNIEnv*)r0;
+    jobject obj = (jobject)r1;
+    jmethodID   methodID = (jmethodID)r2;
     const char *signature = get_signature_for_method(methodID);
 
     if (NULL == signature) {
@@ -334,163 +334,163 @@ find_and_call_function_runtime(state_t *state, void *addr)
 {
     if (addr == JNIEnv_functions.GetJavaVM) {   // 219
         LOG_I("calling GetJavaVM(%p, %p)", vv(r0), vv(r1));
-        r0_signed = JNIEnv_functions.GetJavaVM((JNIEnv*)aa(r0), (JavaVM**)aa(r1));
+        r0_signed = JNIEnv_functions.GetJavaVM((JNIEnv*)r0, (JavaVM**)r1);
         LOG_I("        GetJavaVM returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetVersion) {   // 4
         LOG_I("calling GetVersion(%p)", vv(r0));
-        r0_signed = JNIEnv_functions.GetVersion((JNIEnv *)aa(r0));
+        r0_signed = JNIEnv_functions.GetVersion((JNIEnv *)r0);
         LOG_I("        GetVersion returned 0x%x", r0);
         return 1;
     } else if (addr == JNIEnv_functions.ThrowNew) { // 14
-        LOG_I("calling ThrowNew(%p, %p, %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2));
-        r0_signed = JNIEnv_functions.ThrowNew((JNIEnv *)aa(r0), (jclass)aa(r1), (const char *)aa(r2));
+        LOG_I("calling ThrowNew(%p, %p, %p \"%s\")", vv(r0), vv(r1), vv(r2), r2);
+        r0_signed = JNIEnv_functions.ThrowNew((JNIEnv *)r0, (jclass)r1, (const char *)r2);
         return 1;
     } else if (addr == JNIEnv_functions.FindClass) { // 6
-        LOG_I("calling FindClass(%p, %p \"%s\")", vv(r0), vv(r1), aa(r1));
-        r0 = (uint32_t)JNIEnv_functions.FindClass((JNIEnv*)aa(r0), (const char*)aa(r1));
+        LOG_I("calling FindClass(%p, %p \"%s\")", vv(r0), vv(r1), r1);
+        r0 = (uint32_t)JNIEnv_functions.FindClass((JNIEnv*)r0, (const char*)r1);
         LOG_I("        FindClass retuned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetFieldID) { // 94
-        LOG_I("calling GetFieldID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
-        r0 = (uint32_t)JNIEnv_functions.GetFieldID((JNIEnv*)aa(r0), (jclass)aa(r1),
-                                                    (const char*)aa(r2), (const char*)aa(r3));
+        LOG_I("calling GetFieldID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), r2, vv(r3), r3);
+        r0 = (uint32_t)JNIEnv_functions.GetFieldID((JNIEnv*)r0, (jclass)r1,
+                                                    (const char*)r2, (const char*)r3);
         LOG_I("        GetFieldID returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.DeleteLocalRef) {   // 23
         LOG_I("calling DeleteLocalRef(%p, %p)", vv(r0), vv(r1));
-        (void)JNIEnv_functions.DeleteLocalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
+        (void)JNIEnv_functions.DeleteLocalRef((JNIEnv*)r0, (jobject)r1);
         LOG_I("        DeleteLocalRef returned void");
         return 1;
     } else if (addr == JNIEnv_functions.NewGlobalRef) { // 21
         LOG_I("calling NewGlobalRef(%p, %p)", vv(r0), vv(r1));
-        r0 = (uint32_t)JNIEnv_functions.NewGlobalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.NewGlobalRef((JNIEnv*)r0, (jobject)r1);
         LOG_I("        NewGlobalRef returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.DeleteGlobalRef) { // 22
         LOG_I("calling JNIEnv_functions.DeleteGlobalRef(%p, %p)", vv(r0), vv(r1));
-        (void)JNIEnv_functions.DeleteGlobalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
+        (void)JNIEnv_functions.DeleteGlobalRef((JNIEnv*)r0, (jobject)r1);
         LOG_I("        JNIEnv_functions.DeleteGlobalRef returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticFieldID) { // 144
-        LOG_I("calling GetStaticFieldID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
-        r0 = (uint32_t)JNIEnv_functions.GetStaticFieldID((JNIEnv*)aa(r0), (jclass)aa(r1),
-                                            (const char*)aa(r2), (const char*)aa(r3));
+        LOG_I("calling GetStaticFieldID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), r2, vv(r3), r3);
+        r0 = (uint32_t)JNIEnv_functions.GetStaticFieldID((JNIEnv*)r0, (jclass)r1,
+                                            (const char*)r2, (const char*)r3);
         LOG_I("        GetStaticFieldID returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetMethodID) {  // 33
-        LOG_I("calling GetMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
-        const char *signature = aa(r3);
-        r0 = (uint32_t)JNIEnv_functions.GetMethodID((JNIEnv*)aa(r0), (jclass)aa(r1),
-                                                    (const char*)aa(r2), (const char*)aa(r3));
+        LOG_I("calling GetMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), r2, vv(r3), r3);
+        const char *signature = (const char *)r3;
+        r0 = (uint32_t)JNIEnv_functions.GetMethodID((JNIEnv*)r0, (jclass)r1,
+                                                    (const char*)r2, (const char*)r3);
         LOG_I("        GetMethodID returned %p", vv(r0));
         memorize_method_signature((jmethodID)r0, signature);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticMethodID) {    // 113
-        LOG_I("calling GetStaticMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), aa(r2), vv(r3), aa(r3));
-        const char *signature = aa(r3);
-        r0 = (uint32_t)JNIEnv_functions.GetStaticMethodID((JNIEnv*)aa(r0), (jclass)aa(r1),
-                                                    (const char*)aa(r2), (const char*)aa(r3));
+        LOG_I("calling GetStaticMethodID(%p, %p, %p \"%s\", %p \"%s\")", vv(r0), vv(r1), vv(r2), r2, vv(r3), r3);
+        const char *signature = (const char *)r3;
+        r0 = (uint32_t)JNIEnv_functions.GetStaticMethodID((JNIEnv*)r0, (jclass)r1,
+                                                    (const char*)r2, (const char*)r3);
         LOG_I("        GetStaticMethodID returned %p", vv(r0));
         memorize_method_signature((jmethodID)r0, signature);
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticLongField) {   // 151
         LOG_I("calling GetStaticLongField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        x_int64_t = JNIEnv_functions.GetStaticLongField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
+        x_int64_t = JNIEnv_functions.GetStaticLongField((JNIEnv*)r0, (jclass)r1, (jfieldID)r2);
         LOG_I("        GetStaticLongField returned %lld", x_int64_t);
         return 1;
     } else if (addr == JNIEnv_functions.ExceptionClear) {   // 17
         LOG_I("calling ExceptionClear");
-        (void)JNIEnv_functions.ExceptionClear((JNIEnv*)aa(r0));
+        (void)JNIEnv_functions.ExceptionClear((JNIEnv*)r0);
         return 1;
     } else if (addr == JNIEnv_functions.ExceptionCheck) {   // 228
         LOG_I("calling ExceptionCheck(%p)", vv(r0));
-        r0 = (uint32_t)JNIEnv_functions.ExceptionCheck((JNIEnv*)aa(r0));
+        r0 = (uint32_t)JNIEnv_functions.ExceptionCheck((JNIEnv*)r0);
         LOG_I("        ExceptionCheck returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetBooleanField) {   // 96
         LOG_I("calling JNIEnv_functions.GetBooleanField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetBooleanField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetBooleanField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2);
         LOG_I("        JNIEnv_functions.GetBooleanField returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetIntField) {   // 100
         LOG_I("calling GetIntField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0_signed = JNIEnv_functions.GetIntField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        r0_signed = JNIEnv_functions.GetIntField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2);
         LOG_I("        GetIntField returned 0x%08x", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetLongField) {   // 101
         LOG_I("calling GetLongField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        x_int64_t = JNIEnv_functions.GetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        x_int64_t = JNIEnv_functions.GetLongField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2);
         LOG_I("        GetLongField returned 0x%08x%08x", r1, r0);
         return 1;
     } else if (addr == JNIEnv_functions.SetObjectField) {   // 104
         LOG_I("calling JNIEnv_functions.SetObjectField(%p, %p, %p, %p)", vv(r0), vv(r1), vv(r2), vv(r3));
-        (void)JNIEnv_functions.SetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), (jobject)aa(r3));
+        (void)JNIEnv_functions.SetObjectField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2, (jobject)r3);
         LOG_I("        JNIEnv_functions.SetObjectField returned void");
         return 1;
     } else if (addr == JNIEnv_functions.SetIntField) {   // 109
         LOG_I("calling JNIEnv_functions.SetIntField(%p, %p, %p, %p)", vv(r0), vv(r1), vv(r2), vv(r3));
-        (void)JNIEnv_functions.SetIntField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), (jint)r3);
+        (void)JNIEnv_functions.SetIntField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2, (jint)r3);
         LOG_I("        JNIEnv_functions.SetIntField returned void");
         return 1;
     } else if (addr == JNIEnv_functions.SetLongField) {   // 110
         jlong value = load(r13) + (((uint64_t)load(r13 + 4)) << 32);
         LOG_I("calling SetLongField(%p, %p, %p, 0x%08x%08x)", vv(r0), vv(r1), vv(r2),
                             (uint32_t)(value >> 32), (uint32_t)(value & 0xffffffff));
-        (void)JNIEnv_functions.SetLongField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2), value);
+        (void)JNIEnv_functions.SetLongField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2, value);
         LOG_I("        SetLongField returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetPrimitiveArrayCritical) {    // 222
         LOG_I("calling GetPrimitiveArrayCritical(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetPrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
-                                                                    (jboolean*)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetPrimitiveArrayCritical((JNIEnv*)r0, (jarray)r1,
+                                                                    (jboolean*)r2);
         LOG_I("        GetPrimitiveArrayCritical returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ReleasePrimitiveArrayCritical) {    // 223
         LOG_I("calling ReleasePrimitiveArrayCritical(%p, %p, %p, %d)", vv(r0), vv(r1), vv(r2), r3);
-        (void)JNIEnv_functions.ReleasePrimitiveArrayCritical((JNIEnv*)aa(r0), (jarray)aa(r1),
-                                                                    (void*)aa(r2), (jint)r3);
+        (void)JNIEnv_functions.ReleasePrimitiveArrayCritical((JNIEnv*)r0, (jarray)r1,
+                                                                    (void*)r2, (jint)r3);
         LOG_I("        ReleasePrimitiveArrayCritical returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectClass) {       // 31
         LOG_I("calling GetObjectClass(%p, %p)", vv(r0), vv(r1));
-        r0 = (uint32_t)JNIEnv_functions.GetObjectClass((JNIEnv*)aa(r0), (jobject)aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.GetObjectClass((JNIEnv*)r0, (jobject)r1);
         LOG_I("        GetObjectClass returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetObjectField) {   // 95
         LOG_I("calling GetObjectField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetObjectField((JNIEnv*)aa(r0), (jobject)aa(r1), (jfieldID)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetObjectField((JNIEnv*)r0, (jobject)r1, (jfieldID)r2);
         LOG_I("        GetObjectField returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetIntArrayElements) {  // 187
         LOG_I("calling GetIntArrayElements(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jboolean*)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetIntArrayElements((JNIEnv*)r0, (jintArray)r1, (jboolean*)r2);
         LOG_I("        GetIntArrayElements returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ReleaseIntArrayElements) {  // 195
         LOG_I("calling ReleaseIntArrayElements(%p, %p, %p, %d)", vv(r0), vv(r1), vv(r2), r3);
-        (void)JNIEnv_functions.ReleaseIntArrayElements((JNIEnv*)aa(r0), (jintArray)aa(r1), (jint*)aa(r2), (jint)r3);
+        (void)JNIEnv_functions.ReleaseIntArrayElements((JNIEnv*)r0, (jintArray)r1, (jint*)r2, (jint)r3);
         LOG_I("        ReleaseIntArrayElements retrned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetByteArrayRegion) {   // 200
         uint32_t param5 = load(r13);
         LOG_I("calling JNIEnv_functions.GetByteArrayRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
-        (void)JNIEnv_functions.GetByteArrayRegion((JNIEnv*)aa(r0), (jbyteArray)aa(r1), (jsize)r2,
-                                                    (jsize)r3, (jbyte*)aa(param5));
+        (void)JNIEnv_functions.GetByteArrayRegion((JNIEnv*)r0, (jbyteArray)r1, (jsize)r2,
+                                                    (jsize)r3, (jbyte*)param5);
         LOG_I("        JNIEnv_functions.GetByteArrayRegion returned void");
         return 1;
     } else if (addr == JNIEnv_functions.GetIntArrayRegion) {   // 203
         uint32_t param5 = load(r13);
         LOG_I("calling JNIEnv_functions.GetIntArrayRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
-        (void)JNIEnv_functions.GetIntArrayRegion((JNIEnv*)aa(r0), (jintArray)aa(r1), (jsize)r2,
-                                                    (jsize)r3, (jint*)aa(param5));
+        (void)JNIEnv_functions.GetIntArrayRegion((JNIEnv*)r0, (jintArray)r1, (jsize)r2,
+                                                    (jsize)r3, (jint*)param5);
         LOG_I("        JNIEnv_functions.GetIntArrayRegion returned void");
         return 1;
     } else if (addr == JNIEnv_functions.SetByteArrayRegion) {   // 208
         uint32_t param5 = load(r13);
         LOG_I("calling SetByteArrayRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
-        (void)JNIEnv_functions.SetByteArrayRegion((JNIEnv*)aa(r0), (jbyteArray)aa(r1), (jsize)r2,
-                                                    (jsize)r3, (const jbyte*)aa(param5));
+        (void)JNIEnv_functions.SetByteArrayRegion((JNIEnv*)r0, (jbyteArray)r1, (jsize)r2,
+                                                    (jsize)r3, (const jbyte*)param5);
         return 1;
     } else if (addr == JNIEnv_functions.CallVoidMethod) {   // 61
         doCallVoidMethod(state);
@@ -511,96 +511,96 @@ find_and_call_function_runtime(state_t *state, void *addr)
         doCallStaticObjectMethod(state);
         return 1;
     } else if (addr == JNIEnv_functions.NewStringUTF) { //167
-        LOG_I("calling JNIEnv_functions.NewStringUTF(%p, %p \"%s\")", vv(r0), vv(r1), aa(r1));
-        r0 = (uint32_t)JNIEnv_functions.NewStringUTF((JNIEnv*)aa(r0), (const char*)aa(r1));
+        LOG_I("calling JNIEnv_functions.NewStringUTF(%p, %p \"%s\")", vv(r0), vv(r1), r1);
+        r0 = (uint32_t)JNIEnv_functions.NewStringUTF((JNIEnv*)r0, (const char*)r1);
         LOG_I("        JNIEnv_functions.NewStringUTF returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetStringLength) {  // 164
         LOG_I("calling JNIEnv_functions.GetStringLength(%p, %p)", vv(r0), vv(r1));
-        r0 = (uint32_t)JNIEnv_functions.GetStringLength((JNIEnv*)aa(r0), (jstring)aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.GetStringLength((JNIEnv*)r0, (jstring)r1);
         LOG_I("        JNIEnv_functions.GetStringLength returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetArrayLength) {  // 171
         LOG_I("calling JNIEnv_functions.GetArrayLength(%p, %p)", vv(r0), vv(r1));
-        r0 = (uint32_t)JNIEnv_functions.GetArrayLength((JNIEnv*)aa(r0), (jarray)aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.GetArrayLength((JNIEnv*)r0, (jarray)r1);
         LOG_I("        JNIEnv_functions.GetArrayLength returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetStringCritical) {  // 224
         LOG_I("calling JNIEnv_functions.GetStringCritical(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetStringCritical((JNIEnv*)r0, (jstring)r1, (jboolean*)r2);
         LOG_I("        JNIEnv_functions.GetStringCritical returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ReleaseStringCritical) {  // 225
         LOG_I("calling JNIEnv_functions.ReleaseStringCritical(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        (void)JNIEnv_functions.ReleaseStringCritical((JNIEnv*)aa(r0), (jstring)aa(r1), (const jchar*)aa(r2));
+        (void)JNIEnv_functions.ReleaseStringCritical((JNIEnv*)r0, (jstring)r1, (const jchar*)r2);
         LOG_I("        JNIEnv_functions.ReleaseStringCritical returned void");
         return 1;
     } else if (addr == JNIEnv_functions.NewByteArray) {  // 176
         LOG_I("calling JNIEnv_functions.NewByteArray(%p, %d)", vv(r0), r1);
-        r0 = (uint32_t)JNIEnv_functions.NewByteArray((JNIEnv*)aa(r0), (jsize)r1);
+        r0 = (uint32_t)JNIEnv_functions.NewByteArray((JNIEnv*)r0, (jsize)r1);
         LOG_I("        JNIEnv_functions.NewByteArray returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.NewCharArray) {  // 177
         LOG_I("calling JNIEnv_functions.NewCharArray(%p, %d)", vv(r0), r1);
-        r0 = (uint32_t)JNIEnv_functions.NewCharArray((JNIEnv*)aa(r0), (jsize)r1);
+        r0 = (uint32_t)JNIEnv_functions.NewCharArray((JNIEnv*)r0, (jsize)r1);
         LOG_I("        JNIEnv_functions.NewCharArray returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.NewIntArray) {  // 179
         LOG_I("calling JNIEnv_functions.NewIntArray(%p, %d)", vv(r0), r1);
-        r0 = (uint32_t)JNIEnv_functions.NewIntArray((JNIEnv*)aa(r0), (jsize)r1);
+        r0 = (uint32_t)JNIEnv_functions.NewIntArray((JNIEnv*)r0, (jsize)r1);
         LOG_I("        JNIEnv_functions.NewIntArray returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticObjectField) { //  145
         LOG_I("calling JNIEnv_functions.GetStaticObjectField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetStaticObjectField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetStaticObjectField((JNIEnv*)r0, (jclass)r1, (jfieldID)r2);
         LOG_I("        JNIEnv_functions.GetStaticObjectField returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetStaticIntField) { //  150
         LOG_I("calling JNIEnv_functions.GetStaticIntField(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0_signed =    JNIEnv_functions.GetStaticIntField((JNIEnv*)aa(r0), (jclass)aa(r1), (jfieldID)aa(r2));
+        r0_signed =    JNIEnv_functions.GetStaticIntField((JNIEnv*)r0, (jclass)r1, (jfieldID)r2);
         LOG_I("        JNIEnv_functions.GetStaticIntField returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.IsSameObject) { //  24
         LOG_I("calling JNIEnv_functions.IsSameObject(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.IsSameObject((JNIEnv*)aa(r0), (jobject)aa(r1), (jobject)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.IsSameObject((JNIEnv*)r0, (jobject)r1, (jobject)r2);
         LOG_I("        JNIEnv_functions.IsSameObject returned %d", r0);
         return 1;
     } else if (addr == JNIEnv_functions.SetIntArrayRegion) {    //  211
         const uint32_t param5 = load(r13);
         LOG_I("calling JNIEnv_functions.SetIntArrayRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
-        (void)JNIEnv_functions.SetIntArrayRegion((JNIEnv*)aa(r0), (jintArray)aa(r1), (jsize)r2, (jsize)r3, (const jint*)param5);
+        (void)JNIEnv_functions.SetIntArrayRegion((JNIEnv*)r0, (jintArray)r1, (jsize)r2, (jsize)r3, (const jint*)param5);
         LOG_I("calling JNIEnv_functions.SetIntArrayRegion returned void");
         return 1;
     } else if (addr == JNIEnv_functions.NewLocalRef) {  //  25
         LOG_I("calling JNIEnv_functions.NewLocalRef(%p, %p)", vv(r0), vv(r1));
-        r0 = (uint32_t)JNIEnv_functions.NewLocalRef((JNIEnv*)aa(r0), (jobject)aa(r1));
+        r0 = (uint32_t)JNIEnv_functions.NewLocalRef((JNIEnv*)r0, (jobject)r1);
         LOG_I("        JNIEnv_functions.NewLocalRef returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.NewDirectByteBuffer) {  //  229
         int64_t jlongvalue = r2 | ((int64_t)r3 << 32);
         LOG_I("calling JNIEnv_functions.NewDirectByteBuffer(%p, %p, 0x%08x%08x)", vv(r0), vv(r1), r3, r2);
-        r0 = (uint32_t)JNIEnv_functions.NewDirectByteBuffer((JNIEnv*)aa(r0), (void*)aa(r1), (jlong)jlongvalue);
+        r0 = (uint32_t)JNIEnv_functions.NewDirectByteBuffer((JNIEnv*)r0, (void*)r1, (jlong)jlongvalue);
         LOG_I("        JNIEnv_functions.NewDirectByteBuffer returned %p", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.GetStringUTFLength) {   //  168
         LOG_I("calling JNIEnv_functions.GetStringUTFLength(%p, %p)", vv(r0), vv(r1));
-        r0_signed =    JNIEnv_functions.GetStringUTFLength((JNIEnv*)aa(r0), (jstring)aa(r1));
+        r0_signed =    JNIEnv_functions.GetStringUTFLength((JNIEnv*)r0, (jstring)r1);
         LOG_I("        JNIEnv_functions.GetStringUTFLength returned %d)", r0);
         return 1;
     } else if (addr == JNIEnv_functions.GetStringUTFChars) {   //  169
         LOG_I("calling JNIEnv_functions.GetStringUTFChars(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        r0 = (uint32_t)JNIEnv_functions.GetStringUTFChars((JNIEnv*)aa(r0), (jstring)aa(r1), (jboolean*)aa(r2));
+        r0 = (uint32_t)JNIEnv_functions.GetStringUTFChars((JNIEnv*)r0, (jstring)r1, (jboolean*)r2);
         LOG_I("        JNIEnv_functions.GetStringUTFChars returned %p)", vv(r0));
         return 1;
     } else if (addr == JNIEnv_functions.ReleaseStringUTFChars) {   //  170
         LOG_I("calling JNIEnv_functions.ReleaseStringUTFChars(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
-        (void)JNIEnv_functions.ReleaseStringUTFChars((JNIEnv*)aa(r0), (jstring)aa(r1), (const char*)aa(r2));
+        (void)JNIEnv_functions.ReleaseStringUTFChars((JNIEnv*)r0, (jstring)r1, (const char*)r2);
         LOG_I("        JNIEnv_functions.ReleaseStringUTFChars returned void)");
         return 1;
     } else if (addr == JNIEnv_functions.GetStringUTFRegion) {   // 221
         uint32_t param5 = load(r13);
         LOG_I("calling JNIEnv_functions.GetStringUTFRegion(%p, %p, %d, %d, %p)", vv(r0), vv(r1), r2, r3, vv(param5));
-        (void)JNIEnv_functions.GetStringUTFRegion((JNIEnv*)aa(r0), (jstring)aa(r1), (jsize)r2, (jsize)r3, (char*)aa(param5));
+        (void)JNIEnv_functions.GetStringUTFRegion((JNIEnv*)r0, (jstring)r1, (jsize)r2, (jsize)r3, (char*)param5);
         LOG_I("        JNIEnv_functions.GetStringUTFRegion returned void");
         return 1;
     }
@@ -611,21 +611,21 @@ find_and_call_function_runtime(state_t *state, void *addr)
 
     if (addr == JavaVM_functions.GetEnv) {  //  6
         LOG_I("calling JavaVM_functions.GetEnv(%p, %p, 0x%x)", vv(r0), vv(r1), r2);
-        r0_signed = JavaVM_functions.GetEnv((JavaVM*)aa(r0), (void**)aa(r1), (jint)r2);
+        r0_signed = JavaVM_functions.GetEnv((JavaVM*)r0, (void**)r1, (jint)r2);
         LOG_I("        JavaVM_functions.GetEnv returned %d", r0);
         return 1;
     } else if (addr == JavaVM_functions.AttachCurrentThread) {   //  4
         LOG_I("calling JavaVM_functions.AttachCurrentThread(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
         if (0 != r2) {
-            JavaVMAttachArgs *attach_args = (void *)(aa(r2));
-            attach_args->name = aa((uint32_t)(attach_args->name));
+            JavaVMAttachArgs *attach_args = (void *)(r2);
+            attach_args->name = (char *)(uint32_t)(attach_args->name);
         }
-        r0_signed = JavaVM_functions.AttachCurrentThread((JavaVM*)aa(r0), (JNIEnv**)aa(r1), (void*)aa(r2));
+        r0_signed = JavaVM_functions.AttachCurrentThread((JavaVM*)r0, (JNIEnv**)r1, (void*)r2);
         LOG_I("        JavaVM_functions.AttachCurrentThread returned %d", r0);
         return 1;
     } else if (addr == JavaVM_functions.DetachCurrentThread) {  // 5
         LOG_I("calling JavaVM_functions.DetachCurrentThread(%p)", vv(r0));
-        r0_signed = JavaVM_functions.DetachCurrentThread((JavaVM*)aa(r0));
+        r0_signed = JavaVM_functions.DetachCurrentThread((JavaVM*)r0);
         LOG_I("        JavaVM_functions.DetachCurrentThread returned %d", r0);
         return 1;
     }

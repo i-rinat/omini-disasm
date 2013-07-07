@@ -37,7 +37,7 @@ static
 uint32_t
 load_halfword(uint32_t addr)
 {
-    return *((uint16_t *)aa(addr));
+    return *((uint16_t *)addr);
 }
 
 __attribute__((always_inline))
@@ -54,7 +54,7 @@ static
 uint32_t
 load_byte(uint32_t addr)
 {
-    return *((uint8_t *)aa(addr));
+    return *((uint8_t *)addr);
 }
 
 __attribute__((always_inline))
@@ -62,5 +62,5 @@ static
 double
 load_double(uint32_t addr)
 {
-    return *((double *)aa(addr));
+    return *((double *)addr);
 }
