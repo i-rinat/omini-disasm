@@ -4,18 +4,18 @@
 #include <glib.h>
 
 
-const uint32_t pc_stack_depth = 1000;
+static const uint32_t pc_stack_depth = 1000;
 
-uint32_t *pc_stack = NULL;
-uint32_t pc_stack_element_count = 0;
+static uint32_t *pc_stack = NULL;
+static uint32_t pc_stack_element_count = 0;
 
-GHashTable *visited_bitmap;
-GHashTable *func_list;
-GHashTable *func_list_do_not_touch;
-GHashTable *func_list_actually_done;
-GHashTable *func_list_non_returning;
+static GHashTable *visited_bitmap = NULL;         //< list of visited addresses amongst one function
 static GHashTable *codecoverage_bitmap = NULL;    //< perpetual bitmap for .text coverage testing
 
+static GHashTable *func_list;
+static GHashTable *func_list_do_not_touch;
+static GHashTable *func_list_actually_done;
+static GHashTable *func_list_non_returning;
 
 
 void
