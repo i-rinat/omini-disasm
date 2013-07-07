@@ -655,7 +655,7 @@ generate_prototypes(void)
         emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
         emit_code("    LOG_I(\"calling setjmp(%%p)\", vv(r0)); \\");
         emit_code("    state_t saved_state = *state; \\");
-        emit_code("    int32_t retval = setjmp((long int *)get_jmp_buf_address((uint32_t)aa(r0))); \\");
+        emit_code("    int32_t retval = setjmp((long int *)get_jmp_buf_address(r0)); \\");
         emit_code("    if (retval) { \\");
         emit_code("        *state = saved_state; \\");
         emit_code("    } \\");

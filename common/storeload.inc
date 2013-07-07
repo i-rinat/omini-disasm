@@ -1,10 +1,6 @@
 // storeload.inc
 
-#define aa(addr)    ((char*)addr)
 #define vv(value)   ((void*)value)
-
-
-//#define ENABLE_STORELOAD_TRACING
 
 
 __attribute__((always_inline))
