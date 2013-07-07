@@ -678,7 +678,7 @@ calculate_code_coverage(bfd *abfd)
         if (0 == strcmp(sect->name, ".text")) {
             printf("calculating .text coverage\n");
 
-            printf("%08x: ", (sect->vma / bytes_per_line) * bytes_per_line);
+            printf("%08x: ", ((uint32_t)sect->vma / bytes_per_line) * bytes_per_line);
             const uint32_t skip_cnt = sect->vma % bytes_per_line;
             for (uint32_t k = 0; k < skip_cnt; k ++) {
                 if (k % 8 == 0)
