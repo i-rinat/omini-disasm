@@ -22,13 +22,6 @@ typedef struct {
         };
     } reg;
 
-    struct APSR_t {
-        int C;
-        int V;
-        int N;
-        int Z;
-    } APSR;
-
     unsigned char *d_stack;
 } state_t;
 
@@ -48,7 +41,6 @@ typedef struct {
 #define r12     state->reg.r12
 #define r13     state->reg.r13
 #define r14     state->reg.r14
-#define APSR    state->APSR
 #define r0_signed      state->reg.r0_signed
 #define r1_signed      state->reg.r1_signed
 #define r2_signed      state->reg.r2_signed
