@@ -603,8 +603,17 @@ find_and_call_function_runtime(state_t *state, void *addr)
         (void)JNIEnv_functions.GetStringUTFRegion((JNIEnv*)r0, (jstring)r1, (jsize)r2, (jsize)r3, (char*)param5);
         LOG_I("        JNIEnv_functions.GetStringUTFRegion returned void");
         return 1;
+    } else if (addr == JNIEnv_functions.IsInstanceOf) { // 32
+        LOG_I("calling JNIEnv_functions.IsInstanceOf(%p, %p, %p)", vv(r0), vv(r1), vv(r2));
+        r0 = (uint32_t)JNIEnv_functions.IsInstanceOf((JNIEnv*)r0, (jobject)r1, (jclass)r2);
+        LOG_I("        JNIEnv_functions.IsInstanceOf returned %d", r0);
+        return 1;
+    } else if (addr == JNIEnv_functions.ExceptionOccurred) {    // 15
+        LOG_I("calling JNIEnv_functions.ExceptionOccurred(%p)", vv(r0));
+        r0 = (uint32_t)JNIEnv_functions.ExceptionOccurred((JNIEnv*)r0);
+        LOG_I("        JNIEnv_functions.ExceptionOccurred returned %p", vv(r0));
+        return 1;
     }
-
 
 
     // ===================
