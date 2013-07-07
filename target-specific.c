@@ -258,8 +258,10 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
 
             emit_code("%s", buf);
             emit_code("    LOG_I(\"called proxy_%04x\");", func_addr);
+            emit_code("#ifdef TRACING_PROXY_DURATION");
             emit_code("    clock_t ts, te;");
             emit_code("    ts = clock();");
+            emit_code("#endif // TRACING_PROXY_DURATION");
             emit_code("    state_t *state = initialize_state();");
             emit_code("    uint32_t saved_fp = r13;");
             emit_code("    r0 = env;");
@@ -305,9 +307,12 @@ apply_quirks_for_c3630424f7c9514b203301154218db40(void)
             emit_code("    if (r13 != saved_fp) {");
             emit_code("      LOG_E(\"failed saved_fp == fp for proxy_%04x\");", func_addr);
             emit_code("    }");
+            emit_code("#ifdef TRACING_PROXY_DURATION");
             emit_code("    te = clock();");
             emit_code("    LOG_I(\"       proxy_%04x quits (%%ld clocks)\", te - ts);", func_addr);
-            //emit_code("    LOG_I(\"       proxy_%04x quits\");", func_addr);
+            emit_code("#else");
+            emit_code("    LOG_I(\"       proxy_%04x quits\");", func_addr);
+            emit_code("#endif // TRACING_PROXY_DURATION");
 
             if (!strcmp(signature_return_type(signature), "void")) {
                 emit_code("    return;");

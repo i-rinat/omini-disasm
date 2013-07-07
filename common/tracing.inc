@@ -5,6 +5,7 @@ static uint32_t        trace_msg_id = 0;
 static char            trace_msg[1024];
 
 #define TRACING_WRITE_TO_FILE
+//#define TRACING_PROXY_DURATION
 
 #define TRACING_FILE_NAME   "/sdcard/mylog.txt"
 
