@@ -25,7 +25,9 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("    LOG_I(\"        memcpy returned %%p\", vv(r0));");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "__cxa_finalize")) {
-        // do nothing
+        emit_code("static void func_%04x(state_t *state) {", relp->address);
+        emit_code("    // this function intentionally left blank");
+        emit_code("}");
     } else if (!strcmp(ext_func_name, "__cxa_type_match")) {
         // do nothing
     } else if (!strcmp(ext_func_name, "__cxa_atexit")) {
