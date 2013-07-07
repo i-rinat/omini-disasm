@@ -19,7 +19,7 @@ static
 void
 constructor_log(void)
 {
-    log_fp = fopen(TRACING_FILE_NAME, "w");
+    log_fp = fopen(TRACING_FILE_NAME, "a");
     if (!log_fp) {
         __android_log_print(ANDROID_LOG_ERROR, "libfranken", "can't open logfile %s, errno = %d",
                                                                 TRACING_FILE_NAME, errno);
