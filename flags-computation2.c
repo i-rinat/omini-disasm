@@ -13,7 +13,7 @@ struct {
     int Z;
 } APSR, reference_APSR;
 
-void do_cmp()
+void do_cmp(void)
 {
     const int64_t signed_sum64 = (int64_t)(int32_t)q.xs + (int64_t)(int32_t)(~q.ys) + 1;
     const uint64_t unsigned_sum64 = (uint64_t)q.x + (uint64_t)(~q.y) + 1;
@@ -86,7 +86,7 @@ void do_adc(uint32_t old_C)
 }
 
 
-void check_flags()
+void check_flags(void)
 {
     if (reference_APSR.Z != APSR.Z) {
         printf("Z mismatch @ %u, %u\n", q.x, q.y);
@@ -104,7 +104,7 @@ void check_flags()
     }
 }
 
-void check_collations()
+void check_collations(void)
 {
     // eq
     if (APSR.Z && !(q.xs == q.ys))      printf("fail eq @ %d, %d\n", q.xs, q.ys);

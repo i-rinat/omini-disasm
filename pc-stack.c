@@ -19,20 +19,20 @@ static GHashTable *func_list_non_returning;
 
 
 void
-pc_stack_initialize()
+pc_stack_initialize(void)
 {
     pc_stack = malloc(sizeof(uint32_t) * pc_stack_depth);
     assert(pc_stack);
 }
 
 int
-pc_stack_empty()
+pc_stack_empty(void)
 {
     return (pc_stack_element_count == 0);
 }
 
 uint32_t
-pc_stack_pop()
+pc_stack_pop(void)
 {
     assert(pc_stack_element_count > 0);
     pc_stack_element_count --;
@@ -48,14 +48,14 @@ pc_stack_push(uint32_t e)
 }
 
 void
-pc_stack_free()
+pc_stack_free(void)
 {
     free(pc_stack);
     pc_stack = NULL;
 }
 
 void
-visited_bitmap_initialize()
+visited_bitmap_initialize(void)
 {
     visited_bitmap = g_hash_table_new(g_direct_hash, g_direct_equal);
     assert(visited_bitmap);
@@ -74,7 +74,7 @@ visited_bitmap_mark_visited(uint32_t pc)
 }
 
 void
-visited_bitmap_free()
+visited_bitmap_free(void)
 {
     g_hash_table_destroy(visited_bitmap);
 }
@@ -101,13 +101,13 @@ codecoverage_bitmap_mark_visited(uint32_t pc)
 }
 
 void
-codecoverage_bitmap_free()
+codecoverage_bitmap_free(void)
 {
     g_hash_table_destroy(codecoverage_bitmap);
 }
 
 void
-func_list_initialize()
+func_list_initialize(void)
 {
     func_list = g_hash_table_new(g_direct_hash, g_direct_equal);
     func_list_do_not_touch = g_hash_table_new(g_direct_hash, g_direct_equal);
@@ -151,7 +151,7 @@ func_list_mark_done(uint32_t pc)
 }
 
 uint32_t
-func_list_get_next()
+func_list_get_next(void)
 {
     GHashTableIter iter;
     gpointer key, value;
@@ -165,7 +165,7 @@ func_list_get_next()
 }
 
 uint32_t
-func_list_pop_from_done_list()
+func_list_pop_from_done_list(void)
 {
     GHashTableIter iter;
     gpointer key, value;
@@ -189,7 +189,7 @@ func_list_already_in_done_list(uint32_t pc)
 }
 
 void
-func_list_free()
+func_list_free(void)
 {
     g_hash_table_destroy(func_list);
     g_hash_table_destroy(func_list_do_not_touch);
@@ -198,13 +198,13 @@ func_list_free()
 }
 
 uint32_t
-func_list_get_done_count()
+func_list_get_done_count(void)
 {
     return g_hash_table_size(func_list_actually_done);
 }
 
 uint32_t
-func_list_get_count()
+func_list_get_count(void)
 {
     return g_hash_table_size(func_list);
 }

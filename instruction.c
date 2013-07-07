@@ -28,32 +28,32 @@ begin_function(uint32_t pc)
 }
 
 int
-function_end_found()
+function_end_found(void)
 {
     return flag_function_end_found;
 }
 
 int
-last_instruction_ended_with_return()
+last_instruction_ended_with_return(void)
 {
     return flag_last_instruction_ended_with_return;
 }
 
 int
-last_instruction_ended_with_goto()
+last_instruction_ended_with_goto(void)
 {
     return flag_last_instruction_ended_with_goto;
 }
 
 void
-set_function_end_flag()
+set_function_end_flag(void)
 {
     flag_function_end_found = 1;
     flag_last_instruction_ended_with_return = 1;
 }
 
 void
-end_function()
+end_function(void)
 {
     emit_code("}");
 }

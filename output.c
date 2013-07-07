@@ -43,7 +43,7 @@ set_output_file(const char *fname)
 }
 
 void
-close_output_file()
+close_output_file(void)
 {
     if (output_fp)
         fclose(output_fp);
