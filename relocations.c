@@ -330,11 +330,11 @@ process_jump_slot_relocations(arelent *relp)
     } else if (!strcmp(ext_func_name, "sigaction")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_E(\"calling fake sigaction(%%d, %%p, %%p)\", r0, vv(r1), vv(r2));");
-        emit_code("    LOG_E(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)r1)->sa_handler);");
-        emit_code("    LOG_E(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)r1)->sa_sigaction);");
-        emit_code("    LOG_E(\"   sigaction->sa_mask = %%lx\", ((const struct sigaction *)r1)->sa_mask);");
-        emit_code("    LOG_E(\"   sigaction->sa_flags = %%lx\", ((const struct sigaction *)r1)->sa_flags);");
-        emit_code("    LOG_E(\"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)r1)->sa_restorer);");
+        //emit_code("    LOG_E(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)r1)->sa_handler);");
+        //emit_code("    LOG_E(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)r1)->sa_sigaction);");
+        //emit_code("    LOG_E(\"   sigaction->sa_mask = %%lx\", ((const struct sigaction *)r1)->sa_mask);");
+        //emit_code("    LOG_E(\"   sigaction->sa_flags = %%lx\", ((const struct sigaction *)r1)->sa_flags);");
+        //emit_code("    LOG_E(\"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)r1)->sa_restorer);");
         //emit_code("    r0_signed = sigaction((int)r0, (const struct sigaction *)r1, "
         //                    "(struct sigaction *)r2);");
         emit_code("    r0 = 0;"); // fake
