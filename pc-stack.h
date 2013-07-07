@@ -13,6 +13,11 @@ int         visited_bitmap_visited(uint32_t pc);
 void        visited_bitmap_mark_visited(uint32_t pc);
 void        visited_bitmap_free();
 
+void        codecoverage_bitmap_initialize(void);
+int         codecoverage_bitmap_visited(uint32_t pc);
+void        codecoverage_bitmap_mark_visited(uint32_t pc);
+void        codecoverage_bitmap_free();
+
 void        func_list_initialize();
 void        func_list_add(uint32_t pc);
 void        func_list_add_to_ignore_list(uint32_t pc);

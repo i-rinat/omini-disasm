@@ -668,6 +668,41 @@ generate_prototypes(void)
     close_output_file();
 }
 
+void
+calculate_code_coverage(bfd *abfd)
+{
+    const uint32_t bytes_per_line = 0x40;
+
+    struct bfd_section *sect = abfd->sections;
+    while (sect) {
+        if (0 == strcmp(sect->name, ".text")) {
+            printf("calculating .text coverage\n");
+
+            printf("%08x: ", (sect->vma / bytes_per_line) * bytes_per_line);
+            const uint32_t skip_cnt = sect->vma % bytes_per_line;
+            for (uint32_t k = 0; k < skip_cnt; k ++) {
+                if (k % 8 == 0)
+                    printf(" ");
+                printf(" ");
+            }
+
+            for (uint32_t k = sect->vma; k < sect->vma + sect->size; k += 4) {
+                if (k % bytes_per_line == 0) {
+                    printf("\n%08x:  ", k);
+                } else if (k % 8 == 0) {
+                    printf(" ");
+                }
+
+                printf("%s", codecoverage_bitmap_visited(k) ? "XXXX" : "----");
+            }
+            printf("\n\n");
+
+        }
+        sect = sect->next;
+    }
+
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -750,6 +785,7 @@ main(int argc, char *argv[])
 
     func_list_free();
 
+    calculate_code_coverage(abfd);
     printf("done\n");
     return 0;
 }

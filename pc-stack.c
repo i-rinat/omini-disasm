@@ -14,6 +14,8 @@ GHashTable *func_list;
 GHashTable *func_list_do_not_touch;
 GHashTable *func_list_actually_done;
 GHashTable *func_list_non_returning;
+static GHashTable *codecoverage_bitmap = NULL;    //< perpetual bitmap for .text coverage testing
+
 
 
 void
@@ -75,6 +77,33 @@ void
 visited_bitmap_free()
 {
     g_hash_table_destroy(visited_bitmap);
+}
+
+void
+codecoverage_bitmap_initialize(void)
+{
+    codecoverage_bitmap = g_hash_table_new(g_direct_hash, g_direct_equal);
+    assert(codecoverage_bitmap);
+}
+
+int
+codecoverage_bitmap_visited(uint32_t pc)
+{
+    return GPOINTER_TO_INT(g_hash_table_lookup(codecoverage_bitmap, GINT_TO_POINTER(pc)));
+}
+
+void
+codecoverage_bitmap_mark_visited(uint32_t pc)
+{
+    if (!codecoverage_bitmap)
+        codecoverage_bitmap_initialize();
+    g_hash_table_insert(codecoverage_bitmap, GINT_TO_POINTER(pc), GINT_TO_POINTER(1));
+}
+
+void
+codecoverage_bitmap_free()
+{
+    g_hash_table_destroy(codecoverage_bitmap);
 }
 
 void

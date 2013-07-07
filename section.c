@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include "pc-stack.h"
 
 typedef struct section_t {
     uint32_t   *buf;
@@ -64,6 +65,7 @@ uint32_t
 get_word_at(uint32_t addr)
 {
     assert((addr & 0x3) == 0 && "address alignment");
+    codecoverage_bitmap_mark_visited(addr);
     section_t *ptr = sections;
     while (NULL != ptr) {
         if (ptr->start <= addr && addr < ptr->start + ptr->length)
