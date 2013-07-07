@@ -1,12 +1,10 @@
 typedef struct {
     union reg_t {
         struct {
-            uint32_t r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14;
+            uint32_t r0, r1, r2, r3, r13;
         };
         struct {
-            int32_t r0_signed, r1_signed, r2_signed, r3_signed, r4_signed, r5_signed, r6_signed, \
-                    r7_signed, r8_signed, r9_signed, r10_signed, r11_signed, r12_signed, \
-                    r13_signed, r14_signed;
+            int32_t r0_signed, r1_signed, r2_signed, r3_signed, r13_signed;
         };
         struct {
             double x_double, y_double;
@@ -25,37 +23,47 @@ typedef struct {
     unsigned char *d_stack;
 } state_t;
 
+union local_reg_t {
+    struct {
+        uint32_t r4, r5, r6, r7, r8, r9, r10, r11, r12, r14;
+    };
+    struct {
+        int32_t r4_signed, r5_signed, r6_signed, r7_signed, r8_signed,
+                r9_signed, r10_signed, r11_signed, r12_signed, r14_signed;
+    };
+};
 
 #define r0      state->reg.r0
 #define r1      state->reg.r1
 #define r2      state->reg.r2
 #define r3      state->reg.r3
-#define r4      state->reg.r4
-#define r5      state->reg.r5
-#define r6      state->reg.r6
-#define r7      state->reg.r7
-#define r8      state->reg.r8
-#define r9      state->reg.r9
-#define r10     state->reg.r10
-#define r11     state->reg.r11
-#define r12     state->reg.r12
 #define r13     state->reg.r13
-#define r14     state->reg.r14
 #define r0_signed      state->reg.r0_signed
 #define r1_signed      state->reg.r1_signed
 #define r2_signed      state->reg.r2_signed
 #define r3_signed      state->reg.r3_signed
-#define r4_signed      state->reg.r4_signed
-#define r5_signed      state->reg.r5_signed
-#define r6_signed      state->reg.r6_signed
-#define r7_signed      state->reg.r7_signed
-#define r8_signed      state->reg.r8_signed
-#define r9_signed      state->reg.r9_signed
-#define r10_signed     state->reg.r10_signed
-#define r11_signed     state->reg.r11_signed
-#define r12_signed     state->reg.r12_signed
 #define r13_signed     state->reg.r13_signed
-#define r14_signed     state->reg.r14_signed
+
+#define r4      local_reg.r4
+#define r5      local_reg.r5
+#define r6      local_reg.r6
+#define r7      local_reg.r7
+#define r8      local_reg.r8
+#define r9      local_reg.r9
+#define r10     local_reg.r10
+#define r11     local_reg.r11
+#define r12     local_reg.r12
+#define r14     local_reg.r14
+#define r4_signed      local_reg.r4_signed
+#define r5_signed      local_reg.r5_signed
+#define r6_signed      local_reg.r6_signed
+#define r7_signed      local_reg.r7_signed
+#define r8_signed      local_reg.r8_signed
+#define r9_signed      local_reg.r9_signed
+#define r10_signed     local_reg.r10_signed
+#define r11_signed     local_reg.r11_signed
+#define r12_signed     local_reg.r12_signed
+#define r14_signed     local_reg.r14_signed
 
 
 #define x_double    state->reg.x_double

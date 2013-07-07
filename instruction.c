@@ -24,6 +24,7 @@ begin_function(uint32_t pc)
     flag_function_end_found = 0;
     emit_code("static void func_%04x(state_t *state) {", pc);
     emit_code("    struct { int C, V, N, Z; } APSR;");
+    emit_code("    union local_reg_t local_reg;");
 }
 
 int
