@@ -164,13 +164,13 @@ process_jump_slot_relocations(arelent *relp)
     } else if (!strcmp(ext_func_name, "pthread_create")) {
         emit_code("static void *proxy_38450(void *param);"); // TODO: remove hardcode
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_E(\"calling pthread_create(%%p, %%p, %%p, %%p)\", vv(r0), vv(r1), vv(r2), vv(r3));");
+        emit_code("    LOG_I(\"calling pthread_create(%%p, %%p, %%p, %%p)\", vv(r0), vv(r1), vv(r2), vv(r3));");
         // TODO: remove hardcode
         emit_code("    if (r2 == image_offset + 0x38450) {");
         emit_code("    r0_signed = pthread_create((pthread_t *)r0, "
                             "(const pthread_attr_t *)r1, &proxy_38450, (void *)r3);");
         emit_code("    } else {");
-        emit_code("    LOG_E(\"start_routine not found\");");
+        emit_code("        LOG_E(\"pthread_create: start_routine (%%p) (%%p) not found\", vv(r2), vv(r2-image_offset));");
         emit_code("    }");
         emit_code("    r0 = 0;"); //fake success
         emit_code("}");
@@ -331,12 +331,12 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "sigaction")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
-        emit_code("    LOG_E(\"calling fake sigaction(%%d, %%p, %%p)\", r0, vv(r1), vv(r2));");
-        //emit_code("    LOG_E(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)r1)->sa_handler);");
-        //emit_code("    LOG_E(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)r1)->sa_sigaction);");
-        //emit_code("    LOG_E(\"   sigaction->sa_mask = %%lx\", ((const struct sigaction *)r1)->sa_mask);");
-        //emit_code("    LOG_E(\"   sigaction->sa_flags = %%lx\", ((const struct sigaction *)r1)->sa_flags);");
-        //emit_code("    LOG_E(\"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)r1)->sa_restorer);");
+        emit_code("    LOG_I(\"calling fake sigaction(%%d, %%p, %%p)\", r0, vv(r1), vv(r2));");
+        //emit_code("    LOG_I(\"   sigaction->sa_handler = %%p\", ((const struct sigaction *)r1)->sa_handler);");
+        //emit_code("    LOG_I(\"   sigaction->sa_sigaction = %%p\", ((const struct sigaction *)r1)->sa_sigaction);");
+        //emit_code("    LOG_I(\"   sigaction->sa_mask = %%lx\", ((const struct sigaction *)r1)->sa_mask);");
+        //emit_code("    LOG_I(\"   sigaction->sa_flags = %%lx\", ((const struct sigaction *)r1)->sa_flags);");
+        //emit_code("    LOG_I(\"   sigaction->sa_restorer = %%p\", ((const struct sigaction *)r1)->sa_restorer);");
         //emit_code("    r0_signed = sigaction((int)r0, (const struct sigaction *)r1, "
         //                    "(struct sigaction *)r2);");
         emit_code("    r0 = 0;"); // fake
