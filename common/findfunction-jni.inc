@@ -288,6 +288,13 @@ doCallObjectMethod(state_t *state)
             vv(methodID), param1, param2, param3);
         r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID, param1, param2, param3);
         LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
+    } else if (!strcmp(signature, "II")) {
+        uint32_t    param1 = r3;
+        uint32_t    param2 = load(r13);
+        LOG_I("calling JNIEnv_functions.CallObjectMethod(%p, %p, %p, [%d, %d])", vv(jnienv), vv(obj),
+            vv(methodID), param1, param2);
+        r0 = (uint32_t)JNIEnv_functions.CallObjectMethod(jnienv, obj, methodID, param1, param2);
+        LOG_I("        JNIEnv_functions.CallObjectMethod returned %p", vv(r0));
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
     } else if (!strcmp(signature, "unknown")) {
