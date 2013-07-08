@@ -613,6 +613,10 @@ find_and_call_function_runtime(state_t *state, void *addr)
         r0 = (uint32_t)JNIEnv_functions.ExceptionOccurred((JNIEnv*)r0);
         LOG_I("        JNIEnv_functions.ExceptionOccurred returned %p", vv(r0));
         return 1;
+    } else if (addr == JNIEnv_functions.NewString) {    // 163
+        LOG_I("calling JNIEnv_functions.NewString(%p, %p \"%s\", %d)", vv(r0), vv(r1), (const char*)r1, r2);
+        r0 = (uint32_t)JNIEnv_functions.NewString((JNIEnv*)r0, (const jchar*)r1, (jsize)r2);
+        return 1;
     }
 
 
