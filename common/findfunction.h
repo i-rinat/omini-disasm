@@ -1,7 +1,7 @@
-// findfunction.inc
+// findfunction.h
 
-#include "findfunction-jni.inc"
-#include "findfunction-dlsym.inc"
+#include "findfunction-jni.h"
+#include "findfunction-dlsym.h"
 
 static
 void

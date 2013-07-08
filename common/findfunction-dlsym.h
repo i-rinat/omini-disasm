@@ -1,9 +1,9 @@
-// findfunction-dlsym.inc
+// findfunction-dlsym.h
 
 #define GL_GLEXT_PROTOTYPES
 #include <GLES/gl.h>
 #include <GLES/glext.h>
-#include "gl-enums.inc"
+#include "gl-enums.h"
 
 #define DLSYM_TABLE_SIZE  200
 static pthread_mutex_t dlsym_mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -215,7 +215,7 @@ process_jump_slot_relocations(arelent *relp)
         emit_code("}");
     } else if (!strcmp(ext_func_name, "setjmp")) {
         // define function as macro in order to force inlining setjmp
-        // later, in prototypes.inc
+        // later, in prototypes.h
         setjmp_func_address = relp->address;
 
     } else if (!strcmp(ext_func_name, "pthread_cond_signal")) {

@@ -1,4 +1,4 @@
-/// @file gl-enums.inc
+/// @file gl-enums.h
 
 static
 const char *

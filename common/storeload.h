@@ -1,4 +1,4 @@
-// storeload.inc
+// storeload.h
 
 #define vv(value)   ((void*)value)
 

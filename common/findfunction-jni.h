@@ -1,4 +1,4 @@
-/// @file findfunction-jni.inc
+/// @file findfunction-jni.h
 
 static struct JNINativeInterface JNIEnv_functions;
 static struct JNIInvokeInterface JavaVM_functions;

@@ -621,7 +621,7 @@ declare_data_arrays(bfd *abfd)
 void
 generate_prototypes(void)
 {
-    set_output_file("prototypes.inc");
+    set_output_file("prototypes.h");
     char *buf_switchcase = malloc(1024*1024); // TODO: is that enough?
     assert(buf_switchcase);
 
@@ -730,8 +730,8 @@ main(int argc, char *argv[])
     emit_code("#include <sys/time.h>");
     emit_code("#include <sys/resource.h>");
     emit_code("#include <dlfcn.h>");
-    emit_code("#include \"tracing.inc\"");
-    emit_code("#include \"jmpbuf-table.inc\"");
+    emit_code("#include \"tracing.h\"");
+    emit_code("#include \"jmpbuf-table.h\"");
     emit_code("");
 
     func_list_initialize();
@@ -757,10 +757,10 @@ main(int argc, char *argv[])
     read_section(abfd, ".rodata");
 
     declare_data_arrays(abfd);
-    emit_code("#include \"registers.inc\"");
-    emit_code("#include \"prototypes.inc\"");
-    emit_code("#include \"storeload.inc\"");
-    emit_code("#include \"findfunction.inc\"");
+    emit_code("#include \"registers.h\"");
+    emit_code("#include \"prototypes.h\"");
+    emit_code("#include \"storeload.h\"");
+    emit_code("#include \"findfunction.h\"");
     determine_target_functions(abfd);
 
     apply_target_specific_quirks();
