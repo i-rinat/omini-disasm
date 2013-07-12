@@ -208,9 +208,9 @@ process_jump_slot_relocations(arelent *relp)
     } else if (!strcmp(ext_func_name, "longjmp")) {
         emit_code("static void func_%04x(state_t *state) {", relp->address);
         emit_code("    LOG_I(\"calling longjmp(%%p, %%d)\", vv(r0), r1);");
-        emit_code("    uint32_t native_addr = get_jmp_buf_address((uint32_t)r0);");
-        emit_code("    LOG_I(\"native_addr = %%p (longjmp)\", vv(native_addr));");
-        emit_code("    longjmp((long int *)native_addr, (int)r1);");
+        // pointer to actual jmp_buf was stored at r0
+        emit_code("    void *p = (void*)load(r0);");
+        emit_code("    longjmp(p, (int)r1);");
         emit_code("    LOG_I(\"        longjmp should not return\");");
         emit_code("}");
     } else if (!strcmp(ext_func_name, "setjmp")) {

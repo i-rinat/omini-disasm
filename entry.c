@@ -655,7 +655,11 @@ generate_prototypes(void)
         emit_code("#define func_%04x(notusedstate) { \\", setjmp_plt_func_address);
         emit_code("    LOG_I(\"calling setjmp(%%p)\", vv(r0)); \\");
         emit_code("    state_t saved_state = *state; \\");
-        emit_code("    int32_t retval = setjmp((long int *)get_jmp_buf_address(r0)); \\");
+        // allocate jmp_buf on stack and store its address in r0
+        // original code should allocate some memory, there is enough room to store pointer
+        emit_code("    void *p = alloca(sizeof(jmp_buf)); \\");
+        emit_code("    store(r0, (uint32_t)p); \\");
+        emit_code("    int32_t retval = setjmp(p); \\");
         emit_code("    if (retval) { \\");
         emit_code("        *state = saved_state; \\");
         emit_code("    } \\");
@@ -731,7 +735,6 @@ main(int argc, char *argv[])
     emit_code("#include <sys/resource.h>");
     emit_code("#include <dlfcn.h>");
     emit_code("#include \"tracing.h\"");
-    emit_code("#include \"jmpbuf-table.h\"");
     emit_code("");
 
     func_list_initialize();
